@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center flex-column col-md-12 ">
+    <button id="button" aria-describedby="tooltip">Click Me</button>
+    <div id="tooltip" role="tooltip">
+        This is a Popper.js tooltip!
+        <div id="arrow" data-popper-arrow></div>
+    </div>
+
+    <h3>{% block title %}Student Maintenance{% endblock %}</h3>
+    <div class="row mb-3 col-md-12 text-center justify-content-center">
+        <hr class="col-sm-9"/>
+        <h4>You can manage attendance records here:</h4>
+        <hr class="col-sm-9"/>
+    </div>
+
+    <table id="example" class="table table-striped table-sm" style="width:100%">
+        <thead>
+            <tr>
+                <th>Badge</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row.badgeNumber }}</td>
+                <td>{{ row.firstName }}</td>
+                <td>{{ row.lastName }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+    <script>
+        const button = document.querySelector('#button');
+        const tooltip = document.querySelector('#tooltip');
+        let popperInstance = null;
+
+        function createPopperInstance() {
+            popperInstance = Popper.createPopper(button, tooltip, {
+                placement: 'right', // You can change the placement
+                modifiers: [
+                    {
+                        name: 'offset',
+                        options: {
+                            offset: [0, 8], // Adjust offset if needed
+                        },
+                    },
+                    {
+                        name: 'arrow',
+                        options: {
+                            element: document.querySelector('#arrow'),
+                        },
+                    },
+                ],
+            });
+        }
+
+        function destroyPopperInstance() {
+            if (popperInstance) {
+                popperInstance.destroy();
+                popperInstance = null;
+            }
+        }
+
+        button.addEventListener('click', () => {
+            if (tooltip.style.display === 'none') {
+                // Show the tooltip
+                tooltip.style.display = 'block';
+                createPopperInstance();
+            } else {
+                // Hide the tooltip
+                tooltip.style.display = 'none';
+                destroyPopperInstance();
+            }
+        });
+    </script>
+{% endblock %}

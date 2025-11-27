@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}
+Student related functions
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="static/students.css">
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+{% endblock %}
+
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center flex-column col-md-12 ">
+    <div class="row mb-3 col-md-12 text-center justify-content-center">
+        <hr class="col-sm-9"/>
+        <h4>Please select a student to manage:</h4>
+        <hr class="col-sm-9"/>
+    </div>
+
+    <table id="example" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Age</th>
+                <th>Start date</th>
+                <th>Salary</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Tiger Nixon</td>
+                <td>System Architect</td>
+                <td>Edinburgh</td>
+                <td>61</td>
+                <td>2011-04-25</td>
+                <td>$320,800</td>
+            </tr>
+            <tr>
+                <td>Sonya Frost</td>
+                <td>Software Engineer</td>
+                <td>Edinburgh</td>
+                <td>23</td>
+                <td>2008-12-13</td>
+                <td>$103,600</td>
+            </tr>
+            <tr>
+                <td>Jena Gaines</td>
+                <td>Office Manager</td>
+                <td>London</td>
+                <td>30</td>
+                <td>2008-12-19</td>
+                <td>$90,560</td>
+            </tr>
+            <tr>
+                <td>Dai Rios</td>
+                <td>Personnel Lead</td>
+                <td>Edinburgh</td>
+                <td>35</td>
+                <td>2012-09-26</td>
+                <td>$217,500</td>
+            </tr>
+            <tr>
+                <td>Jenette Caldwell</td>
+                <td>Development Lead</td>
+                <td>New York</td>
+                <td>30</td>
+                <td>2011-09-03</td>
+                <td>$345,000</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div> <!-- /container -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#example').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {extend: 'copy'},
+                'csv', 'excel', 'pdf', 'print'
+            ]
+         });
+        $('#example_wrapper').addClass('col-md-12 border border-secondary rounded p-3');
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="static/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/style.css">
+
+    <script src="static/jquery-3.7.1.min.js"></script>
+    <script src="static/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
+
+    <title>{% block title %} {% endblock %}</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index')}}">Check In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/students">Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">About</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        {% block content %} {% endblock %}
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    <script type="javascript">
+        async function getRequest(url = '') {
+            const response = await fetch(url, {
+                method: 'GET',
+                cache: 'no-cache'
+            })
+            return response.json()
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            let url = document.location
+            let route = "/flaskwebgui-keep-server-alive"
+            let interval_request = 3 * 1000 //sec
+            function keep_alive_server() {
+                getRequest(url + route)
+                    .then(data => console.log(data))
+            }
+            setInterval(keep_alive_server, interval_request)()
+        })
+    </script>
+
+  </body>
+</html>

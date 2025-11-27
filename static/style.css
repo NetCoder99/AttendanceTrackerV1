@@ -1,0 +1,60 @@
+.my-custom-navbar {
+  background-color: #ff5733; /* Example custom color */
+  /* You can also add gradients or background images here */
+}
+
+.my-custom-navbar .navbar-brand,
+.my-custom-navbar .nav-link {
+  color: black; /* Adjust text color for contrast */
+}
+
+.navbar .nav-link:hover {
+  background: lightgray;
+}
+
+.nav-item .active {
+    color: red !important;
+}
+
+h1 {
+    border: 2px #eee solid;
+    color: brown;
+    text-align: center;
+    padding: 10px;
+}
+
+#tooltip {
+    background-color: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: none; /* Hidden by default */
+    z-index: 1000; /* Ensure it appears above other content */
+}
+
+.checkinResponse {
+  background-color: #fff9c4;
+  font-size: 1.5em;
+}
+
+.checkinTimer {
+  display: inline-block;
+  width: 1rem;
+  font-size: 0.5em;
+  color: orange;
+  text-align: right;
+}
+
+.checkinMsg2 {
+  display: inline-block;
+  width: 15rem;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.removed {
+  display: none;
+}
