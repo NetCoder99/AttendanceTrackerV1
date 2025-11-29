@@ -1,3 +1,4 @@
+import re
 import sqlite3
 
 from services.config import getDbPath
@@ -48,4 +49,29 @@ def GetStudentRecordsStmt(badgeNumber = None):
         FROM students  s
         left join belts b
             on s.currentRank = b.beltId
+    '''
+
+# ------------------------------------------------------------------
+def UpdStudentPicture(pictureDetails):
+    db_path = getDbPath()
+    dbObj = sqlite3.connect(db_path)
+    dbObj.row_factory = DictFactory
+    cursor = dbObj.cursor()
+    cursor.execute(UpdStudentPictureStmt(pictureDetails))
+    dbObj.commit()
+    rows = cursor.fetchall()
+    dbObj.close()
+    return rows
+
+def UpdStudentPictureStmt(pictureDetails):
+    pattern = r"(data:image/)(.+)(;)"
+    match = re.search(pattern, pictureDetails['fileBase64'])
+    studentImageType = match.groups()[1]
+    studentImageParts = pictureDetails['fileBase64'].split(',')
+    return f'''
+        update students
+        set    studentImageName    = '{pictureDetails['file_name']}',
+               studentImageType    = '{studentImageType}',
+               studentImageBase64  = '{studentImageParts[1]}'
+        WHERE badgeNumber = '{pictureDetails['badgeNumber']}'
     '''

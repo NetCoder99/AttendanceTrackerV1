@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1 class="mt-2">Student Details</h1>
+
+<div style="background-color: #f2ffe6;" class="pt-2 pb-2 ps-3">
+    <div class="row d-flex justify-content-center small">
+        <div id="frmCreate" class="row w-100 d-flex justify-content-center mainForm">
+            <div>
+                <h5 id="studentTitle" class="text-center">
+                    {{studentFields.headerMessage}}
+                </h5>
+            </div>
+
+            <div class="row w-100 d-flex text-center justify-content-center">
+                <div class="">
+                    <a href="#" class="btn btn-primary btn-sm" style="display: inline-block" onClick="handleReturnClick()">Back to search</a>
+                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block" onClick="handleReturnClick()">Details</a>
+                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block" onClick="handleReturnClick()">Promotions</a>
+                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block" onClick="handleReturnClick()">Attendance</a>
+                </div>
+                <hr class="w-75 mt-2">
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4 text-center">
+                    <div class="text-left d-inline-block mt-3" >
+                    <div>
+                      <form id="frmPictureSelect" method="POST" action="/save_student_picture" enctype="multipart/form-data">
+                          <label for="selectStudentPicture" class="btn btn-success btn-sm mb-2" style="width: 12rem">Select Picture</label>
+                          <input id="selectStudentPicture" style="display:none;" type="file">
+                      </form>
+                    </div>
+                    </div>
+                    <div style="height: 250px">
+                        <img id="studentImage"
+                             src=data:image/{{studentFields.studentImageType}};base64,{{studentFields.studentImageBase64}}
+                             alt="No image found"
+                             height=250
+                             width=auto
+                        />
+                    </div>
+                    <div class="text-center d-inline-block ">
+                        <div class="mt-2 p-1 fw-bold border rounded"
+                                style="backgroundColor: #D3D3D3; width: 14rem">
+                            <label>Student:</label>
+                            <label id="badgeNumberLbl">{{studentFields.badgeNumber}}</label>
+                        </div>
+                        <div
+                                class="mt-2 p-1 fw-bold border rounded"
+                                style="backgroundColor: #D3D3D3; width: 14rem">
+                            <label>Status:&nbsp; </label>
+                            <label>Active</label>
+                        </div>
+                        <div
+                                class="mt-2 p-1 fw-bold border rounded"
+                                style="backgroundColor: #D3D3D3; width: 14rem">
+                            <label>Member Since:</label><br>
+                            <label id="memberSinceLbl">01/01/1753</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8 pt-3">
+                    <div class="row">
+                        <div class="d-inline-block text-start" style="width: 11rem">
+                            <label class="form-label ms-1 mb-0">First Name</label>
+                            <input  id="frmFirstName"
+                                    placeholder="First Name"
+                                    value="{{studentFields.firstName}}"
+                                    class="d-inline-block float-left form-control ${studentFields.firstNameClass}"
+                                    style="width: 11rem"
+                                    onBlur=handleFieldBlur("frmFirstName")
+                            />
+                        </div>
+                        <div class="d-inline-block text-start ms-3" style="width: 11rem">
+                            <label class="form-label ms-1 mb-0">Middle Name</label>
+                            <input  id="frmMiddleName"
+                                    placeholder="Middle Name"
+                                    value="{{studentFields.middleName}}"
+                                    class="d-inline-block float-left form-control ${studentFields.middleNameClass}"
+                                    style="width: 11rem"
+                                    onBlur=handleFieldBlur("frmMiddleName")
+                                    disabled
+                            />
+                        </div>
+                        <div class="d-inline-block text-start ms-3" style="width: 11rem">
+                            <label class="form-label ms-1 mb-0">Last Name</label>
+                            <input  id="frmLastName"
+                                    placeholder="Last Name"
+                                    value="{{studentFields.lastName}}"
+                                    class="d-inline-block float-left form-control ${studentFields.lastNameClass}"
+                                    style="width: 11rem"
+                                    onBlur=handleFieldBlur("frmLastName")
+                            />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-inline-block text-start mt-2" style="width: 35rem">
+                            <label class="form-label ms-1 mb-0">Address Line 1(Optional)</label>
+                            <input  id="frmAddress"
+                                    placeholder="Address Line 1"
+                                    value="{{studentFields.address}}"
+                                    class="d-inline-block float-left form-control {{studentFields.addressClass}}"
+                                    style="width: 35rem"
+                                    onBlur=handleFieldBlur("frmAddress")
+                            />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-inline-block text-start mt-2" style="width: 35rem">
+                            <label class="form-label ms-1 mb-0">Address Line 2 (Optional)</label>
+                            <input  id="frmAddress2"
+                                    placeholder="Address Line 1"
+                                    value="{{studentFields.address2}}"
+                                    class="d-inline-block float-left form-control {{studentFields.address2Class}}"
+                                    style="width: 35rem"
+                                    onBlur=handleFieldBlur("frmAddress2")
+                            />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-inline-block text-start mt-2" style="width: 35rem">
+                            <label class="form-label ms-1 mb-0">City (Optional)</label>
+                            <input  id="frmCity"
+                                    placeholder="City"
+                                    value="{{studentFields.city}}"
+                                    class="d-inline-block float-left form-control {{studentFields.cityClass}}"
+                                    style="width: 35rem"
+                                    onBlur=handleFieldBlur("frmCity")
+                            />
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="d-inline-block text-start" style="width: 23rem">
+                            <label class="form-label ms-1 mb-0">State</label>
+                            <input  id="frmState"
+                                    placeholder="State"
+                                    value="{{studentFields.state}}"
+                                    class="d-inline-block float-left form-control ${studentFields.stateClass}"
+                                    style="width: 22rem"
+                                    onBlur=handleFieldBlur("frmState")
+                            />
+                        </div>
+                        <div class="d-inline-block text-start ms-3" style="width: 12rem">
+                            <label class="form-label ms-1 mb-0">Zip Code</label>
+                            <input  id="frmZip"
+                                    placeholder="Zip Code"
+                                    value="{{studentFields.zip}}"
+                                    class="d-inline-block float-left form-control ${studentFields.zipClass}"
+                                    style="width: 11rem"
+                                    onBlur=handleFieldBlur("frmZip")
+                            />
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="d-inline-block text-start" style="width: 11rem">
+                            <label class="form-label ms-1 mb-0">Phone</label>
+                            <input  id="frmPhoneHome"
+                                    placeholder="555-555-1234"
+                                    value="{{studentFields.phoneHome}}"
+                                    class="d-inline-block float-left form-control ${studentFields.phoneHomeClass}"
+                                    style="width: 11rem"
+                                    onBlur=handleFieldBlur("frmPhoneHome")
+                            />
+                        </div>
+                        <div class="d-inline-block text-start ms-3" style="width: 12rem">
+                            <label class="form-label ms-1 mb-0">E-Mail</label>
+                            <input  id="frmEmail"
+                                    placeholder="E-Mail"
+                                    value="{{studentFields.email}}"
+                                    class="d-inline-block float-left form-control ${studentFields.emailClass}"
+                                    style="width: 11rem"
+                                    onBlur=handleFieldBlur("frmEmail")
+                            />
+                        </div>
+                        <div class="d-inline-block text-start ms-1" style="width: 12rem">
+                            <label class="form-label ms-1 mb-0">Birth Date</label>
+                            <input  id="frmBirthDate"
+                                    type="date"
+                                    placeholder=""
+                                    value="{{studentFields.birthDate}}"
+                                    class="d-inline-block float-left form-control ${studentFields.birthDateClass}"
+                                    style="width: 11rem"
+                                    onBlur=handleFieldBlur("frmEmail")
+                            />
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="d-inline-block text-start" style="width: 12rem">
+                            <button id="btnSaveUpdate" type="button" class="btn btn-success btn-sm ">Save Updates</button>
+                        </div>
+                        <div class="d-inline-block text-start" style="width: 12rem">
+                            <button id="btnCreateBadge" type="button" class="btn btn-success btn-sm ">Create Badge</button>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div id="divStudentMessages" class="fw-bold text-success">Messages ...</div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static',filename='scripts/student_details.js') }}"></script>
+{% endblock %}

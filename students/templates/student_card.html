@@ -1,5 +1,5 @@
 {% macro render_component(student_record={'badgeNumber' : ''}) %}
-<div id="divStudentCard" class="container border rounded m-3 p-2" style="width: 90%; cursor: pointer;background-color: white">
+<div id="divStudentCard" onclick="processStudentEditClick({{student_record.badgeNumber}})" class="container border rounded m-3 p-2" style="width: 90%; cursor: pointer;background-color: white">
     <div class="row">
         <div class="col-md-2" >
             <img id="studentImage"
