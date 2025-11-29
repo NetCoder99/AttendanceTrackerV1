@@ -1,42 +1,39 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% from 'student_card.html' import render_component %}
+<!--{% from 'student_card.html' import render_component %}-->
 
-<h1>Student Search</h1>
+<h2>Student Search</h2>
 
-<div style="background-color: #f2ffe6;" class="pt-2 pb-2 ps-3">
-    <form>
-        <div class="row">
-            <div class="col-md-3">
-                <label class="ms-1 fw-bold">First Name</label>
-                <input id="searchFirstName" type="text" class="form-control" placeholder="First name">
-            </div>
-            <div class="col-md-3">
-                <label class="ms-1 fw-bold">Last Name</label>
-                <input id="searchLastName" type="text" class="form-control" placeholder="Last name">
-            </div>
-            <div class="col-md-3">
-                <label class="ms-1 fw-bold">Badge Number</label>
-                <input id="searchBadgeNumber" type="text" class="form-control" placeholder="Badge Number">
-            </div>
-            <div class="col-md-3">
-                <button id="studentBtnSearch" type="submit" class="btn btn-primary mt-4">Search</button>
-            </div>
-        </div>
-    </form>
-    <div>
-        <label class="ms-1 fw-bold text-success">Search response</label>
-    </div>
 
-</div>
-
-<div id="divStaticCard" hidden>{{ render_component() }}</div>
-
-<div id="divStudentsList" style="background-color: #f2ffe6;" class="pt-2">
-    {% for student_record in student_records %}
-      {{ render_component(student_record) }}
-    {% endfor %}
+<div id="divStudentsList" style="" class="px-5 border rounded w-100 mx-auto">
+    <table id="studentListTable" class="table cell-border b">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Badge Number</th>
+                <th>Student Name</th>
+                <th>City</th>
+            </tr>
+        </thead>
+        <tbody id="studentListTBbody">
+            {% for student_record in student_records %}
+            <tr>
+                <td>
+                    <img id="studentImage"
+                         src=data:image/{{student_record.studentImageType}};base64,{{student_record.studentImageBase64}}
+                         alt="No image found"
+                         height=50
+                         width=auto
+                    />
+                </td>
+                <td >{{ student_record.badgeNumber }}</td>
+                <td>{{ student_record.firstName }} {{ student_record.lastName }}</td>
+                <td>{{ student_record.currentRankName }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 <script src="{{ url_for('static',filename='scripts/students_list.js') }}"></script>

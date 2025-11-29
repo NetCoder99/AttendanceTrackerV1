@@ -1,27 +1,27 @@
-{% macro render_component(student_record={'badgeNumber' : ''}) %}
-<div id="divStudentCard" onclick="processStudentEditClick({{student_record.badgeNumber}})" class="container border rounded m-3 p-2" style="width: 90%; cursor: pointer;background-color: white">
-    <div class="row">
-        <div class="col-md-2" >
-            <img id="studentImage"
-                 src=data:image/{{student_record.studentImageType}};base64,{{student_record.studentImageBase64}}
-                 alt="No image found"
-                 height=100
-                 width=auto
-            />
-        </div>
-        <div class="col-md-10">
-            <div class="row mt-4">
-                <label class="student_label fw-bold" style="width: 10rem;">Badge Number</label>
-                <label class="student_label fw-bold" style="width: 20rem;">Student Name</label>
-                <label class="student_label fw-bold" style="width: 10rem;">Student Rank</label>
-            </div>
-            <hr class="m-0">
-            <div class="row">
-                <label id="studentBadgeNumber" class="student_label fw-bold" style="width: 10rem;">{{student_record.badgeNumber}}</label>
-                <label id="studentStudentName" class="student_label fw-bold" style="width: 20rem;">{{student_record.firstName}} {{student_record.lastName}}</label>
-                <label id="studentRankName"    class="student_label fw-bold" style="width: 10rem;">{{student_record.currentRankName}}</label>
-            </div>
-        </div>
-    </div>
-</div>
-{%- endmacro %}
+<!--{% macro render_component(student_record={'badgeNumber' : ''}) %}-->
+<!--<div id="divStudentCard_{{student_record.badgeNumber}} " onclick="processStudentEditClick({{student_record.badgeNumber}})" class="container border rounded m-3 p-2" style="width: 90%; cursor: pointer;background-color: white">-->
+<!--    <div class="row">-->
+<!--        <div class="col-md-2" >-->
+<!--            <img id="studentImage"-->
+<!--                 src=data:image/{{student_record.studentImageType}};base64,{{student_record.studentImageBase64}}-->
+<!--                 alt="No image found"-->
+<!--                 height=100-->
+<!--                 width=auto-->
+<!--            />-->
+<!--        </div>-->
+<!--        <div class="col-md-10">-->
+<!--            <div class="row mt-4">-->
+<!--                <label class="student_label fw-bold" style="width: 10rem;">Badge Number</label>-->
+<!--                <label class="student_label fw-bold" style="width: 20rem;">Student Name</label>-->
+<!--                <label class="student_label fw-bold" style="width: 10rem;">Student Rank</label>-->
+<!--            </div>-->
+<!--            <hr class="m-0">-->
+<!--            <div class="row">-->
+<!--                <label id="studentBadgeNumber" class="student_label fw-bold" style="width: 10rem;">{{student_record.badgeNumber}}</label>-->
+<!--                <label id="studentStudentName" class="student_label fw-bold" style="width: 20rem;">{{student_record.firstName}} {{student_record.lastName}}</label>-->
+<!--                <label id="studentRankName"    class="student_label fw-bold" style="width: 10rem;">{{student_record.currentRankName}}</label>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--{%- endmacro %}-->

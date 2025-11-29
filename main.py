@@ -1,22 +1,26 @@
 # ------------------------------------------------------------------
 # pyinstaller --add-data "templates;templates" --add-data "static;static" --add-data "students;students" main.py
 # ------------------------------------------------------------------
-
 import os
 import sys
 from flask import Flask, render_template, request, jsonify
 from flaskwebgui import FlaskUI
 
+from schedule.routes import schedule_bp
 from students.routes import students_bp
 from services.checkin_procs import validateCheckin
 
+# ----------------------------------------------------------------------------------
 base_dir = '.'
 if hasattr(sys, '_MEIPASS'):
     base_dir = os.path.join(sys._MEIPASS)
 
+# ----------------------------------------------------------------------------------
 app = Flask(__name__, static_folder=os.path.join(base_dir, 'static'), template_folder=os.path.join(base_dir, 'templates'))
 app.register_blueprint(students_bp)
+app.register_blueprint(schedule_bp)
 
+# ----------------------------------------------------------------------------------
 @app.route('/')
 def index():
     checkinMessage = {
@@ -36,6 +40,7 @@ def checkin():
         return jsonify(validateCheckin(request.form.to_dict()))
 
 @app.errorhandler(404)
+@app.errorhandler(500)
 def page_not_found(e):
     missing_url = None
     try:
@@ -54,4 +59,4 @@ def page_not_found(e):
 if __name__ == '__main__':
     ui = FlaskUI(app=app, width=1200, height=900, fullscreen=False, server='flask')
     ui.run()
-    #app.run(debug=False)
+    app.run(debug=False)

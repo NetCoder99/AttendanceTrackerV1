@@ -17,32 +17,17 @@ def students_bp_home():
     student_records = GetSqliteStudents()
     return render_template('students_list.html', student_records=student_records)
 
-@students_bp.route('/student_search', methods=['POST'])   # Focus here
-def students_bp_search():
-    if request.method == 'POST':
-        data = request.get_json()
-        student_records = GetSqliteStudents()
-        search_records = copy.deepcopy(student_records)
-        if data['searchBadgeNumber']:
-            search_records = [x for x in search_records if
-                              str(x['badgeNumber']).lower() == str(data['searchBadgeNumber'].lower())]
-        else:
-            if data['searchFirstName']:
-                search_records = [x for x in search_records if
-                                  x['firstName'].lower().startswith(data['searchFirstName'].lower())]
-            if data['searchLastName']:
-                search_records = [x for x in search_records if
-                                  x['lastName'].lower().startswith(data['searchLastName'].lower())]
-        return search_records
-
-@students_bp.route('/students_details')   # Focus here
+@students_bp.route('/student_details')   # Focus here
 def students_bp_details():
-    badgeNumber = request.args['badgeNumber']
-    student_records = GetSqliteStudents()
-    student_record = [x for x in student_records if
-                      str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
-    student_record['headerMessage'] = 'Updating a student record.'
-    return render_template('student_details.html', studentFields=student_record)
+    try:
+        badgeNumber = request.args['badgeNumber']
+        student_records = GetSqliteStudents()
+        student_record = [x for x in student_records if
+                          str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
+        student_record['headerMessage'] = 'Updating a student record.'
+        return render_template('student_details.html', studentFields=student_record)
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
 
 @students_bp.route('/save_student_picture', methods=['POST'])
 def save_student_picture():
@@ -54,3 +39,26 @@ def save_student_picture():
     returnData = data_json['fileBase64']
     return str(data_json['fileBase64'])
 
+@students_bp.route('/student_promotions')   # Focus here
+def student_promotions():
+    try:
+        badgeNumber = request.args['badgeNumber']
+        student_records = GetSqliteStudents()
+        student_record = [x for x in student_records if
+                          str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
+        student_record['headerMessage'] = 'Reviewing student promotions.'
+        return render_template('student_promotions.html', studentFields=student_record)
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
+@students_bp.route('/student_attendance')   # Focus here
+def student_attendance():
+    try:
+        badgeNumber = request.args['badgeNumber']
+        student_records = GetSqliteStudents()
+        student_record = [x for x in student_records if
+                          str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
+        student_record['headerMessage'] = 'Reviewing student attendance.'
+        return render_template('student_attendance.html', studentFields=student_record)
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')

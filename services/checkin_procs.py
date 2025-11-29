@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlite.sqlite_classes import GetClassRecords
+from sqlite.sqlite_schedule import GetClassRecords
 from sqlite.sqlite_students import GetSqliteStudents
 
 def validateCheckin(data: any):

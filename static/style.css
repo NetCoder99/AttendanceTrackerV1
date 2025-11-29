@@ -23,6 +23,15 @@ h1 {
     padding: 10px;
 }
 
+h2 {
+    margin-top: 3rem;
+    border: 2px #eee solid;
+    color: white;
+    background-color: #990e4a;
+    text-align: center;
+    padding: 5px;
+}
+
 #tooltip {
     background-color: #333;
     color: white;
@@ -57,6 +66,16 @@ h1 {
 
 .removed {
   display: none;
+}
+
+/* To style all header cells */
+table.dataTable thead th {
+    background-color: #337ab7 !important; /* Example: Bootstrap primary blue */
+    color: white !important; /* Optional: Change text color for contrast */
+}
+
+#studentListTable tbody tr:hover {
+    cursor: pointer;
 }
 
 .custom-file-upload {

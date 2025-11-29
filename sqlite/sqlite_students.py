@@ -7,18 +7,28 @@ from sqlite.sqlite_procs import DictFactory
 
 # ------------------------------------------------------------------
 def GetSqliteStudents():
-    db_path = getDbPath()
-    dbObj = sqlite3.connect(db_path)
-    dbObj.row_factory = DictFactory
-    cursor = dbObj.cursor()
-    cursor.execute(GetStudentRecordsStmt())
-    rows = cursor.fetchall()
-    dbObj.close()
-    return rows
-
+    try:
+        db_path = getDbPath()
+        dbObj = sqlite3.connect(db_path)
+        dbObj.row_factory = DictFactory
+        cursor = dbObj.cursor()
+        cursor.execute(GetStudentRecordsStmt())
+        rows = cursor.fetchall()
+        dbObj.close()
+        return rows
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
 
 def GetStudentRecordsStmt(badgeNumber = None):
     return '''
+        with cte_default_image as (
+          select a.imageId,
+                 a.imageName,
+                 a.imageType,
+                 a.imageBase64
+          from  assets a
+          where a.imageId = 428
+        )    
         SELECT s.badgeNumber,
                s.firstName,
                s.lastName,
@@ -38,14 +48,21 @@ def GetStudentRecordsStmt(badgeNumber = None):
                s.gender,
                s.currentRank,
                s.ethnicity,
-               --s.studentImageBytes,
-               s.studentImagePath,
-               s.studentImageBase64,
                s.middleName,
-               s.studentImageName,
-               s.studentImageType,
                s.currentRankName,
-               b.beltTitle
+               b.beltTitle,
+               case when s.studentImageBase64 is not null
+                    then s.studentImageBase64 
+                    else (select imageBase64 from cte_default_image)
+               end as studentImageBase64,   
+               case when s.studentImageBase64 is not null
+                    then s.studentImageName 
+                    else (select imageName from cte_default_image)
+               end as studentImageName,   
+               case when s.studentImageBase64 is not null
+                    then s.studentImageType 
+                    else (select imageType from cte_default_image)
+               end as studentImageType   
         FROM students  s
         left join belts b
             on s.currentRank = b.beltId
