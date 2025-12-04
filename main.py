@@ -6,8 +6,8 @@ import sys
 from flask import Flask, render_template, request, jsonify
 from flaskwebgui import FlaskUI
 
-from schedule.routes import schedule_bp
-from students.routes import students_bp
+from blueprints.schedule.routes import schedule_bp
+from blueprints.students.routes import students_bp
 from services.checkin_procs import validateCheckin
 
 # ----------------------------------------------------------------------------------
@@ -57,6 +57,6 @@ def page_not_found(e):
 
 # Run the application
 if __name__ == '__main__':
-    ui = FlaskUI(app=app, width=1200, height=900, fullscreen=False, server='flask')
-    ui.run()
+    #ui = FlaskUI(app=app, width=1200, height=900, fullscreen=False, server='flask')
+    #ui.run()
     app.run(debug=False)

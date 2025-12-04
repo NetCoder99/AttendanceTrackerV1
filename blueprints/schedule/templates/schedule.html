@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}
+Class management functions
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+{% endblock %}
+
+{% block content %}
+<h2>Classes / Schedule Manager</h2>
+    <table id="classTable" class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Day of Week</th>
+          <th>Class Details</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyClassDays">
+        <tr>
+          <td id="tdDayName" class="fw-bold">Sunday</td>
+          <td>
+            <table class="table table-sm table-hover">
+              <thead id="theadClassSunday">
+              </thead>
+              <tbody id="tbodyClassSunday">
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Monday</td>
+          <td  class="border-bottom-0">
+            <table class="table table-sm table-hover">
+              <thead id="theadClassMonday">
+              </thead>
+              <tbody id="tbodyClassMonday">
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Tuesday</td>
+          <td class="border-bottom-0">
+            <table class="table table-sm table-hover">
+              <thead id="theadClassTuesday">
+              </thead>
+              <tbody id="tbodyClassTuesday">
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Wednesday</td>
+          <td class="border-bottom-0">
+            <table class="table table-sm table-hover">
+              <thead id="theadClassWednesday">
+              </thead>
+              <tbody id="tbodyClassWednesday">
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Thursday</td>
+          <td class="border-bottom-0">
+            <table class="table table-sm table-hover">
+              <thead id="theadClassThursday">
+              </thead>
+              <tbody id="tbodyClassThursday">
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Friday</td>
+          <td class="border-bottom-0">
+            <table class="table table-sm table-hover">
+              <thead id="theadClassFriday">
+              </thead>
+              <tbody id="tbodyClassFriday">
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Saturday</td>
+          <td class="border-bottom-0">
+            <table class="table table-sm table-hover">
+              <thead id="theadClassSaturday">
+              </thead>
+              <tbody id="tbodyClassSaturday">
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+<script src="{{ url_for('schedule_bp.static',filename='schedule.js') }}"> </script>
+
+{% endblock %}

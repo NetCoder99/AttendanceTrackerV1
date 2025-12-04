@@ -2,7 +2,25 @@ import sqlite3
 
 from services.config import getDbPath
 from sqlite.sqlite_procs import DictFactory
+from datetime import datetime
+# ------------------------------------------------------------------
+def GetClassRecordsSorted():
+    classRecords = GetClassRecords()
+    for classRecord in classRecords:
+        date_string = "01-Jan-1980 " + classRecord['classStartTime']
+        format_string = "%d-%b-%Y %I:%M %p"
+        datetimeObject = datetime.strptime(date_string, format_string)
+        try:
+            classRecord['sortKey'] = datetimeObject.timestamp()
+        except Exception as ex:
+            print(f'ex: {ex.__str__()}')
 
+    try:
+        sorted_data = sorted(classRecords, key=lambda x: (x['classDayOfWeek'], x['sortKey']))
+    except Exception as ex:
+        print(f'ex: {ex.__str__()}')
+
+    return sorted_data
 
 # ------------------------------------------------------------------
 def GetClassRecords():
