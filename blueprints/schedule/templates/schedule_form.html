@@ -18,7 +18,7 @@
                                 <h5 id="updAddClass" class="fw-bold">Updating class</h5>
                                 <hr>
                                 <div id="frmCreate" class="row w-100 d-flex mainForm">
-                                    <form id="frmClassData" class="p-2" aria-disabled="true">
+                                    <form id="frmClassData" class="p-2" >
 
                                         <div class="form-group row">
                                             <label class="col-sm-3 col-form-label">
@@ -26,9 +26,10 @@
                                             </label>
                                             <div class="col-sm-6">
                                                 <input id="inpClassName"
+                                                       name="inpClassName"
                                                        placeholder="Class name"
                                                        class="d-inline-block float-left mt-1"
-                                                       style="width: 20rem"
+                                                       style="width: 30rem"
                                                 />
                                             </div>
                                         </div>
@@ -37,7 +38,7 @@
                                                 Style Name
                                             </label>
                                             <div class="col-sm-6">
-                                                <select id="slctStyleNum" class="mt-1">
+                                                <select id="slctStyleNum" class="mt-1" name="slctStyleNum">
                                                     <option value="1">Okinawan Shorin-Ryu</option>
                                                     <option value="2">Chanbara</option>
                                                     <option value="3">Batto-Do Koshiden Ken Ryu</option>
@@ -49,7 +50,7 @@
                                                 Day of week
                                             </label>
                                             <div class="col-sm-6">
-                                                <select id="slctDayOfWeek" class="mt-1">
+                                                <select id="slctDayOfWeek" name="slctDayOfWeek" class="mt-1">
                                                     <option value="0">Sunday</option>
                                                     <option value="1">Monday</option>
                                                     <option value="2">Tuesday</option>
@@ -66,10 +67,18 @@
                                             </label>
                                             <div class="col-sm-6">
                                                 <input id="inpStartTime"
+                                                       name="inpStartTime"
                                                        placeholder="Start Time"
                                                        class="d-inline-block float-left mt-1"
+                                                       style="width: 6rem"
                                                        size="sm"
                                                 />
+                                                <div class="d-inline-block radio-group" style="width: 9rem">
+                                                        <input type="radio" id="chkAm" name="chkAmPm" value="AM" >
+                                                        <label for="chkAm">AM</label>
+                                                        <input type="radio" id="chkPm" name="chkAmPm" value="PM"  checked>
+                                                        <label for="chkPm">PM</label><br>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -78,8 +87,10 @@
                                             </label>
                                             <div class="col-sm-6">
                                                 <input id="inpClassDuration"
+                                                       name="inpClassDuration"
                                                        placeholder="50"
                                                        class="d-inline-block float-left mt-1"
+                                                       style="width: 6rem"
                                                        size="sm"
                                                 />
                                             </div>
@@ -87,7 +98,7 @@
 
                                         <div class="form-group row">
                                             <label class="col-sm-3 col-form-label">
-                                                Start Time
+                                                End Time
                                             </label>
                                             <div class="col-sm-6">
                                                 <input id="inpFinisTime"
@@ -105,19 +116,19 @@
                                             </label>
                                             <div class="col-sm-6">
                                                 <div class="d-inline-block" style="width: 5rem">
-                                                    <input id="chkWhite" type="checkbox"/>
+                                                    <input id="chkWhite" name="chkWhite" type="checkbox"/>
                                                     <label for="chkWhite">White</label>
                                                 </div>
                                                 <div class="d-inline-block" style="width: 5rem">
-                                                    <input id="chkOrange" type="checkbox"/>
+                                                    <input id="chkOrange" name="chkOrange" type="checkbox"/>
                                                     <label for="chkOrange">Orange</label>
                                                 </div>
                                                 <div class="d-inline-block" style="width: 5rem">
-                                                    <input id="chkYellow" type="checkbox"/>
+                                                    <input id="chkYellow" name="chkYellow" type="checkbox"/>
                                                     <label for="chkYellow">Yellow</label>
                                                 </div>
                                                 <div class="d-inline-block" style="width: 5rem">
-                                                    <input id="chkBlue" type="checkbox"/>
+                                                    <input id="chkBlue" name="chkBlue" type="checkbox"/>
                                                     <label for="chkBlue">Blue</label>
                                                 </div>
                                             </div>
@@ -126,24 +137,24 @@
 
                                         <div class="form-group row">
                                             <label class="col-sm-3 col-form-label">
-                                                    <input id="chkAll" type="checkbox"/>
+                                                    <input id="chkAll" name="chkBlue" type="checkbox"/>
                                                     <label for="chkAll">All</label>
                                             </label>
                                             <div class="col-sm-6">
                                                 <div class="d-inline-block" style="width: 5rem">
-                                                    <input id="chkGreen" type="checkbox"/>
+                                                    <input id="chkGreen" name="chkGreen" type="checkbox"/>
                                                     <label for="chkGreen">Green</label>
                                                 </div>
                                                 <div class="d-inline-block" style="width: 5rem">
-                                                    <input id="chkPurple" type="checkbox"/>
+                                                    <input id="chkPurple" name="chkPurple" type="checkbox"/>
                                                     <label for="chkPurple">Purple</label>
                                                 </div>
                                                 <div class="d-inline-block" style="width: 5rem">
-                                                    <input id="chkBrown" type="checkbox"/>
+                                                    <input id="chkBrown" name="chkBrown" type="checkbox"/>
                                                     <label for="chkBrown">Brown</label>
                                                 </div>
                                                 <div class="d-inline-block" style="width: 5rem">
-                                                    <input id="chkBlack" type="checkbox"/>
+                                                    <input id="chkBlack" name="chkBlack" type="checkbox"/>
                                                     <label for="chkBlack">Black</label>
                                                 </div>
                                             </div>
@@ -155,6 +166,7 @@
                                             </label>
                                             <div class="col-sm-6">
                                                 <input id="inpAllowedAges"
+                                                       name="inpAllowedAges"
                                                        placeholder="Any ages"
                                                        class="d-inline-block float-left mt-1"
                                                        size="sm"
@@ -168,13 +180,29 @@
                         </div>
                     </div>
                 </div>
-                <form>
 
-                    <div class="modal-footer">
-                        <button id="btnClose" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button id="btnSave" type="button" class="btn btn-primary">Save changes</button>
+                <div id="divClassPrimaryButtons" class="container mt-3">
+                    <div class="row align-items-start">
+                        <div class="col justify-content-start">
+                            <label id="lblPrimaryMessage" class="text-left fw-bold text-success">Waiting for
+                                input</label>
+                        </div>
+                        <div class="col justify-content-end">
+                            <button id="btnClose" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                            <button id="btnDelete" type="button" class="btn btn-danger ">Delete class</button>
+                            <button id="btnSave" type="button" class="btn btn-primary ">Save changes</button>
+                        </div>
                     </div>
-                </form>
+                </div>
+
+                <div id="divClassConfirmations" class="row removed modal-footer">
+                    <label id="lblConfirmClassDelete" class="fw-bold col-5">Are you sure?</label>
+                    <button id="btnClassConfirmDeleteYes"  type="button" class="btn btn-danger col-3" >Yes</button>
+                    <button id="btnClassConfirmDeleteNo"   type="button" class="btn btn-primary col-3">No</button>
+                </div>
+
             </div>
         </div>
     </div>

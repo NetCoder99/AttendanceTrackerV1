@@ -3,6 +3,7 @@ import copy
 
 from flask import Blueprint, render_template, request, jsonify
 
+from blueprints.schedule.validateClassFields import validateClassFields
 from sqlite.sqlite_schedule import GetClassRecords, GetClassRecordsSorted
 
 schedule_bp = Blueprint(
@@ -34,5 +35,6 @@ def classDetails_api():
 
 @schedule_bp.route('/saveClassDetails_api', methods=['POST', 'GET'])
 def saveClassDetails_api():
-    classData     = request
-    return None
+    #classData  = request.json
+    isValid    = validateClassFields(request.json)
+    return jsonify(isValid)

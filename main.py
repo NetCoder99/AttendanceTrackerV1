@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------
-# pyinstaller --add-data "templates;templates" --add-data "static;static" --add-data "students;students" main.py
+# pyinstaller --add-data "templates;templates" --add-data "static;static" --add-data "blueprints/students;blueprints/students" --add-data "blueprints/schedule;blueprints/schedule" main.py
 # ------------------------------------------------------------------
 import os
 import sys
@@ -19,6 +19,7 @@ if hasattr(sys, '_MEIPASS'):
 app = Flask(__name__, static_folder=os.path.join(base_dir, 'static'), template_folder=os.path.join(base_dir, 'templates'))
 app.register_blueprint(students_bp)
 app.register_blueprint(schedule_bp)
+
 
 # ----------------------------------------------------------------------------------
 @app.route('/')
@@ -57,6 +58,6 @@ def page_not_found(e):
 
 # Run the application
 if __name__ == '__main__':
-    #ui = FlaskUI(app=app, width=1200, height=900, fullscreen=False, server='flask')
-    #ui.run()
-    app.run(debug=False)
+    ui = FlaskUI(app=app, width=1200, height=900, fullscreen=False, server='flask')
+    ui.run()
+    #app.run(debug=False)

@@ -76,8 +76,19 @@ h3 {
   display: none;
 }
 
+.invalid {
+    border-color: red !important; /* Example for invalid state */
+}
+
 .dropdown-menu {
   background-color: white; /* Light grey example */
+}
+
+.radio-group input[type="radio"],
+.radio-group label {
+    display: inline-block;
+    margin-right: 1px;
+    vertical-align: middle;
 }
 
 /* To style all header cells */
