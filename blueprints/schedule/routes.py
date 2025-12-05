@@ -15,10 +15,24 @@ schedule_bp = Blueprint(
 @schedule_bp.route('/schedule')
 def schedule_bp_home():
     class_records = GetClassRecordsSorted()
-    return render_template('schedule.html')
+    return render_template('schedule_list.html')
 
 @schedule_bp.route('/schedule_api', methods=['POST', 'GET'])
-def schedule_bp_api():
+def schedule_api():
     class_records = GetClassRecordsSorted()
     return jsonify({"data": class_records})
 
+@schedule_bp.route('/getClassDetails_api', methods=['POST', 'GET'])
+def classDetails_api():
+    classNum       = request.json['classNum']
+    class_records = GetClassRecordsSorted()
+    if classNum:
+        class_record = [x for x in class_records if str(x['classNum']) == str(classNum)]
+        return {"data": class_record[0]}
+
+    return None
+
+@schedule_bp.route('/saveClassDetails_api', methods=['POST', 'GET'])
+def saveClassDetails_api():
+    classData     = request
+    return None

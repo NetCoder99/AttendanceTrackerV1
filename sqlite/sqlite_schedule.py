@@ -3,6 +3,7 @@ import sqlite3
 from services.config import getDbPath
 from sqlite.sqlite_procs import DictFactory
 from datetime import datetime
+
 # ------------------------------------------------------------------
 def GetClassRecordsSorted():
     classRecords = GetClassRecords()
@@ -14,7 +15,6 @@ def GetClassRecordsSorted():
             classRecord['sortKey'] = datetimeObject.timestamp()
         except Exception as ex:
             print(f'ex: {ex.__str__()}')
-
     try:
         sorted_data = sorted(classRecords, key=lambda x: (x['classDayOfWeek'], x['sortKey']))
     except Exception as ex:
@@ -55,3 +55,5 @@ def GetClassRecordsStmt():
             on c.classDayOfWeek = v.dayOfWeek
           order by c.classDayOfWeek; 
     '''
+
+

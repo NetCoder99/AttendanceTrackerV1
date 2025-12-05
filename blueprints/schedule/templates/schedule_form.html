@@ -1,0 +1,181 @@
+<!-- Modal -->
+<div class="modal" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fs-5 mx-auto " id="exampleModalLabel">Class / Schedule Maintenance</h3>
+            </div>
+            <div class="modal-body">
+                <div style="background-color: #f2ffe6;" class="pt-2 pb-2 ps-3">
+                    <div class="row d-flex justify-content-center medium">
+                        <div id="frmCreateOuter" class="row w-100 d-flex justify-content-center mainForm">
+                            <div>
+                                <div id="divClassDayOfWeek" hidden></div>
+                                <div id="divClassNum" hidden></div>
+
+                                <h5 id="lblAddClass" class="fw-bold">Adding new class</h5>
+                                <h5 id="updAddClass" class="fw-bold">Updating class</h5>
+                                <hr>
+                                <div id="frmCreate" class="row w-100 d-flex mainForm">
+                                    <form id="frmClassData" class="p-2" aria-disabled="true">
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">
+                                                Class Name
+                                            </label>
+                                            <div class="col-sm-6">
+                                                <input id="inpClassName"
+                                                       placeholder="Class name"
+                                                       class="d-inline-block float-left mt-1"
+                                                       style="width: 20rem"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mt-2">
+                                            <label class="col-sm-3 col-form-label">
+                                                Style Name
+                                            </label>
+                                            <div class="col-sm-6">
+                                                <select id="slctStyleNum" class="mt-1">
+                                                    <option value="1">Okinawan Shorin-Ryu</option>
+                                                    <option value="2">Chanbara</option>
+                                                    <option value="3">Batto-Do Koshiden Ken Ryu</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mt-2">
+                                            <label class="col-sm-3 col-form-label">
+                                                Day of week
+                                            </label>
+                                            <div class="col-sm-6">
+                                                <select id="slctDayOfWeek" class="mt-1">
+                                                    <option value="0">Sunday</option>
+                                                    <option value="1">Monday</option>
+                                                    <option value="2">Tuesday</option>
+                                                    <option value="3">Wednesday</option>
+                                                    <option value="4">Thursday</option>
+                                                    <option value="5">Friday</option>
+                                                    <option value="6">Saturday</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">
+                                                Start Time
+                                            </label>
+                                            <div class="col-sm-6">
+                                                <input id="inpStartTime"
+                                                       placeholder="Start Time"
+                                                       class="d-inline-block float-left mt-1"
+                                                       size="sm"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">
+                                                Duration (Mins)
+                                            </label>
+                                            <div class="col-sm-6">
+                                                <input id="inpClassDuration"
+                                                       placeholder="50"
+                                                       class="d-inline-block float-left mt-1"
+                                                       size="sm"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">
+                                                Start Time
+                                            </label>
+                                            <div class="col-sm-6">
+                                                <input id="inpFinisTime"
+                                                       placeholder="End Time"
+                                                       class="d-inline-block float-left mt-1"
+                                                       size="sm"
+                                                       disabled
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">
+                                                Allowed Ranks
+                                            </label>
+                                            <div class="col-sm-6">
+                                                <div class="d-inline-block" style="width: 5rem">
+                                                    <input id="chkWhite" type="checkbox"/>
+                                                    <label for="chkWhite">White</label>
+                                                </div>
+                                                <div class="d-inline-block" style="width: 5rem">
+                                                    <input id="chkOrange" type="checkbox"/>
+                                                    <label for="chkOrange">Orange</label>
+                                                </div>
+                                                <div class="d-inline-block" style="width: 5rem">
+                                                    <input id="chkYellow" type="checkbox"/>
+                                                    <label for="chkYellow">Yellow</label>
+                                                </div>
+                                                <div class="d-inline-block" style="width: 5rem">
+                                                    <input id="chkBlue" type="checkbox"/>
+                                                    <label for="chkBlue">Blue</label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">
+                                                    <input id="chkAll" type="checkbox"/>
+                                                    <label for="chkAll">All</label>
+                                            </label>
+                                            <div class="col-sm-6">
+                                                <div class="d-inline-block" style="width: 5rem">
+                                                    <input id="chkGreen" type="checkbox"/>
+                                                    <label for="chkGreen">Green</label>
+                                                </div>
+                                                <div class="d-inline-block" style="width: 5rem">
+                                                    <input id="chkPurple" type="checkbox"/>
+                                                    <label for="chkPurple">Purple</label>
+                                                </div>
+                                                <div class="d-inline-block" style="width: 5rem">
+                                                    <input id="chkBrown" type="checkbox"/>
+                                                    <label for="chkBrown">Brown</label>
+                                                </div>
+                                                <div class="d-inline-block" style="width: 5rem">
+                                                    <input id="chkBlack" type="checkbox"/>
+                                                    <label for="chkBlack">Black</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">
+                                                Allowed Ages
+                                            </label>
+                                            <div class="col-sm-6">
+                                                <input id="inpAllowedAges"
+                                                       placeholder="Any ages"
+                                                       class="d-inline-block float-left mt-1"
+                                                       size="sm"
+                                                />
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form>
+
+                    <div class="modal-footer">
+                        <button id="btnClose" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button id="btnSave" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

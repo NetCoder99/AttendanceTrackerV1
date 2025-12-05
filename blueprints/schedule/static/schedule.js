@@ -12,65 +12,25 @@ fetch('schedule_api')
     return response.json();
   })
   .then(classData => {
-    console.log('Classes Data:', classData);
     processScheduleData(classData['data']);
   })
   .catch(error => {
     console.error('Error:', error);
   });
-//  $('#scheduleClassesTable').DataTable({
-//    "ordering": false,
-//    "paging": false,
-//    "searching": false,
-//    "processing": true,
-//    "serverSide": true,
-//    "pageLength": -1,
-//    "ajax": {
-//        "url": "schedule_api", // Replace with your actual API endpoint
-//        "type": "POST", // Or "GET" depending on your API
-//        "data": function (d) {  }
-//    },
-//    "columns": [
-//        { "data": "dayName" },
-//        { "data": "classStartTime" },
-//        { "data": "classFinisTime" },
-//        { "data": "className" },
-//        { "data": "classNum" },
-//        { "data": "classDayOfWeek" },
-//    ],
-//    rowCallback: function(row, data, index) {
-//        console.log(`Processing row: ${index}`);
-//        if (index % 2 === 0) {
-//            $('td', row).each(function(colIndex) {
-//                $(this).addClass('bg-success');
-//            });
-//        }
-//        else {
-//          $(row).addClass('bg-success');
-//        }
-//    }
-//});
 }
 
 function processScheduleData(classData) {
     let prevDayOfWeek = -1;
     const classTable = $("#classTable");
 
-    for (let i = 0; i < classData.length; i++) {
-        console.log(`processing classDayOfWeek: ${i}`)
-
+    for (let i = 0; i < 7; i++) {
+        //console.log(`processing classDayOfWeek: ${i}`)
         const dailyRecords = classData.filter(classDataRec => classDataRec.classDayOfWeek === i);
-
-
-        if (classData[i].classDayOfWeek != prevDayOfWeek) {
-            const tableHeader = getDailyTableHeader(classData[i].classDayOfWeek);
-            addTableHeaderContent(classData[i].classDayOfWeek, tableHeader);
-
-            const tableBody   = getDailyTableBody(classData[i].classDayOfWeek);
-            addTableBodyContent(classData[i].classDayOfWeek, classData, tableBody);
-            prevDayOfWeek = classData[i].classDayOfWeek
-
-        }
+        //console.log(`class count: ${dailyRecords.length}`)
+        const tableHeader = getDailyTableHeader(i);
+        addTableHeaderContent(i, tableHeader);
+        const tableBody   = getDailyTableBody(i);
+        addTableBodyContent(i, dailyRecords, tableBody);
     }
 }
 
@@ -92,16 +52,16 @@ function processScheduleData(classData) {
 //  "styleNum": 1
 //}
 
-function addTableBodyContent(classDayOfWeek, classData, tableBody) {
+function addTableBodyContent(classDayOfWeek, dailyRecords, tableBody) {
     try {
         if (tableBody === null) {
             console.log('table body was null');
             throw `Table body was null: ${classDayOfWeek}`;
         }
-        const dailyRecords = classData.filter(classDataRec => classDataRec.classDayOfWeek === classDayOfWeek);
-        console.log(`dailyRecord size: ${dailyRecords.length}`);
+        //const dailyRecords = classData.filter(classDataRec => classDataRec.classDayOfWeek === classDayOfWeek);
+        //console.log(`dailyRecord size: ${dailyRecords.length}`);
         for (let i = 0; i < dailyRecords.length; i++) {
-            console.log(`dailyRecord: ${dailyRecords[i].classDayOfWeek} - ${dailyRecords[i].className}`);
+            //console.log(`dailyRecord: ${dailyRecords[i].classDayOfWeek} - ${dailyRecords[i].className}`);
             addTableBodyRow(tableBody, dailyRecords[i]);
         }
         addTableBodyAddClassRow(tableBody, classDayOfWeek);
@@ -145,6 +105,10 @@ function addTableBodyRow(tableBody, classRecord) {
         newAnchor.innerHTML  = 'Edit';
         newAnchor.onclick = function(event) {
           event.preventDefault();
+          $('#exampleModal').find('#divClassNum').html(classRecord.classNum);
+          $('#exampleModal').find('#divClassDayOfWeek').html(classRecord.classDayOfWeek);
+          $('#exampleModal').modal('show');
+
           console.log(`Edit clicked for classNum: ${classRecord.classNum}`);
         };
 
@@ -173,8 +137,10 @@ function addTableBodyAddClassRow(tableBody, classDayOfWeek) {
         newAnchor.innerHTML  = 'Add new class';
 
         newAnchor.onclick = function(event) {
-          event.preventDefault(); // Prevent default navigation
-          console.log(`Add class clicked for classDayOfWeek: ${classDayOfWeek}`);
+          event.preventDefault();
+          $('#exampleModal').find('#divClassNum').html('');
+          $('#exampleModal').find('#divClassDayOfWeek').html(classDayOfWeek);
+          $('#exampleModal').modal('show');
         };
 
         const td1 = document.createElement("td");
@@ -219,28 +185,22 @@ function addTableHeaderContent(classDayOfWeek, tableHeader) {
             console.log('table header was null');
         }
         const headerRow = document.createElement("tr");
-
         const th1 = document.createElement("th");
         th1.style.width = '20rem';
         th1.textContent = 'Class Name';
         headerRow.appendChild(th1);
-
         const th2 = document.createElement("th");
         th2.textContent = 'Start Time';
         headerRow.appendChild(th2);
-
         const th3 = document.createElement("th");
         th3.textContent = 'End Time';
         headerRow.appendChild(th3);
-
         const th4 = document.createElement("th");
         th4.textContent = 'Style Name';
         headerRow.appendChild(th4);
-
         const th5 = document.createElement("th");
         th5.textContent = 'Function';
         headerRow.appendChild(th5);
-
         tableHeader.append(headerRow);
     } catch (error) {
         console.error("An error occurred:", error.message);

@@ -32,6 +32,14 @@ h2 {
     padding: 5px;
 }
 
+h3 {
+    border: 2px #eee solid;
+    color: white;
+    background-color: #990e4a;
+    text-align: center;
+    padding: 5px;
+}
+
 #tooltip {
     background-color: #333;
     color: white;
@@ -66,6 +74,10 @@ h2 {
 
 .removed {
   display: none;
+}
+
+.dropdown-menu {
+  background-color: white; /* Light grey example */
 }
 
 /* To style all header cells */
