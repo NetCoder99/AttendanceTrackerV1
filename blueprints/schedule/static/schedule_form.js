@@ -8,14 +8,10 @@ $(document).ready(function() {
         const classNum       = $('#exampleModal').find('#divClassNum').html();
         console.log(`modal dialog activated for: ${classDayOfWeek}, ${classNum}`);
         if (classNum === '') {
-            classModal.find('#lblAddClass').removeClass("removed");
-            classModal.find('#updAddClass').addClass("removed");
             initializeNewClassForm(classModal, classDayOfWeek);
         }
         else {
-            classModal.find('#lblAddClass').addClass("removed");
-            classModal.find('#updAddClass').removeClass("removed");
-            initializeUpdClassDetailsForm(classModal, classDayOfWeek, classNum);
+            initializeUpdClassForm(classModal, classDayOfWeek, classNum);
         }
     });
 })
@@ -25,7 +21,9 @@ $("#btnSave").click(function() {
     console.log("Button save was clicked!");
     event.preventDefault();
     const formObject = $(frmClassData);
-    const formData   = $(frmClassData).serializeArray();
+    let   formData   = $(frmClassData).serializeArray();
+    classNum = $("#divClassNum").html();
+    formData.push({'name': 'classNum', 'value': classNum});
     const formJson   = JSON.stringify(formData);
     console.log(`formData: ${formJson}`);
 
@@ -36,7 +34,7 @@ $("#btnSave").click(function() {
         dataType : 'json',
         data : JSON.stringify(formData),
         success : function(result) {
-           processSaveResponse(result);
+           processSaveResponse(result, classNum);
         },error : function(result){
            console.log(result);
         }
@@ -53,12 +51,23 @@ $("#btnDelete").click(function() {
 
 // ------------------------------------------------------------------------
 $("#btnClassConfirmDeleteYes").click(function() {
-  event.preventDefault();
-  classNum = $("#divClassNum").html();
-  console.log(`Button delete was clicked for: ${classNum}`);
-
-  $("#divClassPrimaryButtons").removeClass('removed');
-  $("#divClassConfirmations").addClass('removed');
+    event.preventDefault();
+    classNum = $("#divClassNum").html();
+    console.log(`Button delete was clicked for: ${classNum}`);
+    $.ajax({
+        type: 'POST',
+        contentType: 'application/json',
+        url: '/deleteClassDetails_api',
+        dataType : 'json',
+        data : JSON.stringify({'classNum': classNum}),
+        success : function(result) {
+           processDeleteResponse(result);
+        },error : function(result){
+           console.log(result);
+        }
+    });
+    $("#divClassPrimaryButtons").removeClass('removed');
+    $("#divClassConfirmations").addClass('removed');
 });
 $("#btnClassConfirmDeleteNo").click(function() {
   console.log("Button delete was clicked!");
@@ -77,7 +86,22 @@ $('#chkAll').on('change', function() {
 });
 
 // ------------------------------------------------------------------------
-function processSaveResponse(result) {
+function processDeleteResponse(result) {
+    console.log(`processDeleteResponse: ${JSON.stringify(result)}`);
+    if (result.status === 'ok') {
+        $('#exampleModal').modal('hide');
+        location.reload();
+    }
+    else {
+        lblPrimaryMessage = $('#lblPrimaryMessage');
+        lblPrimaryMessage.html(result.message);
+        lblPrimaryMessage.addClass('text-danger');
+        lblPrimaryMessage.removeClass('text-success');
+    }
+}
+
+// ------------------------------------------------------------------------
+function processSaveResponse(result, classNum) {
     console.log(`processSaveResponse: ${JSON.stringify(result)}`);
 
     lblPrimaryMessage = $('#lblPrimaryMessage');
@@ -92,7 +116,9 @@ function processSaveResponse(result) {
         $('#inpClassName').removeClass('invalid');
         $('#inpStartTime').removeClass('invalid');
         $('#inpClassDuration').removeClass('invalid');
-        $('#inpFinisTime').val(result.inpFinisTime.value);
+        if (classNum === null) {$('#inpFinisTime').val(result.inpFinisTime.value);}
+        $('#exampleModal').modal('hide');
+        location.reload();
     }
     else {
         // - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -126,15 +152,43 @@ function processSaveResponse(result) {
             $('#lblPrimaryMessage').html(result.inpClassName.message);
             $('#lblPrimaryMessage').addClass('text-danger');
         }
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        if (result.classOverLap.status === 'ok') {
+            $('#inpClassName').removeClass('invalid');
+        }
+        else {
+            $('#inpStartTime').addClass('invalid');
+            $('#inpStartTime').focus();
+            $('#lblPrimaryMessage').html(result.classOverLap.message);
+            $('#lblPrimaryMessage').addClass('text-danger');
+        }
     }
 
 }
 
-// ------------------------------------------------------------------------
-function initializeUpdClassDetailsForm(classModal, classDayOfWeek, classNum) {
-    setDisableAllFields(classModal, true);
-    classModal.find('#btnDelete').removeClass("removed");
 
+// ------------------------------------------------------------------------
+function initializeNewClassForm(classModal, classDayOfWeek) {
+    classModal.find('#lblAddClass').removeClass("removed");
+    classModal.find('#updAddClass').addClass("removed");
+    classModal.find('#inpClassName').val("");
+    classModal.find('#slctStyleNum').val("1");
+    classModal.find('#slctDayOfWeek').val(classDayOfWeek);
+    classModal.find('#inpStartTime').val("");
+    classModal.find("#chkPm").prop("checked", true);
+    classModal.find('#inpClassDuration').val("");
+    classModal.find('#btnDelete').addClass("removed");
+    classModal.find('#inpClassName').focus();
+    setCheckAllRanks(classModal, false);
+    setDisableAllFields(classModal, false);
+}
+
+// ------------------------------------------------------------------------
+function initializeUpdClassForm(classModal, classDayOfWeek, classNum) {
+    classModal.find('#lblAddClass').addClass("removed");
+    classModal.find('#updAddClass').removeClass("removed");
+    classModal.find('#btnDelete').removeClass("removed");
+    setDisableAllFields(classModal, true);
     const dataToSend = {
       classDayOfWeek: classDayOfWeek,
       classNum: classNum
@@ -146,17 +200,13 @@ function initializeUpdClassDetailsForm(classModal, classDayOfWeek, classNum) {
       },
       body: JSON.stringify(dataToSend)
     })
-      .then(
-          response => response.json()
-      )
-      .then(
-          data => processClassDetails(classModal, data.data)
-      )
-      .catch(error => console.error('Error:', error));
-    }
+    .then(response => response.json())
+    .then(data => displayClassDetails(classModal, data.data))
+    .catch(error => console.error('Error:', error));
+}
 
 // ------------------------------------------------------------------------
-function processClassDetails(classModal, classDetails) {
+function displayClassDetails(classModal, classDetails) {
     console.log(`processClassDetails: ${classDetails}`);
     classModal.find('#inpClassName').val(classDetails.className);
     classModal.find('#slctStyleNum').val(classDetails.styleNum);
@@ -172,15 +222,16 @@ function processClassDetails(classModal, classDetails) {
     else {
         $("#chkPm").prop("checked", true);
     }
-
     classModal.find('#inpClassDuration').val(classDetails.classDuration);
     classModal.find('#inpFinisTime').val(classDetails.classFinisTime);
-
     setAllowedRanksCheckBoxes(classModal, classDetails.allowedRanks);
-
     classModal.find('#inpAllowedAges').val(classDetails.allowedAges);
     classModal.find('#inpClassName').focus();
     setDisableAllFields(classModal, false);
+    classModal.find('#slctDayOfWeek').prop('disabled', true);
+    classModal.find('#inpStartTime').prop('disabled', true);
+    classModal.find('#inpClassDuration').prop('disabled', true);
+    $('input[name="chkAmPm"]').prop('disabled', true);
 }
 
 //{
@@ -217,20 +268,6 @@ function setAllowedRanksCheckBoxes(classModal, allowedRanks) {
         if (allowedRanksArray[i] === "8") {classModal.find('#chkBlack').prop("checked", true);}
     }
 }
-
-// ------------------------------------------------------------------------
-function initializeNewClassForm(classModal, classDayOfWeek) {
-    classModal.find('#inpClassName').val("");
-    classModal.find('#slctStyleNum').val("1");
-    classModal.find('#slctDayOfWeek').val(classDayOfWeek);
-    classModal.find('#inpStartTime').val("");
-    classModal.find("#chkPm").prop("checked", true);
-    classModal.find('#inpClassDuration').val("");
-    classModal.find('#btnDelete').addClass("removed");
-    classModal.find('#inpClassName').focus();
-    setCheckAllRanks(classModal, false);
-}
-
 // ------------------------------------------------------------------------
 function setDisableAllFields(classModal, disabledFlag) {
     classModal.find('#inpClassName').prop('disabled', disabledFlag);

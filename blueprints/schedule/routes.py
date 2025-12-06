@@ -3,8 +3,10 @@ import copy
 
 from flask import Blueprint, render_template, request, jsonify
 
-from blueprints.schedule.validateClassFields import validateClassFields
-from sqlite.sqlite_schedule import GetClassRecords, GetClassRecordsSorted
+from blueprints.schedule.validateClassFields import validateClassFieldsUpdate, getSqlClassInsertDict, \
+    validateClassFieldsInsert, getSqlClassUpdateDict
+from sqlite.sqlite_schedule import GetClassRecords, GetClassRecordsSorted, DeleteClass, InsertNewClass, \
+    UpdateExistingClass
 
 schedule_bp = Blueprint(
     'schedule_bp', __name__,
@@ -24,7 +26,7 @@ def schedule_api():
     return jsonify({"data": class_records})
 
 @schedule_bp.route('/getClassDetails_api', methods=['POST', 'GET'])
-def classDetails_api():
+def getClassDetails_api():
     classNum       = request.json['classNum']
     class_records = GetClassRecordsSorted()
     if classNum:
@@ -35,10 +37,28 @@ def classDetails_api():
 
 @schedule_bp.route('/saveClassDetails_api', methods=['POST', 'GET'])
 def saveClassDetails_api():
-    isValid    = validateClassFields(request.json)
-    return jsonify(isValid)
+    classData = request.json
+    classNumEntry = [x for x in classData if x['name'] == 'classNum'][0]
+
+    if classNumEntry['value']:
+        validationResults = validateClassFieldsUpdate(classData)
+        if validationResults['validationResults']['status'] == 'ok':
+            print(f'Updating class details')
+            classDict = getSqlClassUpdateDict(classData)
+            UpdateExistingClass(classDict)
+    else:
+        validationResults = validateClassFieldsInsert(classData)
+        if validationResults['validationResults']['status'] == 'ok':
+            vldStartTime     = validationResults['inpStartTime']
+            vldClassDuration = validationResults['inpClassDuration']
+            vldFinisTime     = validationResults['inpFinisTime']
+            classDict = getSqlClassInsertDict(request.json, vldStartTime, vldClassDuration, vldFinisTime)
+            InsertNewClass(classDict)
+
+    return jsonify(validationResults)
 
 @schedule_bp.route('/deleteClassDetails_api', methods=['POST', 'GET'])
 def deleteClassDetails_api():
-    isValid    = validateClassFields(request.json)
-    return jsonify(isValid)
+    delCount = DeleteClass(request.json)
+    result = {'status': 'ok', 'message': f'{delCount} class has been deleted'}
+    return jsonify(result)

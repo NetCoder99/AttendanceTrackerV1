@@ -7,25 +7,36 @@ from sqlite.sqlite_schedule import GetClassRecordsSorted, InsertNewClass
 from sqlite.sqlite_styles import GetStyleRecords
 
 
-def validateClassFields(classData):
+# ---------------------------------------------------------------------------------------------------
+def validateClassFieldsUpdate(classData):
     validationResults = {}
-
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     inpClassName = getFieldValue(classData, 'inpClassName')
     validationResults['inpClassName'] = validateClassName(inpClassName)
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    errCount = len({k: v for k, v in validationResults.items() if v['status'] == 'error'})
+    if errCount == 0:
+        validationResults['validationResults'] = {'status': 'ok', 'message': 'Class changes have been saved'}
+    else:
+        validationResults['validationResults'] = {'status': 'error', 'message': f'Validation error count{errCount}'}
+    return validationResults
 
+
+# ---------------------------------------------------------------------------------------------------
+def validateClassFieldsInsert(classData):
+    validationResults = {}
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    inpClassName = getFieldValue(classData, 'inpClassName')
+    validationResults['inpClassName'] = validateClassName(inpClassName)
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     inpStartTime = getFieldValue(classData, 'inpStartTime')
     validationResults['inpStartTime'] = validateClassStartTime(classData, inpStartTime)
-
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     inpClassDuration = getFieldValue(classData, 'inpClassDuration')
     validationResults['inpClassDuration'] = validateClassDuration(inpClassDuration)
-
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     chkAmPm = getFieldValue(classData, 'chkAmPm')
     validationResults['inpFinisTime'] = calculateFinisTime(chkAmPm, validationResults['inpStartTime'], validationResults['inpClassDuration'])
-
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     validationResults['classOverLap'] = checkForClassOverLap(
         classData,
@@ -33,14 +44,12 @@ def validateClassFields(classData):
         validationResults['inpClassDuration'],
         validationResults['inpFinisTime']
     )
-
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     errCount = len({k: v for k, v in validationResults.items() if v['status'] == 'error'})
     if errCount == 0:
         validationResults['validationResults'] = {'status': 'ok', 'message': 'Class changes have been saved'}
     else:
         validationResults['validationResults'] = {'status': 'error', 'message': f'Validation error count{errCount}'}
-
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     return validationResults
 
@@ -61,11 +70,23 @@ def checkForClassOverLap(classData, vldStartTime, vldClassDuration, vldFinisTime
     classesByDay  = [x for x in classRecords if str(x['classDayOfWeek']) == str(slctDayOfWeek)]
     if len(classesByDay) == 0:
         try:
-            classDict = getSqlClassInsertDict(classData, vldStartTime, vldClassDuration, vldFinisTime)
-            InsertNewClass(classDict)
             return {'status' : 'ok','message': 'No overlap was found', 'value' : ''}
         except Exception as ex:
-            print(f'Error in checkForClassOverLap: {ex.__str__()}')
+            return {'status': 'error', 'message': ex.__str__(), 'value': ''}
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # if start time between any other start / end time then it overlaps
+    date_string     = "01-Jan-1900 " + vldStartTime['value']
+    tempStartTime   = datetime.strptime(date_string, "%d-%b-%Y %I:%M %p")
+    for classEntry in classesByDay:
+        classStartTime = datetime.strptime("01-Jan-1900 " + classEntry['classStartTime'], "%d-%b-%Y %I:%M %p")
+        classFinisTime = datetime.strptime("01-Jan-1900 " + classEntry['classFinisTime'], "%d-%b-%Y %I:%M %p")
+        if classStartTime <= tempStartTime <= classFinisTime:
+            return {'status': 'error', 'message': 'Class overlaps another class', 'value': classEntry['classNum']}
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    return {'status' : 'ok','message': 'No overlap was found', 'value' : ''}
 
 def getSqlClassInsertDict(classData, vldStartTime, vldClassDuration, vldFinisTime):
     return {
@@ -76,6 +97,21 @@ def getSqlClassInsertDict(classData, vldStartTime, vldClassDuration, vldFinisTim
         'classStartTime' : vldStartTime['value'],
         'classFinisTime' : vldFinisTime['value'],
         'classDuration'  : vldClassDuration['value'],
+        'allowedRanks'   : getSelectedRanksAsString(classData),
+        'classDisplayTitle' : getFieldValue(classData, 'inpClassName'),
+        'allowedAges'       : getFieldValue(classData, 'inpAllowedAges')
+    }
+
+def getSqlClassUpdateDict(classData):
+    return {
+        'classNum'       : getFieldValue(classData, 'classNum'),
+        'className'      : getFieldValue(classData, 'inpClassName'),
+        'styleNum'       : getFieldValue(classData, 'slctStyleNum'),
+        'styleName'      : getStyleName(getFieldValue(classData, 'slctStyleNum')),
+        # 'classDayOfWeek' : getFieldValue(classData, 'slctDayOfWeek'),
+        # 'classStartTime' : vldStartTime['value'],
+        # 'classFinisTime' : vldFinisTime['value'],
+        # 'classDuration'  : vldClassDuration['value'],
         'allowedRanks'   : getSelectedRanksAsString(classData),
         'classDisplayTitle' : getFieldValue(classData, 'inpClassName'),
         'allowedAges'       : getFieldValue(classData, 'inpAllowedAges')

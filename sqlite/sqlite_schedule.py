@@ -102,7 +102,6 @@ def InsertNewClass(classDict):
     except Exception as ex:
         print(f'Error in InsertNewClass: {ex.__str__()}')
         raise ex
-
 def InsertNewClassStmt():
     return '''
         INSERT INTO classes (
@@ -129,4 +128,51 @@ def InsertNewClassStmt():
           :classDisplayTitle, 
           :allowedAges
         )
+    '''
+
+# ------------------------------------------------------------------
+def UpdateExistingClass(classDict):
+    try:
+        db_path = getDbPath()
+        dbObj = sqlite3.connect(db_path)
+        dbObj.row_factory = DictFactory
+        cursor = dbObj.cursor()
+        cursor.execute(UpdateExistingClassStmt(), classDict)
+        dbObj.commit()
+        dbObj.close()
+    except Exception as ex:
+        print(f'Error in InsertNewClass: {ex.__str__()}')
+        raise ex
+def UpdateExistingClassStmt():
+    return '''
+        update classes 
+        set className         = :className, 
+            styleNum          = :styleNum, 
+            styleName         = :styleName, 
+            allowedRanks      = :allowedRanks, 
+            classDisplayTitle = :classDisplayTitle, 
+            allowedAges       = :allowedAges
+       where classNum         = :classNum            
+    '''
+
+# ------------------------------------------------------------------
+def DeleteClass(classDict):
+    try:
+        db_path = getDbPath()
+        dbObj = sqlite3.connect(db_path)
+        dbObj.row_factory = DictFactory
+        cursor = dbObj.cursor()
+        cursor.execute(DeleteClassStmt(), classDict)
+        rowCount = cursor.rowcount
+        dbObj.commit()
+        dbObj.close()
+        return rowCount
+    except Exception as ex:
+        print(f'Error in InsertNewClass: {ex.__str__()}')
+        raise ex
+
+def DeleteClassStmt():
+    return '''
+        delete from classes
+        where  classNum = :classNum 
     '''
