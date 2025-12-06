@@ -22,14 +22,13 @@ $(document).ready(function() {
 
 // ------------------------------------------------------------------------
 $("#btnSave").click(function() {
-  console.log("Button save was clicked!");
-  event.preventDefault();
-  const formObject = $(frmClassData);
-  const formData   = $(frmClassData).serializeArray();
-  const formJson   = JSON.stringify(formData);
-  console.log(`formData: ${formData}`);
+    console.log("Button save was clicked!");
+    event.preventDefault();
+    const formObject = $(frmClassData);
+    const formData   = $(frmClassData).serializeArray();
+    const formJson   = JSON.stringify(formData);
+    console.log(`formData: ${formJson}`);
 
-  //var data = {"name":"John Doe","age":"21"};
     $.ajax({
         type: 'POST',
         contentType: 'application/json',
@@ -54,8 +53,10 @@ $("#btnDelete").click(function() {
 
 // ------------------------------------------------------------------------
 $("#btnClassConfirmDeleteYes").click(function() {
-  console.log("Button delete was clicked!");
   event.preventDefault();
+  classNum = $("#divClassNum").html();
+  console.log(`Button delete was clicked for: ${classNum}`);
+
   $("#divClassPrimaryButtons").removeClass('removed');
   $("#divClassConfirmations").addClass('removed');
 });
@@ -64,6 +65,15 @@ $("#btnClassConfirmDeleteNo").click(function() {
   event.preventDefault();
   $("#divClassPrimaryButtons").removeClass('removed');
   $("#divClassConfirmations").addClass('removed');
+});
+$('#chkAll').on('change', function() {
+    const classModal = $('#exampleModal');
+    if ($('#chkAll').prop('checked')) {
+        setCheckAllRanks(classModal, true)
+    }
+    else {
+        setCheckAllRanks(classModal, false)
+    }
 });
 
 // ------------------------------------------------------------------------
@@ -194,7 +204,7 @@ function processClassDetails(classModal, classDetails) {
 // ------------------------------------------------------------------------
 function setAllowedRanksCheckBoxes(classModal, allowedRanks) {
     const allowedRanksArray = allowedRanks.split(",");
-    uncheckAllRanks(classModal);
+    setCheckAllRanks(classModal, false);
     for (let i = 0; i < allowedRanksArray.length; i++) {
         console.log(`allowedRank: ${allowedRanksArray[i]}`);
         if (allowedRanksArray[i] === "1") {classModal.find('#chkWhite').prop("checked", true);}
@@ -208,7 +218,6 @@ function setAllowedRanksCheckBoxes(classModal, allowedRanks) {
     }
 }
 
-
 // ------------------------------------------------------------------------
 function initializeNewClassForm(classModal, classDayOfWeek) {
     classModal.find('#inpClassName').val("");
@@ -219,8 +228,10 @@ function initializeNewClassForm(classModal, classDayOfWeek) {
     classModal.find('#inpClassDuration').val("");
     classModal.find('#btnDelete').addClass("removed");
     classModal.find('#inpClassName').focus();
+    setCheckAllRanks(classModal, false);
 }
 
+// ------------------------------------------------------------------------
 function setDisableAllFields(classModal, disabledFlag) {
     classModal.find('#inpClassName').prop('disabled', disabledFlag);
     classModal.find('#slctStyleNum').prop('disabled', disabledFlag);
@@ -230,18 +241,15 @@ function setDisableAllFields(classModal, disabledFlag) {
     classModal.find('#chkWhite').prop('disabled', disabledFlag);
 }
 
-function uncheckAllRanks(classModal) {
-    classModal.find('#chkWhite').prop("checked", false);
-    classModal.find('#chkOrange').prop("checked", false);
-    classModal.find('#chkYellow').prop("checked", false);
-    classModal.find('#chkBlue').prop("checked", false);
-    classModal.find('#chkGreen').prop("checked", false);
-    classModal.find('#chkPurple').prop("checked", false);
-    classModal.find('#chkBrown').prop("checked", false);
-    classModal.find('#chkBlack').prop("checked", false);
+// ------------------------------------------------------------------------
+function setCheckAllRanks(classModal, status) {
+    classModal.find('#chkWhite').prop("checked", status);
+    classModal.find('#chkOrange').prop("checked", status);
+    classModal.find('#chkYellow').prop("checked", status);
+    classModal.find('#chkBlue').prop("checked", status);
+    classModal.find('#chkGreen').prop("checked", status);
+    classModal.find('#chkPurple').prop("checked", status);
+    classModal.find('#chkBrown').prop("checked", status);
+    classModal.find('#chkBlack').prop("checked", status);
 }
 
-//function isValidTimeHHMM(timeString) {
-//  const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
-//  return regex.test(timeString);
-//}

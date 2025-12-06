@@ -1,0 +1,776 @@
+{
+    "type": "database",
+    "name": "AttendanceV2",
+    "objects": [
+        {
+            "type": "table",
+            "database": null,
+            "name": "assets",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE assets (\r\n\timageId INTEGER PRIMARY KEY AUTOINCREMENT,\r\n\timageName TEXT NOT NULL,\r\n\timageBase64 TEXT NOT NULL\r\n, imageBytes BLOB, imageType TEXT)",
+            "columns": [
+                {
+                    "name": "imageId",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "PRIMARY KEY",
+                            "definition": "PRIMARY KEY AUTOINCREMENT"
+                        }
+                    ]
+                },
+                {
+                    "name": "imageName",
+                    "type": "TEXT",
+                    "constraints": [
+                        {
+                            "type": "NOT NULL",
+                            "definition": "NOT NULL"
+                        }
+                    ]
+                },
+                {
+                    "name": "imageBase64",
+                    "type": "TEXT",
+                    "constraints": [
+                        {
+                            "type": "NOT NULL",
+                            "definition": "NOT NULL\r\n"
+                        }
+                    ]
+                },
+                {
+                    "name": "imageBytes",
+                    "type": "BLOB"
+                },
+                {
+                    "name": "imageType",
+                    "type": "TEXT"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "attendance",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE attendance \n    (\n        attendance_id  INTEGER PRIMARY KEY,\n        badgeNumber     int,\n        checkinDateTime text,\n        checkinDate     text,\n        checkinTime     text,\n        studentName     text,\n        studentStatus   text,\n        className       text,\n        rankName        text,\n        classStartTime  text\n    , classNum INTEGER, styleNum INTEGER)",
+            "columns": [
+                {
+                    "name": "attendance_id",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "PRIMARY KEY",
+                            "definition": "PRIMARY KEY"
+                        }
+                    ]
+                },
+                {
+                    "name": "badgeNumber",
+                    "type": "int"
+                },
+                {
+                    "name": "checkinDateTime",
+                    "type": "text"
+                },
+                {
+                    "name": "checkinDate",
+                    "type": "text"
+                },
+                {
+                    "name": "checkinTime",
+                    "type": "text"
+                },
+                {
+                    "name": "studentName",
+                    "type": "text"
+                },
+                {
+                    "name": "studentStatus",
+                    "type": "text"
+                },
+                {
+                    "name": "className",
+                    "type": "text"
+                },
+                {
+                    "name": "rankName",
+                    "type": "text"
+                },
+                {
+                    "name": "classStartTime",
+                    "type": "text"
+                },
+                {
+                    "name": "classNum",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "styleNum",
+                    "type": "INTEGER"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "attendance_import",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE attendance_import \r\n(\r\nrecordId                   INTEGER PRIMARY KEY AUTOINCREMENT,\r\nstudentBirthDate           text,\r\nstudentBirthDateSong       text,\r\nclassName                  text,\r\nattendanceDate             text,\r\nattendanceHours            text,\r\nattendanceRankName         text,\r\nattendanceRankNum          text,\r\nattendanceStudentName      text,\r\nattendanceCheckinTimeIn    text,\r\nattendanceCheckinDateTime  text,\r\nattendanceCheckinDayName   text,\r\nattendanceTimeStamp        text,\r\nattendanceWeekofYear       text,\r\nattendanceScannedNum       text,\r\nattendanceStudentNum       text,\r\nrankNum                    text\r\n, badgeNumber INTEGER, attendanceStyleName TEXT)",
+            "columns": [
+                {
+                    "name": "recordId",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "PRIMARY KEY",
+                            "definition": "PRIMARY KEY AUTOINCREMENT"
+                        }
+                    ]
+                },
+                {
+                    "name": "studentBirthDate",
+                    "type": "text"
+                },
+                {
+                    "name": "studentBirthDateSong",
+                    "type": "text"
+                },
+                {
+                    "name": "className",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceDate",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceHours",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceRankName",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceRankNum",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceStudentName",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceCheckinTimeIn",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceCheckinDateTime",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceCheckinDayName",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceTimeStamp",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceWeekofYear",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceScannedNum",
+                    "type": "text"
+                },
+                {
+                    "name": "attendanceStudentNum",
+                    "type": "text"
+                },
+                {
+                    "name": "rankNum",
+                    "type": "text"
+                },
+                {
+                    "name": "badgeNumber",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "attendanceStyleName",
+                    "type": "TEXT"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "belts",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE belts (\r\n    beltId            integer primary key AUTOINCREMENT,\r\n    beltTitle         text,\r\n    stripeTitle       text,\r\n    classCount        integer,\r\n    imageSource       text\r\n  )",
+            "columns": [
+                {
+                    "name": "beltId",
+                    "type": "integer",
+                    "constraints": [
+                        {
+                            "type": "PRIMARY KEY",
+                            "definition": "primary key AUTOINCREMENT"
+                        }
+                    ]
+                },
+                {
+                    "name": "beltTitle",
+                    "type": "text"
+                },
+                {
+                    "name": "stripeTitle",
+                    "type": "text"
+                },
+                {
+                    "name": "classCount",
+                    "type": "integer"
+                },
+                {
+                    "name": "imageSource",
+                    "type": "text"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "classes",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE classes (\r\n    classNum INTEGER PRIMARY KEY AUTOINCREMENT,\r\n    className TEXT,\r\n    styleNum INTEGER,\r\n    styleName TEXT\r\n, classDayOfWeek INTEGER, \r\nclassStartTime TEXT, \r\nclassFinisTime TEXT, \r\nclassDuration INTEGER, \r\nallowedRanks TEXT, \r\nclassDisplayTitle INTEGER, \r\nallowedAges TEXT, classCheckinStart TEXT, classCheckInFinis TEXT)",
+            "columns": [
+                {
+                    "name": "classNum",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "PRIMARY KEY",
+                            "definition": "PRIMARY KEY AUTOINCREMENT"
+                        }
+                    ]
+                },
+                {
+                    "name": "className",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "styleNum",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "styleName",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "classDayOfWeek",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "classStartTime",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "classFinisTime",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "classDuration",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "allowedRanks",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "classDisplayTitle",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "allowedAges",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "classCheckinStart",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "classCheckInFinis",
+                    "type": "TEXT"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "history",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE history (\r\n\tid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\r\n\tbadgeNumber INTEGER,\r\n\tjsonText INTEGER NOT NULL\r\n)",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "NOT NULL",
+                            "definition": "NOT NULL "
+                        },
+                        {
+                            "type": "PRIMARY KEY",
+                            "definition": "PRIMARY KEY AUTOINCREMENT"
+                        }
+                    ]
+                },
+                {
+                    "name": "badgeNumber",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "jsonText",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "NOT NULL",
+                            "definition": "NOT NULL\r\n"
+                        }
+                    ]
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "promotions",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE promotions (\r\n\tpromotionId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\r\n\tbadgeNumber INTEGER NOT NULL,\r\n\tbeltId INTEGER,\r\n\tbeltTitle TEXT,\r\n\tstripeTitle TEXT,\r\n\tstudentName TEXT\r\n, promotionData TEXT)",
+            "columns": [
+                {
+                    "name": "promotionId",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "NOT NULL",
+                            "definition": "NOT NULL "
+                        },
+                        {
+                            "type": "PRIMARY KEY",
+                            "definition": "PRIMARY KEY AUTOINCREMENT"
+                        }
+                    ]
+                },
+                {
+                    "name": "badgeNumber",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "NOT NULL",
+                            "definition": "NOT NULL"
+                        }
+                    ]
+                },
+                {
+                    "name": "beltId",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "beltTitle",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "stripeTitle",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "studentName",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "promotionData",
+                    "type": "TEXT"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "rankPrefix",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE rankPrefix (\r\n\trankPrefixId INTEGER PRIMARY KEY AUTOINCREMENT,\r\n\trankPrefixStr TEXT NOT NULL\r\n)",
+            "columns": [
+                {
+                    "name": "rankPrefixId",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "PRIMARY KEY",
+                            "definition": "PRIMARY KEY AUTOINCREMENT"
+                        }
+                    ]
+                },
+                {
+                    "name": "rankPrefixStr",
+                    "type": "TEXT",
+                    "constraints": [
+                        {
+                            "type": "NOT NULL",
+                            "definition": "NOT NULL\r\n"
+                        }
+                    ]
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "ranks",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE ranks (\r\n\trankNum INTEGER NOT NULL,\r\n\trankName INTEGER\r\n)",
+            "columns": [
+                {
+                    "name": "rankNum",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "NOT NULL",
+                            "definition": "NOT NULL"
+                        }
+                    ]
+                },
+                {
+                    "name": "rankName",
+                    "type": "INTEGER"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "ranks_summary",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE ranks_summary (\r\n\tRankName TEXT,\r\n\tRequirementType TEXT,\r\n\tRequirementValue TEXT,\r\n\tStyleName TEXT\r\n)",
+            "columns": [
+                {
+                    "name": "RankName",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "RequirementType",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "RequirementValue",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "StyleName",
+                    "type": "TEXT"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "requirements",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE requirements (\r\n        requirementId     integer primary key autoincrement,\r\n        beltId            int,\r\n        stripeTitle       text,\r\n        requiredClasses  integer,\r\n        foreign key(beltId) references belts(beltId)\r\n)",
+            "columns": [
+                {
+                    "name": "requirementId",
+                    "type": "integer",
+                    "constraints": [
+                        {
+                            "type": "PRIMARY KEY",
+                            "definition": "primary key autoincrement"
+                        }
+                    ]
+                },
+                {
+                    "name": "beltId",
+                    "type": "int"
+                },
+                {
+                    "name": "stripeTitle",
+                    "type": "text"
+                },
+                {
+                    "name": "requiredClasses",
+                    "type": "integer"
+                }
+            ],
+            "constraints": [
+                {
+                    "type": "FOREIGN KEY",
+                    "definition": "foreign key(beltId) references belts(beltId)\r\n"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "students",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE students (\n        badgeNumber int primary key not null,\n        firstName   text,\n        lastName      text,\n        namePrefix    text,\n        email         text,\n        address       text,\n        address2      text,\n        city          text,\n        country       text,\n        state         text,\n        zip           text,\n        birthDate     text,\n        phoneHome     text,\n        phoneMobile   text,\n        status        text,\n        memberSince   text,\n        gender        text,\n        currentRank   text,\n        ethnicity     text\n    , studentImageBytes BLOB, studentImagePath TEXT, studentImageBase64 TEXT, middleName TEXT, studentImageName TEXT, studentImageType TEXT, currentRankName TEXT)",
+            "columns": [
+                {
+                    "name": "badgeNumber",
+                    "type": "int",
+                    "constraints": [
+                        {
+                            "type": "PRIMARY KEY",
+                            "definition": "primary key "
+                        },
+                        {
+                            "type": "NOT NULL",
+                            "definition": "not null"
+                        }
+                    ]
+                },
+                {
+                    "name": "firstName",
+                    "type": "text"
+                },
+                {
+                    "name": "lastName",
+                    "type": "text"
+                },
+                {
+                    "name": "namePrefix",
+                    "type": "text"
+                },
+                {
+                    "name": "email",
+                    "type": "text"
+                },
+                {
+                    "name": "address",
+                    "type": "text"
+                },
+                {
+                    "name": "address2",
+                    "type": "text"
+                },
+                {
+                    "name": "city",
+                    "type": "text"
+                },
+                {
+                    "name": "country",
+                    "type": "text"
+                },
+                {
+                    "name": "state",
+                    "type": "text"
+                },
+                {
+                    "name": "zip",
+                    "type": "text"
+                },
+                {
+                    "name": "birthDate",
+                    "type": "text"
+                },
+                {
+                    "name": "phoneHome",
+                    "type": "text"
+                },
+                {
+                    "name": "phoneMobile",
+                    "type": "text"
+                },
+                {
+                    "name": "status",
+                    "type": "text"
+                },
+                {
+                    "name": "memberSince",
+                    "type": "text"
+                },
+                {
+                    "name": "gender",
+                    "type": "text"
+                },
+                {
+                    "name": "currentRank",
+                    "type": "text"
+                },
+                {
+                    "name": "ethnicity",
+                    "type": "text"
+                },
+                {
+                    "name": "studentImageBytes",
+                    "type": "BLOB"
+                },
+                {
+                    "name": "studentImagePath",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "studentImageBase64",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "middleName",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "studentImageName",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "studentImageType",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "currentRankName",
+                    "type": "TEXT"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "styles",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE styles (\r\n\tstyleNum INTEGER NOT NULL,\r\n\tstyleName TEXT\r\n)",
+            "columns": [
+                {
+                    "name": "styleNum",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "NOT NULL",
+                            "definition": "NOT NULL"
+                        }
+                    ]
+                },
+                {
+                    "name": "styleName",
+                    "type": "TEXT"
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "table",
+            "database": null,
+            "name": "version",
+            "withoutRowId": false,
+            "strict": false,
+            "ddl": "CREATE TABLE version (\r\n\tversionNo INTEGER NOT NULL\r\n)",
+            "columns": [
+                {
+                    "name": "versionNo",
+                    "type": "INTEGER",
+                    "constraints": [
+                        {
+                            "type": "NOT NULL",
+                            "definition": "NOT NULL\r\n"
+                        }
+                    ]
+                }
+            ],
+            "rows": [
+            ]
+        },
+        {
+            "type": "index",
+            "database": null,
+            "name": "assets_imageName_IDX",
+            "unique": true,
+            "ddl": "CREATE UNIQUE INDEX assets_imageName_IDX ON assets (imageName)"
+        },
+        {
+            "type": "index",
+            "database": null,
+            "name": "belts_beltTitle_IDX",
+            "unique": true,
+            "ddl": "CREATE UNIQUE INDEX belts_beltTitle_IDX ON belts (beltTitle)"
+        },
+        {
+            "type": "index",
+            "database": null,
+            "name": "requirements_stripeTitle_IDX",
+            "unique": true,
+            "ddl": "CREATE UNIQUE INDEX requirements_stripeTitle_IDX ON requirements (stripeTitle)"
+        },
+        {
+            "type": "view",
+            "database": null,
+            "name": "vw_attendance_styles",
+            "ddl": "CREATE VIEW vw_attendance_styles as\r\nselect a.badgeNumber,\r\n       a.checkinDateTime,\r\n       vdow.dayName,\r\n       cast(strftime('%w', a.checkinDateTime) as integer) as classDayNum,\r\n       c.classDayOfWeek,\r\n       a.checkinTime,\r\n       c.classStartTime,\r\n       c.classFinisTime,\r\n       case when a.checkinTime between c.classStartTime and c.classFinisTime\r\n            then c.classNum else null\r\n       end as classFound,\r\n       c.classNum, \r\n       c.styleNum,\r\n       s.styleName \r\nfrom   attendance a \r\nleft   join   classes    c\r\n  on   cast(strftime('%w', a.checkinDateTime) as integer) = c.classDayOfWeek\r\n  and  a.checkinTime between c.classStartTime and c.classFinisTime\r\nleft   join   styles s \r\n  on   c.styleNum = s.styleNum \r\nleft   join vw_days_of_week vdow \r\n  on   cast(strftime('%w', a.checkinDateTime) as integer) = vdow.dayOfWeek \r\norder  by a.checkinDateTime desc",
+            "select": "select a.badgeNumber,\r\n       a.checkinDateTime,\r\n       vdow.dayName,\r\n       cast(strftime('%w', a.checkinDateTime) as integer) as classDayNum,\r\n       c.classDayOfWeek,\r\n       a.checkinTime,\r\n       c.classStartTime,\r\n       c.classFinisTime,\r\n       case when a.checkinTime between c.classStartTime and c.classFinisTime\r\n            then c.classNum else null\r\n       end as classFound,\r\n       c.classNum, \r\n       c.styleNum,\r\n       s.styleName \r\nfrom   attendance a \r\nleft   join   classes    c\r\n  on   cast(strftime('%w', a.checkinDateTime) as integer) = c.classDayOfWeek\r\n  and  a.checkinTime between c.classStartTime and c.classFinisTime\r\nleft   join   styles s \r\n  on   c.styleNum = s.styleNum \r\nleft   join vw_days_of_week vdow \r\n  on   cast(strftime('%w', a.checkinDateTime) as integer) = vdow.dayOfWeek \r\norder  by a.checkinDateTime desc"
+        },
+        {
+            "type": "view",
+            "database": null,
+            "name": "vw_attendance_timestamps",
+            "ddl": "CREATE VIEW vw_attendance_timestamps as \r\nselect  a.badgeNumber,\r\n        a.checkinDateTime,\r\n        CASE WHEN CAST(strftime('%H', a.checkinDateTime) AS INTEGER) <= 12\r\n             THEN LTRIM(strftime('%H:%M AM', datetime(a.checkinDateTime)), '0')\r\n             ELSE cast(strftime('%H', datetime(a.checkinDateTime)) - 12 as text)  \r\n                  || ':' || strftime('%M', datetime(a.checkinDateTime)) || ' PM' \r\n        END AS checkinTimeFmt\r\nfrom   attendance a \r\norder  by a.checkinDateTime asc",
+            "select": "select  a.badgeNumber,\r\n        a.checkinDateTime,\r\n        CASE WHEN CAST(strftime('%H', a.checkinDateTime) AS INTEGER) <= 12\r\n             THEN LTRIM(strftime('%H:%M AM', datetime(a.checkinDateTime)), '0')\r\n             ELSE cast(strftime('%H', datetime(a.checkinDateTime)) - 12 as text)  \r\n                  || ':' || strftime('%M', datetime(a.checkinDateTime)) || ' PM' \r\n        END AS checkinTimeFmt\r\nfrom   attendance a \r\norder  by a.checkinDateTime asc"
+        },
+        {
+            "type": "view",
+            "database": null,
+            "name": "vw_attendance_timestamps_v2",
+            "ddl": "CREATE VIEW vw_attendance_timestamps_v2 as\r\nwith cte_attendance_timestamps as (\r\n    select  a.attendance_id, \r\n            a.badgeNumber,\r\n            strftime('%w', a.checkinDateTime) as dayOfWeek,\r\n            vdow.dayName,\r\n            a.checkinDateTime,\r\n            CASE WHEN CAST(strftime('%H', a.checkinDateTime) AS INTEGER) <= 12\r\n                 THEN LTRIM(strftime('%H:%M AM', datetime(a.checkinDateTime)), '0')\r\n                 ELSE cast(strftime('%H', datetime(a.checkinDateTime)) - 12 as text)  \r\n                      || ':' || strftime('%M', datetime(a.checkinDateTime)) || ' PM' \r\n            END AS checkinTimeFmt\r\n    from   attendance a \r\n    join   vw_days_of_week vdow \r\n      on   strftime('%w', a.checkinDateTime) = vdow.dayOfWeek     \r\n)\r\nselect b.badgeNumber\r\n      ,b.attendance_id\r\n      ,b.dayOfWeek\r\n      ,b.dayName\r\n      ,b.checkinDateTime\r\n      ,b.checkinTimeFmt\r\n      ,case when instr(b.checkinTimeFmt, 'PM') > 0 \r\n            then cast(substr(b.checkinTimeFmt, instr(b.checkinTimeFmt, ':'), -1) as integer) + 12 \r\n            else cast(b.checkinTimeFmt as integer)\r\n       end || '.' || substr(b.checkinTimeFmt, instr(b.checkinTimeFmt, ':')+1, 2) as timeStampValue        \r\nfrom   cte_attendance_timestamps  b\r\norder  by b.checkinDateTime asc",
+            "select": "with cte_attendance_timestamps as (\r\n    select  a.attendance_id, \r\n            a.badgeNumber,\r\n            strftime('%w', a.checkinDateTime) as dayOfWeek,\r\n            vdow.dayName,\r\n            a.checkinDateTime,\r\n            CASE WHEN CAST(strftime('%H', a.checkinDateTime) AS INTEGER) <= 12\r\n                 THEN LTRIM(strftime('%H:%M AM', datetime(a.checkinDateTime)), '0')\r\n                 ELSE cast(strftime('%H', datetime(a.checkinDateTime)) - 12 as text)  \r\n                      || ':' || strftime('%M', datetime(a.checkinDateTime)) || ' PM' \r\n            END AS checkinTimeFmt\r\n    from   attendance a \r\n    join   vw_days_of_week vdow \r\n      on   strftime('%w', a.checkinDateTime) = vdow.dayOfWeek     \r\n)\r\nselect b.badgeNumber\r\n      ,b.attendance_id\r\n      ,b.dayOfWeek\r\n      ,b.dayName\r\n      ,b.checkinDateTime\r\n      ,b.checkinTimeFmt\r\n      ,case when instr(b.checkinTimeFmt, 'PM') > 0 \r\n            then cast(substr(b.checkinTimeFmt, instr(b.checkinTimeFmt, ':'), -1) as integer) + 12 \r\n            else cast(b.checkinTimeFmt as integer)\r\n       end || '.' || substr(b.checkinTimeFmt, instr(b.checkinTimeFmt, ':')+1, 2) as timeStampValue        \r\nfrom   cte_attendance_timestamps  b\r\norder  by b.checkinDateTime asc"
+        },
+        {
+            "type": "view",
+            "database": null,
+            "name": "vw_date_values",
+            "ddl": "CREATE VIEW vw_date_values as \r\n   WITH RECURSIVE cte_numbers (n) AS (\r\n     SELECT 0\r\n     UNION ALL\r\n     SELECT n + 1 FROM cte_numbers WHERE n < 365\r\n   )\r\n   select n, \r\n          date('now', '-' || n || ' days') as dateString,\r\n          strftime('%w', date('now', '-' || n || ' days')) as dayOfWeek,\r\n          case when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 0 then 'Sunday' \r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 1 then 'Monday'\r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 2 then 'Tuesday'\r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 3 then 'Wednesday'\r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 4 then 'Thursday'\r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 5 then 'Friday'\r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 6 then 'Saturday'\r\n               else 'Unknown'\r\n          end  as dayName \r\n   from   cte_numbers",
+            "select": "WITH RECURSIVE cte_numbers (n) AS (\r\n     SELECT 0\r\n     UNION ALL\r\n     SELECT n + 1 FROM cte_numbers WHERE n < 365\r\n   )\r\n   select n, \r\n          date('now', '-' || n || ' days') as dateString,\r\n          strftime('%w', date('now', '-' || n || ' days')) as dayOfWeek,\r\n          case when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 0 then 'Sunday' \r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 1 then 'Monday'\r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 2 then 'Tuesday'\r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 3 then 'Wednesday'\r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 4 then 'Thursday'\r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 5 then 'Friday'\r\n               when cast(strftime('%w', date('now', '-' || n || ' days')) as integer) = 6 then 'Saturday'\r\n               else 'Unknown'\r\n          end  as dayName \r\n   from   cte_numbers"
+        },
+        {
+            "type": "view",
+            "database": null,
+            "name": "vw_days_of_week",
+            "ddl": "CREATE VIEW vw_days_of_week as \r\nselect days.dayOfWeek, days.dayName\r\nfrom   vw_date_values  days\r\nwhere  days.n < 7\r\norder  by days.dayOfWeek",
+            "select": "select days.dayOfWeek, days.dayName\r\nfrom   vw_date_values  days\r\nwhere  days.n < 7\r\norder  by days.dayOfWeek"
+        }
+    ]
+}

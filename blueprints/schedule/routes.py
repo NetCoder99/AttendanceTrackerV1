@@ -15,7 +15,7 @@ schedule_bp = Blueprint(
 
 @schedule_bp.route('/schedule')
 def schedule_bp_home():
-    class_records = GetClassRecordsSorted()
+    #class_records = GetClassRecordsSorted()
     return render_template('schedule_list.html')
 
 @schedule_bp.route('/schedule_api', methods=['POST', 'GET'])
@@ -35,6 +35,10 @@ def classDetails_api():
 
 @schedule_bp.route('/saveClassDetails_api', methods=['POST', 'GET'])
 def saveClassDetails_api():
-    #classData  = request.json
+    isValid    = validateClassFields(request.json)
+    return jsonify(isValid)
+
+@schedule_bp.route('/deleteClassDetails_api', methods=['POST', 'GET'])
+def deleteClassDetails_api():
     isValid    = validateClassFields(request.json)
     return jsonify(isValid)

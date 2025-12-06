@@ -3,6 +3,9 @@ from datetime import datetime, date, time, timedelta
 import json
 from time import strptime, strftime
 
+from sqlite.sqlite_schedule import GetClassRecordsSorted, InsertNewClass
+from sqlite.sqlite_styles import GetStyleRecords
+
 
 def validateClassFields(classData):
     validationResults = {}
@@ -23,6 +26,13 @@ def validateClassFields(classData):
     chkAmPm = getFieldValue(classData, 'chkAmPm')
     validationResults['inpFinisTime'] = calculateFinisTime(chkAmPm, validationResults['inpStartTime'], validationResults['inpClassDuration'])
 
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    validationResults['classOverLap'] = checkForClassOverLap(
+        classData,
+        validationResults['inpStartTime'],
+        validationResults['inpClassDuration'],
+        validationResults['inpFinisTime']
+    )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     errCount = len({k: v for k, v in validationResults.items() if v['status'] == 'error'})
@@ -43,6 +53,53 @@ def getFieldValue(classData, fieldName):
         return None
 
 # ---------------------------------------------------------------------------------------------------
+def checkForClassOverLap(classData, vldStartTime, vldClassDuration, vldFinisTime):
+    if vldStartTime['status'] == 'error' or vldClassDuration['status'] == 'error':
+        return {'status': 'err', 'message': 'Could not check for overlap'}
+    slctDayOfWeek = getFieldValue(classData, 'slctDayOfWeek')
+    classRecords  = GetClassRecordsSorted()
+    classesByDay  = [x for x in classRecords if str(x['classDayOfWeek']) == str(slctDayOfWeek)]
+    if len(classesByDay) == 0:
+        try:
+            classDict = getSqlClassInsertDict(classData, vldStartTime, vldClassDuration, vldFinisTime)
+            InsertNewClass(classDict)
+            return {'status' : 'ok','message': 'No overlap was found', 'value' : ''}
+        except Exception as ex:
+            print(f'Error in checkForClassOverLap: {ex.__str__()}')
+
+def getSqlClassInsertDict(classData, vldStartTime, vldClassDuration, vldFinisTime):
+    return {
+        'className'      : getFieldValue(classData, 'inpClassName'),
+        'styleNum'       : getFieldValue(classData, 'slctStyleNum'),
+        'styleName'      : getStyleName(getFieldValue(classData, 'slctStyleNum')),
+        'classDayOfWeek' : getFieldValue(classData, 'slctDayOfWeek'),
+        'classStartTime' : vldStartTime['value'],
+        'classFinisTime' : vldFinisTime['value'],
+        'classDuration'  : vldClassDuration['value'],
+        'allowedRanks'   : getSelectedRanksAsString(classData),
+        'classDisplayTitle' : getFieldValue(classData, 'inpClassName'),
+        'allowedAges'       : getFieldValue(classData, 'inpAllowedAges')
+    }
+
+def getSelectedRanksAsString(classData):
+    rtnList = []
+    if getFieldValue(classData, 'chkWhite')  : rtnList.append('1')
+    if getFieldValue(classData, 'chkOrange') : rtnList.append('2')
+    if getFieldValue(classData, 'chkYellow') : rtnList.append('3')
+    if getFieldValue(classData, 'chkBlue')   : rtnList.append('4')
+    if getFieldValue(classData, 'chkPurple') : rtnList.append('5')
+    if getFieldValue(classData, 'chkBrown')  : rtnList.append('7')
+    if getFieldValue(classData, 'chkBlack')  : rtnList.append('8')
+    return ','.join(rtnList)
+
+# ---------------------------------------------------------------------------------------------------
+def getStyleName(styleNum):
+    styleRecords = GetStyleRecords()
+    styleNameEntry = [x for x in styleRecords if str(x['styleNum']) == str(styleNum)][0]
+    return styleNameEntry['styleName']
+
+
+# ---------------------------------------------------------------------------------------------------
 def validateClassName(inpClassName):
     if inpClassName:
         return {'status' : 'ok','message': 'inpClassName was valid'}
@@ -55,7 +112,7 @@ def validateClassStartTime(classData, inpStartTime):
         chkAmPm   = getFieldValue(classData, 'chkAmPm')
         startTime = validate_time_format(inpStartTime + ' ' + chkAmPm, "%I:%M %p")  #:(inpStartTime + ' ' + chkAmPm)
         if startTime:
-            return {'status': 'ok', 'message': 'inpStartTime was valid', 'value' : startTime}
+            return {'status': 'ok', 'message': 'inpStartTime was valid', 'value' : startTime.strftime('%I:%M %p')}
         else:
             return {'status': 'error', 'message': 'Start time format was not valid', 'value' : inpStartTime}
     else:
@@ -77,7 +134,8 @@ def calculateFinisTime(chkAmPm, vldStartTime, vldClassDuration):
         return {'status': 'err', 'message': 'Could not calculate class end time'}
     inpStartTime      = vldStartTime['value']
     inpClassDuration  = vldClassDuration['value']
-    date_string     = "01-Jan-1900 " + inpStartTime.strftime('%I:%M') + " " + chkAmPm
+    #date_string     = "01-Jan-1900 " + inpStartTime.strftime('%I:%M') + " " + chkAmPm
+    date_string     = "01-Jan-1900 " + inpStartTime
     tempDateTime    = datetime.strptime(date_string, "%d-%b-%Y %I:%M %p")
     minutesToAdd    = timedelta(minutes=int(inpClassDuration))
     tempNewDateTime = tempDateTime + minutesToAdd
