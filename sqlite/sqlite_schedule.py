@@ -49,6 +49,7 @@ def GetClassRecordsStmt():
                c.allowedAges,
                c.classCheckinStart,
                c.classCheckInFinis,
+               c.isPromotions,
                v.dayName
           FROM classes c
           join vw_days_of_week v
@@ -82,6 +83,7 @@ def CheckForClassOverlapStmt():
                c.allowedAges,
                c.classCheckinStart,
                c.classCheckInFinis,
+               c.isPromotions,
                v.dayName
           FROM classes c
           join vw_days_of_week v
@@ -114,7 +116,8 @@ def InsertNewClassStmt():
           classDuration, 
           allowedRanks, 
           classDisplayTitle, 
-          allowedAges
+          allowedAges,
+          isPromotions
         )
         VALUES (
           :className, 
@@ -126,7 +129,8 @@ def InsertNewClassStmt():
           :classDuration, 
           :allowedRanks, 
           :classDisplayTitle, 
-          :allowedAges
+          :allowedAges,
+          :isPromotions
         )
     '''
 
@@ -151,7 +155,8 @@ def UpdateExistingClassStmt():
             styleName         = :styleName, 
             allowedRanks      = :allowedRanks, 
             classDisplayTitle = :classDisplayTitle, 
-            allowedAges       = :allowedAges
+            allowedAges       = :allowedAges,
+            isPromotions      = :isPromotions
        where classNum         = :classNum            
     '''
 

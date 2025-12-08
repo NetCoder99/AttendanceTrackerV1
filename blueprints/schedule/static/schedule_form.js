@@ -179,6 +179,7 @@ function initializeNewClassForm(classModal, classDayOfWeek) {
     classModal.find('#inpClassDuration').val("");
     classModal.find('#btnDelete').addClass("removed");
     classModal.find('#inpClassName').focus();
+    classModal.find("#chkApplies").prop("checked", false);
     setCheckAllRanks(classModal, false);
     setDisableAllFields(classModal, false);
 }
@@ -231,6 +232,10 @@ function displayClassDetails(classModal, classDetails) {
     classModal.find('#slctDayOfWeek').prop('disabled', true);
     classModal.find('#inpStartTime').prop('disabled', true);
     classModal.find('#inpClassDuration').prop('disabled', true);
+
+    isPromotionsFlag = classDetails.isPromotions == 'on' ? true : false
+    classModal.find("#chkApplies").prop("checked", isPromotionsFlag);
+
     $('input[name="chkAmPm"]').prop('disabled', true);
 }
 

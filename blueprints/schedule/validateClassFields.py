@@ -99,7 +99,8 @@ def getSqlClassInsertDict(classData, vldStartTime, vldClassDuration, vldFinisTim
         'classDuration'  : vldClassDuration['value'],
         'allowedRanks'   : getSelectedRanksAsString(classData),
         'classDisplayTitle' : getFieldValue(classData, 'inpClassName'),
-        'allowedAges'       : getFieldValue(classData, 'inpAllowedAges')
+        'allowedAges'       : getFieldValue(classData, 'inpAllowedAges'),
+        'isPromotions' : getFieldValue(classData, 'chkApplies')
     }
 
 def getSqlClassUpdateDict(classData):
@@ -114,7 +115,8 @@ def getSqlClassUpdateDict(classData):
         # 'classDuration'  : vldClassDuration['value'],
         'allowedRanks'   : getSelectedRanksAsString(classData),
         'classDisplayTitle' : getFieldValue(classData, 'inpClassName'),
-        'allowedAges'       : getFieldValue(classData, 'inpAllowedAges')
+        'allowedAges'       : getFieldValue(classData, 'inpAllowedAges'),
+        'isPromotions': getFieldValue(classData, 'chkApplies')
     }
 
 def getSelectedRanksAsString(classData):
@@ -123,7 +125,8 @@ def getSelectedRanksAsString(classData):
     if getFieldValue(classData, 'chkOrange') : rtnList.append('2')
     if getFieldValue(classData, 'chkYellow') : rtnList.append('3')
     if getFieldValue(classData, 'chkBlue')   : rtnList.append('4')
-    if getFieldValue(classData, 'chkPurple') : rtnList.append('5')
+    if getFieldValue(classData, 'chkGreen')  : rtnList.append('5')
+    if getFieldValue(classData, 'chkPurple') : rtnList.append('6')
     if getFieldValue(classData, 'chkBrown')  : rtnList.append('7')
     if getFieldValue(classData, 'chkBlack')  : rtnList.append('8')
     return ','.join(rtnList)

@@ -8,6 +8,7 @@ import sys
 from flask import Flask, render_template, request, jsonify
 from flaskwebgui import FlaskUI
 
+from blueprints.belts.routes import belts_bp
 from blueprints.schedule.routes import schedule_bp
 from blueprints.students.routes import students_bp
 from services.checkin_procs import validateCheckin
@@ -21,7 +22,7 @@ if hasattr(sys, '_MEIPASS'):
 app = Flask(__name__, static_folder=os.path.join(base_dir, 'static'), template_folder=os.path.join(base_dir, 'templates'))
 app.register_blueprint(students_bp)
 app.register_blueprint(schedule_bp)
-
+app.register_blueprint(belts_bp)
 
 # ----------------------------------------------------------------------------------
 @app.route('/')
