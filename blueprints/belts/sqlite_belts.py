@@ -46,3 +46,28 @@ def GetBeltsRecordsStmt():
                imageSource
         FROM belts;
     '''
+# ------------------------------------------------------------------
+def GetStripeRecords(searchData):
+    db_path = getDbPath()
+    dbObj = sqlite3.connect(db_path)
+    dbObj.row_factory = DictFactory
+    cursor = dbObj.cursor()
+    cursor.execute(GetStripeRecordsStmt(), searchData)
+    rows = cursor.fetchall()
+    dbObj.close()
+    return rows
+def GetStripeRecordsStmt():
+    return '''
+        select s.stripeId,
+               s.stripeName,
+               s.rankNum,
+               s.classCount,
+               s.seqNum *  s.classCount as stripeClassCount,
+               s.seqNum,
+               r.rankName
+        from   stripes  s
+        join   ranks    r
+          on   s.rankNum = r.rankNum
+        where  s.rankNum = :rankNum
+        order  by s.seqNum;
+    '''

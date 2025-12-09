@@ -3,7 +3,7 @@ import copy
 
 from flask import Blueprint, render_template, request, jsonify
 
-from blueprints.belts.sqlite_belts import GetBeltsRecords, GetRanksRecords
+from blueprints.belts.sqlite_belts import GetBeltsRecords, GetRanksRecords, GetStripeRecords
 from blueprints.schedule.validateClassFields import validateClassFieldsUpdate, getSqlClassInsertDict, \
     validateClassFieldsInsert, getSqlClassUpdateDict
 from sqlite.sqlite_schedule import GetClassRecords, GetClassRecordsSorted, DeleteClass, InsertNewClass, \
@@ -29,6 +29,12 @@ def getRanksList_api():
 @belts_bp.route('/getBeltsList_api', methods=['POST', 'GET'])
 def getBeltsList_api():
     beltsRecords = GetBeltsRecords()
+    return jsonify({"data": beltsRecords})
+
+@belts_bp.route('/getStripesList_api', methods=['POST', 'GET'])
+def getStripesList_api():
+    searchData = request.json
+    beltsRecords = GetStripeRecords(searchData)
     return jsonify({"data": beltsRecords})
 
 # @belts_bp.route('/getClassDetails_api', methods=['POST', 'GET'])
