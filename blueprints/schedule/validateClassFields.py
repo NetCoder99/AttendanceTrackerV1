@@ -151,7 +151,7 @@ def validateClassStartTime(classData, inpStartTime):
         chkAmPm   = getFieldValue(classData, 'chkAmPm')
         startTime = validate_time_format(inpStartTime + ' ' + chkAmPm, "%I:%M %p")  #:(inpStartTime + ' ' + chkAmPm)
         if startTime:
-            return {'status': 'ok', 'message': 'inpStartTime was valid', 'value' : startTime.strftime('%I:%M %p')}
+            return {'status': 'ok', 'message': 'inpStartTime was valid', 'value' : startTime.strftime('%I:%M %p').lstrip('0')}
         else:
             return {'status': 'error', 'message': 'Start time format was not valid', 'value' : inpStartTime}
     else:

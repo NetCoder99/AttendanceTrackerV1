@@ -3,11 +3,7 @@ import copy
 
 from flask import Blueprint, render_template, request, jsonify
 
-from blueprints.belts.sqlite_belts import GetBeltsRecords, GetRanksRecords, GetStripeRecords
-from blueprints.schedule.validateClassFields import validateClassFieldsUpdate, getSqlClassInsertDict, \
-    validateClassFieldsInsert, getSqlClassUpdateDict
-from sqlite.sqlite_schedule import GetClassRecords, GetClassRecordsSorted, DeleteClass, InsertNewClass, \
-    UpdateExistingClass
+from blueprints.belts.sqlite_belts import *
 
 belts_bp = Blueprint(
     'belts_bp', __name__,
@@ -37,40 +33,28 @@ def getStripesList_api():
     beltsRecords = GetStripeRecords(searchData)
     return jsonify({"data": beltsRecords})
 
-# @belts_bp.route('/getClassDetails_api', methods=['POST', 'GET'])
-# def getClassDetails_api():
-#     classNum       = request.json['classNum']
-#     class_records = GetClassRecordsSorted()
-#     if classNum:
-#         class_record = [x for x in class_records if str(x['classNum']) == str(classNum)]
-#         return {"data": class_record[0]}
-#
-#     return None
-#
-# @belts_bp.route('/saveClassDetails_api', methods=['POST', 'GET'])
-# def saveClassDetails_api():
-#     classData = request.json
-#     classNumEntry = [x for x in classData if x['name'] == 'classNum'][0]
-#
-#     if classNumEntry['value']:
-#         validationResults = validateClassFieldsUpdate(classData)
-#         if validationResults['validationResults']['status'] == 'ok':
-#             print(f'Updating class details')
-#             classDict = getSqlClassUpdateDict(classData)
-#             UpdateExistingClass(classDict)
-#     else:
-#         validationResults = validateClassFieldsInsert(classData)
-#         if validationResults['validationResults']['status'] == 'ok':
-#             vldStartTime     = validationResults['inpStartTime']
-#             vldClassDuration = validationResults['inpClassDuration']
-#             vldFinisTime     = validationResults['inpFinisTime']
-#             classDict = getSqlClassInsertDict(request.json, vldStartTime, vldClassDuration, vldFinisTime)
-#             InsertNewClass(classDict)
-#
-#     return jsonify(validationResults)
-#
-# @belts_bp.route('/deleteClassDetails_api', methods=['POST', 'GET'])
-# def deleteClassDetails_api():
-#     delCount = DeleteClass(request.json)
-#     result = {'status': 'ok', 'message': f'{delCount} class has been deleted'}
-#     return jsonify(result)
+@belts_bp.route('/addNextStripe_api', methods=['POST', 'GET'])
+def addNextStripe_api():
+    searchData = request.json
+    nextPrefix = GetNextStripeName(searchData)
+    print(f'searchData: {searchData['rankNum']}, nextPrefix: {nextPrefix}')
+    if len(nextPrefix) > 0:
+        insData = {
+            'stripeName' : nextPrefix[0]['stripeName'],
+            'rankNum'    : nextPrefix[0]['rankNum'],
+            'classCount' : nextPrefix[0]['stripeClassCount'],
+            'seqNum'     : nextPrefix[0]['seqNum']
+        }
+        lastRowId = InsStripeRecord(insData)
+        nextPrefix[0]['lastRowId'] = lastRowId
+        return nextPrefix[0]
+    else:
+        return {"data": ""}
+
+@belts_bp.route('/delStripe_api', methods=['POST', 'GET'])
+def delStripe_api():
+    searchData = request.json
+    DelStripeRecord(searchData)
+    #print(f'searchData: {json.dumps(searchData)}')
+    return {"data": ""}
+
