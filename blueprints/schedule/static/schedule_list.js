@@ -4,19 +4,19 @@ $(document).ready(function() {
 })
 
 function initializeSchedulesTable() {
-fetch('schedule_api')
-  .then(response => {
+    fetch('schedule_api')
+    .then(response => {
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+        throw new Error('Network response was not ok');
     }
     return response.json();
-  })
-  .then(classData => {
+    })
+    .then(classData => {
     processScheduleData(classData['data']);
-  })
-  .catch(error => {
+    })
+    .catch(error => {
     console.error('Error:', error);
-  });
+    });
 }
 
 function processScheduleData(classData) {

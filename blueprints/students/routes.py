@@ -3,19 +3,22 @@ import copy
 
 from flask import Blueprint, render_template, request, jsonify
 
+from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
+from services.list_procs import FormListToDict
 from sqlite.sqlite_students import GetSqliteStudents, UpdStudentPictureStmt, UpdStudentPicture
 
 # Defining a blueprint
 students_bp = Blueprint(
     'students_bp', __name__,
     template_folder='templates',
-    static_folder='static'
+    static_folder='static',
+    static_url_path='/students_bp_static'
 )
 
 @students_bp.route('/students')   # Focus here
 def students_bp_home():
     student_records = GetSqliteStudents()
-    return render_template('students_list.html', student_records=student_records)
+    return render_template('students_main.html', student_records=student_records)
 
 @students_bp.route('/student_details')   # Focus here
 def students_bp_details():
@@ -62,3 +65,10 @@ def student_attendance():
         return render_template('student_attendance.html', studentFields=student_record)
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
+
+@students_bp.route('/save_student_details_api', methods=['POST'])
+def save_student_details_api():
+    #data_bytes = request.data
+    form_dict  = FormListToDict(request.json)
+    valdation_results = validateStudentFieldsUpdate(form_dict)
+    return valdation_results

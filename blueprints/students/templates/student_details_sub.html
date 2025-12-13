@@ -1,0 +1,99 @@
+
+<div style="background-color: #f2ffe6;" class="pt-2 pb-2 ps-3">
+    <div class="row d-flex justify-content-center small">
+        <div id="frmCreate" class="row w-100 d-flex justify-content-center mainForm">
+            <div>
+                <h5 id="studentTitle" class="text-center">
+                </h5>
+            </div>
+
+            <div class="row w-100 d-flex text-center justify-content-center">
+                <div class="">
+                    <a href="#" class="btn btn-primary btn-sm" style="display: inline-block"
+                       onClick="handleReturnClick()">Back to search</a>
+                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block"
+                       onClick="handleDetailsClick()">Details</a>
+                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block"
+                       onClick="handlePromotionsClick()">Promotions</a>
+                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block"
+                       onClick="handleAttendanceClick()">Attendance</a>
+                </div>
+                <hr class="w-75 mt-2">
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4 text-center">
+                    <div class="text-left d-inline-block mt-3">
+                        <div>
+                            <form id="frmPictureSelect" method="POST" action="/save_student_picture"
+                                  enctype="multipart/form-data">
+                                <label for="selectStudentPicture" class="btn btn-success btn-sm mb-2"
+                                       style="width: 12rem">Select Picture</label>
+                                <input id="selectStudentPicture" style="display:none;" type="file">
+                            </form>
+                        </div>
+                    </div>
+                    <div style="height: 250px">
+                        <img id="studentImage"
+                             alt="No image found"
+                             height=250
+                             width=auto
+                        />
+                    </div>
+                    <div class="text-center d-inline-block ">
+                        <div class="mt-2 p-1 fw-bold border rounded"
+                             style="backgroundColor: #D3D3D3; width: 14rem">
+                            <label>Student:</label>
+                        </div>
+                        <div
+                                class="mt-2 p-1 fw-bold border rounded"
+                                style="backgroundColor: #D3D3D3; width: 14rem">
+                            <label>Status:&nbsp; </label>
+                            <label>Active</label>
+                        </div>
+                        <div
+                                class="mt-2 p-1 fw-bold border rounded"
+                                style="backgroundColor: #D3D3D3; width: 14rem">
+                            <label>Member Since:</label><br>
+                            <label id="memberSinceLbl">01/01/1753</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8 pt-3">
+                    <form id="frmStudentDetails">
+                        <div class="row">
+                            <div class="d-inline-block text-start" style="width: 11rem">
+                                <label class="form-label ms-1 mb-0">First Name</label>
+                                <input id="frmFirstName"
+                                       name="frmFirstName"
+                                       placeholder="First Name"
+                                       style="width: 11rem"
+                                       onBlur=handleFieldBlur("frmFirstName")
+                                />
+                            </div>
+                            <div class="d-inline-block text-start ms-3" style="width: 11rem">
+                                <label class="form-label ms-1 mb-0">Middle Name</label>
+                                <input id="frmMiddleName"
+                                       name="frmMiddleName"
+                                       placeholder="Middle Name"
+                                       style="width: 11rem"
+                                       onBlur=handleFieldBlur("frmMiddleName")
+                                       disabled
+                                />
+                            </div>
+                            <div class="d-inline-block text-start ms-3" style="width: 11rem">
+                                <label class="form-label ms-1 mb-0">Last Name</label>
+                                <input id="frmLastName"
+                                       name="frmLastName"
+                                       placeholder="Last Name"
+                                       style="width: 11rem"
+                                       onBlur=handleFieldBlur("frmLastName")
+                                />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

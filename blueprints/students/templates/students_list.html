@@ -6,10 +6,7 @@ Student selection functions
 
 {% block content %}
 
-<!--{% from 'student_card.html' import render_component %}-->
-
 <h2>Student Search</h2>
-
 
 <div id="divStudentsList" style="" class="px-5 border rounded w-100 mx-auto">
     <table id="studentListTable" class="table cell-border b">
@@ -41,5 +38,5 @@ Student selection functions
     </table>
 </div>
 
-<script src="{{ url_for('static',filename='scripts/students_list.js') }}"></script>
+<script type="application/javascript" src="{{ url_for('students_bp.static',filename='students_list.js') }}"> </script>
 {% endblock %}

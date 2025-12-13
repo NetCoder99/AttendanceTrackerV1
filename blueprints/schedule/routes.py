@@ -3,7 +3,7 @@ import copy
 
 from flask import Blueprint, render_template, request, jsonify
 
-from blueprints.schedule.validateClassFields import validateClassFieldsUpdate, getSqlClassInsertDict, \
+from blueprints.schedule.validate_class_fields import validateClassFieldsUpdate, getSqlClassInsertDict, \
     validateClassFieldsInsert, getSqlClassUpdateDict
 from sqlite.sqlite_schedule import GetClassRecords, GetClassRecordsSorted, DeleteClass, InsertNewClass, \
     UpdateExistingClass

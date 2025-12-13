@@ -1,33 +1,13 @@
-{% extends 'base.html' %}
-{% block content %}
-
-{% block title %}
-Student promotion functions
-{% endblock %}
-
-<h1 class="mt-2">Student Promotion History</h1>
+<h1 class="mt-2">Student Promotions</h1>
 
 <div style="background-color: #f2ffe6;" class="pt-2 pb-2 ps-3">
     <div class="row d-flex justify-content-center small">
         <div id="frmCreate" class="row w-100 d-flex justify-content-center mainForm">
             <div>
                 <h5 id="studentTitle" class="text-center">
-                    {{studentFields.headerMessage}}
                 </h5>
             </div>
-
-            <div class="row w-100 d-flex text-center justify-content-center">
-                <div class="">
-                    <a href="#" class="btn btn-primary btn-sm" style="display: inline-block" onClick="handleReturnClick()">Back to search</a>
-                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block" onClick="handleDetailsClick()">Details</a>
-                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block" onClick="handlePromotionsClick()">Promotions</a>
-                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block" onClick="handleAttendanceClick()">Attendance</a>
-                </div>
-                <hr class="w-75 mt-2">
-            </div>
-
         </div>
     </div>
 </div>
-<script src="{{ url_for('static',filename='scripts/student_details.js') }}"></script>
-{% endblock %}
+<script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details.js') }}"></script>
