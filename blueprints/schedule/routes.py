@@ -33,7 +33,7 @@ def getClassDetails_api():
         class_record = [x for x in class_records if str(x['classNum']) == str(classNum)]
         return {"data": class_record[0]}
 
-    return None
+    return {{"data": None}}
 
 @schedule_bp.route('/saveClassDetails_api', methods=['POST', 'GET'])
 def saveClassDetails_api():

@@ -5,7 +5,7 @@
 
 import os
 import sys
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flaskwebgui import FlaskUI
 
 from blueprints.belts.routes import belts_bp
@@ -52,7 +52,6 @@ def page_not_found(e):
             missing_url = request.url
     except Exception as ex:
         print(f'exception:{ex}')
-
     app.logger.error(f"page_not_found:{e}\n{missing_url}")
     if missing_url is None:
         return render_template("error.html",message="Page not found")

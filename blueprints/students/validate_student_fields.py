@@ -1,31 +1,39 @@
 # ---------------------------------------------------------------------------------------------------
+import re
+
+import phonenumbers
+
+
 def validateStudentFieldsUpdate(classData):
     validationResults = {}
-    validationResults['validationStudentResults'] = {'status': 'ok', 'message': 'Student changes have been saved'}
+
+    validationResults['frmFirstName']  = validateStudentFirstName(classData['frmFirstName'])
+    validationResults['frmLastName']   = validateStudentLastName(classData['frmLastName'])
+    validationResults['frmPhoneHome']  = validatePhoneNumberHome(classData['frmPhoneHome'])
+
 
 # '''
-# form_dict = {dict: 10} {'frmAddress': '14213 N. BRUNSWICK DR', 'frmAddress2': 'APT A', 'frmBirthDate': '', 'frmCity': 'Fountain Hills', 'frmEmail': '', 'frmFirstName': 'Jennifer', 'frmLastName': 'Hesterman', 'frmPhoneHome': '480-304-0327', 'frmState': 'AZ', 'frmZip': '85268'}
-#  'frmFirstName' = {str} 'Jennifer'
-#  'frmLastName' = {str} 'Hesterman'
-#  'frmAddress' = {str} '14213 N. BRUNSWICK DR'
-#  'frmAddress2' = {str} 'APT A'
-#  'frmCity' = {str} 'Fountain Hills'
-#  'frmState' = {str} 'AZ'
-#  'frmZip' = {str} '85268'
-#  'frmPhoneHome' = {str} '480-304-0327'
-#  'frmEmail' = {str} ''
-#  'frmBirthDate' = {str} ''
-#  __len__ = {int} 10
-#  '''
+# 	Line  20:                                 <input id="selectStudentPicture" style="display:none;" type="file">
+# 	Line  55:                                 <input id="frmFirstName"
+# 	Line  65:                                 <input id="frmMiddleName"
+# 	Line  76:                                 <input id="frmLastName"
+# 	Line  88:                                 <input id="frmAddress"
+# 	Line 100:                                 <input id="frmAddress2"
+# 	Line 113:                                 <input id="frmCity"
+# 	Line 126:                                 <input id="frmState"
+# 	Line 136:                                 <input id="frmZip"
+# 	Line 146:                                 <input id="frmBirthDate"
+# 	Line 159:                                 <input id="frmPhoneHome"
+# 	Line 169:                                 <input id="frmEmail"
+# 	Line 193:                             <div id="divStudentMessages" class="fw-bold text-success">Awaiting input ...</div>
+# '''
 
-    # # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # validationResults['inpClassName'] = validateClassName(inpClassName)
-    # # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # errCount = len({k: v for k, v in validationResults.items() if v['status'] == 'error'})
-    # if errCount == 0:
-    #     validationResults['validationResults'] = {'status': 'ok', 'message': 'Class changes have been saved'}
-    # else:
-    #     validationResults['validationResults'] = {'status': 'error', 'message': f'Validation error count{errCount}'}
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    errCount = len({k: v for k, v in validationResults.items() if v['status'] == 'error'})
+    if errCount == 0:
+        validationResults['validationResults'] = {'status': 'ok', 'message': 'Class changes have been saved'}
+    else:
+        validationResults['validationResults'] = {'status': 'error', 'message': f'Validation error count : {errCount}'}
     return validationResults
 
 # ---------------------------------------------------------------------------------------------------
@@ -41,3 +49,17 @@ def validateStudentLastName(inpStudentLastName):
         return {'status' : 'ok','message': 'inpStudentLastName was valid'}
     else:
         return {'status' : 'error','message': 'Student last name is a required field'}
+
+# ---------------------------------------------------------------------------------------------------
+def validatePhoneNumberHome(frmPhoneHome):
+    if frmPhoneHome:
+        try:
+            pattern = re.compile(r"^\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}$")
+            if pattern.match(frmPhoneHome):
+                return {'status' : 'ok','message': 'frmPhoneHome was valid' }
+            else:
+                return {'status' : 'error','message': 'Home phone number is invalid'}
+        except Exception as ex:
+            return {'status': 'error', 'message': 'Home phone number is invalid'}
+    else:
+        return {'status': 'ok', 'message': 'frmPhoneHome was valid'}

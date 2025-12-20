@@ -3,24 +3,12 @@
     <div class="row d-flex justify-content-center small">
         <div id="frmCreate" class="row w-100 d-flex justify-content-center mainForm">
             <div>
-                <h5 id="studentTitle" class="text-center">
+                <hr>
+                <h5 id="studentTitle" class="text-center fw-bold">
+                    <p id="prgPageTitle">Creating new student record.</p>
                 </h5>
+                <hr>
             </div>
-
-            <div class="row w-100 d-flex text-center justify-content-center">
-                <div class="">
-                    <a href="#" class="btn btn-primary btn-sm" style="display: inline-block"
-                       onClick="handleReturnClick()">Back to search</a>
-                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block"
-                       onClick="handleDetailsClick()">Details</a>
-                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block"
-                       onClick="handlePromotionsClick()">Promotions</a>
-                    <a href="#" class="btn btn-primary ms-5 btn-sm" style="display: inline-block"
-                       onClick="handleAttendanceClick()">Attendance</a>
-                </div>
-                <hr class="w-75 mt-2">
-            </div>
-
             <div class="row">
                 <div class="col-sm-4 text-center">
                     <div class="text-left d-inline-block mt-3">
@@ -34,8 +22,9 @@
                         </div>
                     </div>
                     <div style="height: 250px">
-                        <img id="studentImage"
-                             alt="No image found"
+                        <img id="studentImageTmp"
+                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
+                             alt="No image was found"
                              height=250
                              width=auto
                         />
@@ -43,11 +32,10 @@
                     <div class="text-center d-inline-block ">
                         <div class="mt-2 p-1 fw-bold border rounded"
                              style="backgroundColor: #D3D3D3; width: 14rem">
-                            <label>Student:</label>
+                            <label class="d-inline-block">Image Name:</label>
+                            <label id="studentImageName" class="d-inline-block">Active</label>
                         </div>
-                        <div
-                                class="mt-2 p-1 fw-bold border rounded"
-                                style="backgroundColor: #D3D3D3; width: 14rem">
+                        <div class="mt-2 p-1 fw-bold border rounded" style="backgroundColor: #D3D3D3; width: 14rem">
                             <label>Status:&nbsp; </label>
                             <label>Active</label>
                         </div>
@@ -67,6 +55,7 @@
                                 <input id="frmFirstName"
                                        name="frmFirstName"
                                        placeholder="First Name"
+                                       class="d-inline-block float-left form-control"
                                        style="width: 11rem"
                                        onBlur=handleFieldBlur("frmFirstName")
                                 />
@@ -76,6 +65,7 @@
                                 <input id="frmMiddleName"
                                        name="frmMiddleName"
                                        placeholder="Middle Name"
+                                       class="d-inline-block float-left form-control"
                                        style="width: 11rem"
                                        onBlur=handleFieldBlur("frmMiddleName")
                                        disabled
@@ -86,11 +76,123 @@
                                 <input id="frmLastName"
                                        name="frmLastName"
                                        placeholder="Last Name"
+                                       class="d-inline-block float-left form-control"
                                        style="width: 11rem"
                                        onBlur=handleFieldBlur("frmLastName")
                                 />
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="d-inline-block text-start mt-2" style="width: 35rem">
+                                <label class="form-label ms-1 mb-0">Address Line 1(Optional)</label>
+                                <input id="frmAddress"
+                                       name="frmAddress"
+                                       placeholder="Address Line 1"
+                                       class="d-inline-block float-left form-control"
+                                       style="width: 35rem"
+                                       onBlur=handleFieldBlur("frmAddress")
+                                />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="d-inline-block text-start mt-2" style="width: 35rem">
+                                <label class="form-label ms-1 mb-0">Address Line 2 (Optional)</label>
+                                <input id="frmAddress2"
+                                       name="frmAddress2"
+                                       placeholder="Address Line 1"
+                                       class="d-inline-block float-left form-control"
+                                       style="width: 35rem"
+                                       onBlur=handleFieldBlur("frmAddress2")
+                                />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="d-inline-block text-start mt-2" style="width: 35rem">
+                                <label class="form-label ms-1 mb-0">City (Optional)</label>
+                                <input id="frmCity"
+                                       name="frmCity"
+                                       placeholder="City"
+                                       class="d-inline-block float-left form-control"
+                                       style="width: 35rem"
+                                       onBlur=handleFieldBlur("frmCity")
+                                />
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="d-inline-block text-start" style="width: 12rem">
+                                <label class="form-label ms-1 mb-0">State</label>
+                                <input id="frmState"
+                                       name="frmState"
+                                       placeholder="State"
+                                       class="d-inline-block float-left form-control"
+                                       style="width: 11rem"
+                                       onBlur=handleFieldBlur("frmState")
+                                />
+                            </div>
+                            <div class="d-inline-block text-start ms-3" style="width: 12rem">
+                                <label class="form-label ms-1 mb-0">Zip Code</label>
+                                <input id="frmZip"
+                                       name="frmZip"
+                                       placeholder="Zip Code"
+                                       class="d-inline-block float-left form-control"
+                                       style="width: 11rem"
+                                       onBlur=handleFieldBlur("frmZip")
+                                />
+                            </div>
+                            <div class="d-inline-block text-start ms-3" style="width: 12rem">
+                                <label class="form-label ms-1 mb-0">Birth Date</label>
+                                <input id="frmBirthDate"
+                                       name="frmBirthDate"
+                                       placeholder="01/01/1900"
+                                       class="d-inline-block float-left form-control"
+                                       style="width: 11rem"
+                                       onBlur=handleFieldBlur("frmBirthDate")
+                                />
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="d-inline-block text-start" style="width: 12rem">
+                                <label class="form-label ms-1 mb-0">Phone</label>
+                                <input id="frmPhoneHome"
+                                       name="frmPhoneHome"
+                                       placeholder="555-555-1234"
+                                       class="d-inline-block float-left form-control"
+                                       style="width: 11rem"
+                                       onBlur=handleFieldBlur("frmPhoneHome")
+                                />
+                            </div>
+                            <div class="d-inline-block text-start ms-3" style="width: 24rem">
+                                <label class="form-label ms-1 mb-0">E Mail</label>
+                                <input id="frmEmail"
+                                       name="frmEmail"
+                                       placeholder="E-Mail"
+                                       class="d-inline-block float-left form-control"
+                                       style="width: 24rem"
+                                       onBlur=handleFieldBlur("frmEmail")
+                                />
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="d-inline-block text-start" style="width: 12rem">
+                                <button id="btnSaveStudentUpdate" type="button" class="btn btn-success btn-sm ">Save
+                                    Updates
+                                </button>
+                            </div>
+                            <div class="d-inline-block text-start" style="width: 12rem">
+                                <button id="btnCreateStudentBadge" type="button" class="btn btn-success btn-sm ">Create
+                                    Badge
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div id="divStudentMessages" class="fw-bold text-success">Awaiting input ...</div>
+                        </div>
+
                     </form>
                 </div>
             </div>

@@ -1,11 +1,10 @@
 import json
-import copy
 
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request
 
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
 from services.list_procs import FormListToDict
-from sqlite.sqlite_students import GetSqliteStudents, UpdStudentPictureStmt, UpdStudentPicture
+from blueprints.students.sqlite_students import GetSqliteStudents, UpdStudentPicture, UpdStudentRecord
 
 # Defining a blueprint
 students_bp = Blueprint(
@@ -17,18 +16,41 @@ students_bp = Blueprint(
 
 @students_bp.route('/students')   # Focus here
 def students_bp_home():
+    print(f'Current route: students_bp_home')
     student_records = GetSqliteStudents()
     return render_template('students_main.html', student_records=student_records)
 
-@students_bp.route('/student_details')   # Focus here
+@students_bp.route('/student_details', methods=['GET', 'POST'])   # Focus here
 def students_bp_details():
+    print(f'Current route: students_bp_details')
     try:
-        badgeNumber = request.args['badgeNumber']
+        badgeNumber     = request.json['badgeNumber']
         student_records = GetSqliteStudents()
-        student_record = [x for x in student_records if
+        student_record  = [x for x in student_records if
                           str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
         student_record['headerMessage'] = 'Updating a student record.'
         return render_template('student_details.html', studentFields=student_record)
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
+@students_bp.route('/student_list_api', methods=['GET', 'POST'])
+def student_list_api():
+    print(f'Current route: student_list_api')
+    try:
+        student_records = GetSqliteStudents()
+        return json.dumps(student_records)
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
+@students_bp.route('/student_details_api', methods=['GET', 'POST'])
+def students_details_api():
+    print(f'Current route: students_details_api')
+    try:
+        badgeNumber     = request.json['badgeNumber']
+        student_records = GetSqliteStudents()
+        student_record  = [x for x in student_records if
+                          str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
+        return json.dumps(student_record)
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
 
@@ -66,9 +88,12 @@ def student_attendance():
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
 
-@students_bp.route('/save_student_details_api', methods=['POST'])
+@students_bp.route('/save_student_details_api', methods=['GET', 'POST'])
 def save_student_details_api():
+    print(f'Current route: save_student_details_api')
     #data_bytes = request.data
     form_dict  = FormListToDict(request.json)
-    valdation_results = validateStudentFieldsUpdate(form_dict)
-    return valdation_results
+    validation_results = validateStudentFieldsUpdate(form_dict)
+    if validation_results['validationResults']['status'] == 'ok':
+        UpdStudentRecord(form_dict)
+    return validation_results

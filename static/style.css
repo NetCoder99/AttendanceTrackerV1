@@ -111,3 +111,7 @@ table.dataTable thead th {
     font-family: sans-serif;
     /* Add more styles for appearance */
 }
+
+input::placeholder { /* Standard syntax */
+  font-style: italic;
+}

@@ -15,36 +15,69 @@ Student related functions
 
 {% block content %}
 <h2 class="mt-2">Student Functions</h2>
-
+<input type="hidden" id="hdnBadgeNumber" name="hdnBadgeNumber" value="">
 <div class="container my-5">
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab" aria-controls="search" aria-selected="true">Search</button>
+      <button class="nav-link active"
+              id="tabStudentSearch"
+              data-bs-toggle="tab"
+              data-bs-target="#divStudentSearch"
+              data-badge-number=""
+              type="button" role="tab"
+              aria-controls="search"
+              aria-selected="true">Search</button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false">New Student</button>
+      <button class="nav-link"
+              id="tabStudentDetails"
+              data-bs-toggle="tab"
+              data-bs-target="#divStudentDetails"
+              type="button" role="tab"
+              aria-controls="details"
+              aria-selected="false"
+              disabled>Details</button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link" id="promotions-tab" disabled data-bs-toggle="tab" data-bs-target="#promotions" type="button" role="tab" aria-controls="contact" aria-selected="false">Student Attendance</button>
+      <button class="nav-link"
+              id="tabStudentPromotions"
+              data-bs-toggle="tab"
+              data-bs-target="#divStudentPromotions"
+              type="button" role="tab"
+              aria-controls="promotions"
+              aria-selected="false"
+              disabled>Promotions</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link"
+              id="tabStudentAttendance"
+              data-bs-toggle="tab"
+              data-bs-target="#divStudentAttendance"
+              type="button" role="tab"
+              aria-controls="attendance"
+              aria-selected="false"
+              disabled>Attendance</button>
     </li>
   </ul>
 
   <div class="tab-content mt-3" id="myTabContent">
-    <div class="tab-pane show active" id="search" role="tabpanel" aria-labelledby="search-tab">
+    <div class="tab-pane show active" id="divStudentSearch" role="tabpanel" aria-labelledby="search-tab">
       {% include 'students_list_sub.html' %}
     </div>
-    <div class="tab-pane" id="details" role="tabpanel" aria-labelledby="details-tab">
+    <div class="tab-pane" id="divStudentDetails" role="tabpanel" aria-labelledby="details-tab">
       {% include 'student_details_sub.html' %}
     </div>
-    <div class="tab-pane" id="promotions" role="tabpanel" aria-labelledby="promotions-tab">
-      {% include 'student_details_sub.html' %}
-    </div>
-    <div class="tab-pane" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+    <div class="tab-pane" id="divStudentPromotions" role="tabpanel" aria-labelledby="promotions-tab">
       {% include 'student_promotions.html' %}
+    </div>
+    <div class="tab-pane" id="divStudentAttendance" role="tabpanel" aria-labelledby="attendance-tab">
+      {% include 'student_attendance.html' %}
     </div>
   </div>
 </div>
 
+<script type="application/javascript" src="{{ url_for('students_bp.static',filename='students_main.js') }}"></script>
 <script type="application/javascript" src="{{ url_for('students_bp.static',filename='students_list.js') }}"></script>
+<script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details.js') }}"></script>
 
 {% endblock %}

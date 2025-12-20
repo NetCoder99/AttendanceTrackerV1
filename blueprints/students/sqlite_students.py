@@ -69,6 +69,30 @@ def GetStudentRecordsStmt(badgeNumber = None):
     '''
 
 # ------------------------------------------------------------------
+def UpdStudentRecord(studentRecord):
+    try:
+        db_path = getDbPath()
+        dbObj = sqlite3.connect(db_path)
+        dbObj.row_factory = DictFactory
+        cursor = dbObj.cursor()
+        cursor.execute(UpdStudentRecordStmt(), studentRecord)
+        dbObj.commit()
+        rows = cursor.fetchall()
+        dbObj.close()
+        return rows
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
+def UpdStudentRecordStmt():
+    return '''
+        UPDATE students
+        SET    firstName   = :frmFirstName,
+               lastName    = :frmLastName
+        WHERE  badgeNumber = :badgeNumber
+    '''
+
+
+# ------------------------------------------------------------------
 def UpdStudentPicture(pictureDetails):
     db_path = getDbPath()
     dbObj = sqlite3.connect(db_path)

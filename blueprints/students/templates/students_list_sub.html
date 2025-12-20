@@ -5,10 +5,25 @@
                 <th></th>
                 <th>Badge Number</th>
                 <th>Student Name</th>
-                <th>City</th>
+                <th>Rank</th>
             </tr>
         </thead>
         <tbody id="studentListTBbody">
+            {% for student_record in student_records %}
+            <tr>
+                <td>
+                    <img id="studentImage"
+                         src=data:image/{{student_record.studentImageType}};base64,{{student_record.studentImageBase64}}
+                         alt="No image found"
+                         height=50
+                         width=auto
+                    />
+                </td>
+                <td >{{ student_record.badgeNumber }}</td>
+                <td>{{ student_record.firstName }} {{ student_record.lastName }}</td>
+                <td>{{ student_record.currentRankName }}</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>

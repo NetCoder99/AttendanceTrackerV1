@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlite.sqlite_schedule import GetClassRecords
-from sqlite.sqlite_students import GetSqliteStudents
+from blueprints.students.sqlite_students import GetSqliteStudents
 
 def validateCheckin(data: any):
     if data['badgeNumber'] is None or data['badgeNumber'] == '':

@@ -1,71 +1,51 @@
 $(document).ready(function() {
     console.log("Student List Document ready");
     var studentListTable = $('#studentListTable').DataTable({
-        buttons: [
-                {
-                    text: 'Create new student',
-                    className: 'dt-button',
-                    action: function (e, dt, node, config) {
-                        console.log("Create student clicked");
-                    }
+        dom: 'Bfrtip',
+        buttons: [{
+                text: 'New Student',
+                className: 'btn btn-success',
+                action: function ( e, dt, node, config ) {
+                    alert('Custom button activated!');
                 }
-        ],
-        layout: {
-            topStart: 'buttons'
-        },
+        }],
         columnDefs: [{
                 targets: '_all', // Target all columns
                 className: 'dt-left' // Apply left alignment
-        }],
-        initComplete: function () {
-            var btns = $('.dt-button');
-            btns.addClass('btn btn-success btn-sm float-end');
-            btns.removeClass('btn-secondary');
-
-        }
+        }]
     });
+
     $('#studentListTable tbody').on('click', 'tr', function() {
         console.log(`student row was clicked`);
         var rowData = studentListTable.row(this).data();
+        $("#hdnBadgeNumber").val(rowData[1]);
         processStudentEditClick(rowData[1]);
     });
-
-    $("#btnCreateStudent").on("click", function(event) {
-        console.log("The create student was clicked!");
-    });
 })
-
-$("classCreateStudent").click(function(event) {
-    console.log("The create student was clicked!");
-});
 
 // -------------------------------------------------------------------------------
 function processStudentEditClick(badgeNumber) {
     console.log(`processStudentEditClick was invoked: ${badgeNumber}`);
     const badgeNbr = $('#studentBadgeNumber').html();
-    window.location.href = `/student_details?badgeNumber=${badgeNumber}`;
+    var triggerEl = document.querySelector('#tabStudentDetails');
+    var tab = bootstrap.Tab.getOrCreateInstance(triggerEl);
+    tab.show(); // Show the tab and its content
 }
 
-//// -------------------------------------------------------------------------------
-//function processSearchClick() {
-//    console.log("processSearchClick was invoked");
-//    $.ajax({
-//        url: '/student_search', // The Flask route to call
-//        type: 'POST',
-//        contentType: 'application/json',
-//        dataType: "json",
-//        data: JSON.stringify(
-//            {
-//              'searchFirstName'  : $('#searchFirstName').val(),
-//              'searchLastName'   : $('#searchLastName').val(),
-//              'searchBadgeNumber': $('#searchBadgeNumber').val()
-//            }
-//        ), // Optional: send data
-//        success: function(response) {
-//            processSearchResponse(response);
-//        },
-//        error: function(error) {
-//            console.log(error);
-//        }
-//    });
-//}
+function InitializeStudentsList() {
+    console.log(`InitializeStudentsList`);
+    fetch('/student_list_api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response       => response.json())
+    .then(studentRecords => DisplayStudentRecords(studentRecords))
+    .catch(error         => console.error('Error:', error));
+}
+
+function DisplayStudentRecords(studentRecords) {
+    console.log(`DisplayStudentRecords was invoked: ${studentRecords.length}`);
+
+}
