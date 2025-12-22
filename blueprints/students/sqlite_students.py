@@ -87,11 +87,58 @@ def UpdStudentRecordStmt():
     return '''
         UPDATE students
         SET    firstName   = :frmFirstName,
-               lastName    = :frmLastName
+               lastName    = :frmLastName,
+               address     = :frmAddress,
+               address2    = :frmAddress2,
+               city        = :frmCity,
+               state       = :frmState,
+               zip         = :frmZip,
+               birthDate   = :frmBirthDate,
+               phoneHome   = :frmPhoneHome,
+               email       = :frmEmail
         WHERE  badgeNumber = :badgeNumber
     '''
 
 
+# '''
+# 'frmFirstName' = {str} 'Daffy'
+# 'frmLastName' = {str} 'Duck'
+# 'frmAddress' = {str} '100 Looney Lane'
+# 'frmAddress2' = {str} ''
+# 'frmCity' = {str} 'Cartoon Town'
+# 'frmState' = {str} ''
+# 'frmZip' = {str} ''
+# 'frmBirthDate' = {str} '06/02/2025'
+# 'frmPhoneHome' = {str} ''
+# 'frmEmail' = {str} ''
+# 'badgeNumber' = {str} '100'
+# __len__ = {int} 11
+#        firstName = 'firstName',
+#        lastName = 'lastName',
+#        namePrefix = 'namePrefix',
+#        email = 'email',
+#        address = 'address',
+#        address2 = 'address2',
+#        city = 'city',
+#        country = 'country',
+#        state = 'state',
+#        zip = 'zip',
+#        birthDate = 'birthDate',
+#        phoneHome = 'phoneHome',
+#        phoneMobile = 'phoneMobile',
+#        status = 'status',
+#        memberSince = 'memberSince',
+#        gender = 'gender',
+#        currentRank = 'currentRank',
+#        ethnicity = 'ethnicity',
+#        studentImageBytes = 'studentImageBytes',
+#        studentImagePath = 'studentImagePath',
+#        studentImageBase64 = 'studentImageBase64',
+#        middleName = 'middleName',
+#        studentImageName = 'studentImageName',
+#        studentImageType = 'studentImageType',
+#        currentRankName = 'currentRankName'
+#        '''
 # ------------------------------------------------------------------
 def UpdStudentPicture(pictureDetails):
     db_path = getDbPath()

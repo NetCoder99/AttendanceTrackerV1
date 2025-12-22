@@ -1,5 +1,7 @@
 import sqlite3
 
+from services.config import getDbPath
+
 
 # ----------------------------------------------------------------------------
 def DictFactory(cursor, row):
@@ -16,37 +18,65 @@ def CursorToDict(cursor: any):
         return_dict.append(dict(row)) # Convert sqlite3.Row to a standard dictionary
     return return_dict
 
+# ----------------------------------------------------------------------------
+def GetDataNoArgs(queryStmt):
+    try:
+        db_path = getDbPath()
+        dbObj = sqlite3.connect(db_path)
+        dbObj.row_factory = DictFactory
+        cursor = dbObj.cursor()
+        cursor.execute(queryStmt)
+        rows = cursor.fetchall()
+        dbObj.close()
+        return rows
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
 
 # ----------------------------------------------------------------------------
-def CreateStudentsTable(db_path: str):
-    connection_obj = sqlite3.connect(db_path)
-    cursor_obj = connection_obj.cursor()
-    cursor_obj.execute("DROP TABLE IF EXISTS students")
-    table = """ CREATE TABLE students (
-        badgeNumber int primary key not null,
-        firstName   text,
-        lastName      text,
-        namePrefix    text,
-        email         text,
-        address       text,
-        address2      text,
-        city          text,
-        country       text,
-        state         text,
-        zip           text,
-        birthDate     text,
-        phoneHome     text,
-        phoneMobile   text,
-        status        text,
-        memberSince   text,
-        gender        text,
-        currentRank   text,
-        ethnicity     text
-    ); """
+def GetDataWithArgs(queryStmt, queryDict):
+    try:
+        db_path = getDbPath()
+        dbObj = sqlite3.connect(db_path)
+        dbObj.row_factory = DictFactory
+        cursor = dbObj.cursor()
+        cursor.execute(queryStmt, queryDict)
+        rows = cursor.fetchall()
+        dbObj.close()
+        return rows
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
 
-    cursor_obj.execute(table)
-    print("Table is Ready")
-    connection_obj.close()
+
+# # ----------------------------------------------------------------------------
+# def CreateStudentsTable(db_path: str):
+#     connection_obj = sqlite3.connect(db_path)
+#     cursor_obj = connection_obj.cursor()
+#     cursor_obj.execute("DROP TABLE IF EXISTS students")
+#     table = """ CREATE TABLE students (
+#         badgeNumber int primary key not null,
+#         firstName   text,
+#         lastName      text,
+#         namePrefix    text,
+#         email         text,
+#         address       text,
+#         address2      text,
+#         city          text,
+#         country       text,
+#         state         text,
+#         zip           text,
+#         birthDate     text,
+#         phoneHome     text,
+#         phoneMobile   text,
+#         status        text,
+#         memberSince   text,
+#         gender        text,
+#         currentRank   text,
+#         ethnicity     text
+#     ); """
+#
+#     cursor_obj.execute(table)
+#     print("Table is Ready")
+#     connection_obj.close()
 
 def UpsetStudentRecords(db_path: str, student_records: dict):
     dbObj   = sqlite3.connect(db_path)

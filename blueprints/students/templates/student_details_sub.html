@@ -129,16 +129,19 @@
                                        class="d-inline-block float-left form-control"
                                        style="width: 11rem"
                                        onBlur=handleFieldBlur("frmState")
+                                       maxlength="2"
                                 />
                             </div>
                             <div class="d-inline-block text-start ms-3" style="width: 12rem">
                                 <label class="form-label ms-1 mb-0">Zip Code</label>
                                 <input id="frmZip"
+                                       pattern="^\d{5}(?:[-\s]\d{4})?$"
                                        name="frmZip"
                                        placeholder="Zip Code"
                                        class="d-inline-block float-left form-control"
                                        style="width: 11rem"
                                        onBlur=handleFieldBlur("frmZip")
+                                       maxlength="5"
                                 />
                             </div>
                             <div class="d-inline-block text-start ms-3" style="width: 12rem">
@@ -162,6 +165,7 @@
                                        class="d-inline-block float-left form-control"
                                        style="width: 11rem"
                                        onBlur=handleFieldBlur("frmPhoneHome")
+                                       type="tel"
                                 />
                             </div>
                             <div class="d-inline-block text-start ms-3" style="width: 24rem">
@@ -172,6 +176,7 @@
                                        class="d-inline-block float-left form-control"
                                        style="width: 24rem"
                                        onBlur=handleFieldBlur("frmEmail")
+                                       pattern="\d{5}$"
                                 />
                             </div>
                         </div>

@@ -57,7 +57,7 @@ function DisplayStudentData(studentData) {
     $('#frmState').val(studentData.state);
     $('#frmZip').val(studentData.zip);
     $('#frmBirthDate').val(studentData.birthDate);
-    $('#frmPhone').val(studentData.phoneHome);
+    $('#frmPhoneHome').val(studentData.phoneHome);
     $('#frmEmail').val(studentData.email);
 }
 
@@ -100,6 +100,14 @@ function ProcessSaveStudentResponse(studentSaveResponse) {
             errorMessage = value.message
             frmField.focus();
         }
+      }
+      else {
+          console.log(`Check for reformatted value: ${value}`);
+          const rtnFieldName = key.replace(/^frm/, "rtn");
+          if (rtnFieldName in value) {
+              console.log(`Display formatted value: ${value[rtnFieldName]}`);
+              $(`#${key}`).val(value[rtnFieldName]);
+          }
       }
     }
 

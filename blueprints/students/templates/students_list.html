@@ -1,42 +1,42 @@
-{% extends 'base.html' %}
+<!--{% extends 'base.html' %}-->
 
-{% block title %}
-Student selection functions
-{% endblock %}
+<!--{% block title %}-->
+<!--Student selection functions-->
+<!--{% endblock %}-->
 
-{% block content %}
+<!--{% block content %}-->
 
-<h2>Student Search</h2>
+<!--<h2>Student Search</h2>-->
 
-<div id="divStudentsList" style="" class="px-5 border rounded w-100 mx-auto">
-    <table id="studentListTable" class="table cell-border b">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Badge Number</th>
-                <th>Student Name</th>
-                <th>Rank</th>
-            </tr>
-        </thead>
-        <tbody id="studentListTBbody">
-            {% for student_record in student_records %}
-            <tr>
-                <td>
-                    <img id="studentImage"
-                         src=data:image/{{student_record.studentImageType}};base64,{{student_record.studentImageBase64}}
-                         alt="No image found"
-                         height=50
-                         width=auto
-                    />
-                </td>
-                <td >{{ student_record.badgeNumber }}</td>
-                <td>{{ student_record.firstName }} {{ student_record.lastName }}</td>
-                <td>{{ student_record.currentRankName }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+<!--<div id="divStudentsList" style="" class="px-5 border rounded w-100 mx-auto">-->
+<!--    <table id="studentListTable" class="table cell-border b">-->
+<!--        <thead>-->
+<!--            <tr>-->
+<!--                <th></th>-->
+<!--                <th>Badge Number</th>-->
+<!--                <th>Student Name</th>-->
+<!--                <th>Rank</th>-->
+<!--            </tr>-->
+<!--        </thead>-->
+<!--        <tbody id="studentListTBbody">-->
+<!--            {% for student_record in student_records %}-->
+<!--            <tr>-->
+<!--                <td>-->
+<!--                    <img id="studentImage"-->
+<!--                         src=data:image/{{student_record.studentImageType}};base64,{{student_record.studentImageBase64}}-->
+<!--                         alt="No image found"-->
+<!--                         height=50-->
+<!--                         width=auto-->
+<!--                    />-->
+<!--                </td>-->
+<!--                <td >{{ student_record.badgeNumber }}</td>-->
+<!--                <td>{{ student_record.firstName }} {{ student_record.lastName }}</td>-->
+<!--                <td>{{ student_record.currentRankName }}</td>-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
 
-<script type="application/javascript" src="{{ url_for('students_bp.static',filename='students_list.js') }}"> </script>
-{% endblock %}
+<!--<script type="application/javascript" src="{{ url_for('students_bp.static',filename='students_list.js') }}"> </script>-->
+<!--{% endblock %}-->
