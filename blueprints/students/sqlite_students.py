@@ -19,7 +19,7 @@ def GetSqliteStudents():
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
 
-def GetStudentRecordsStmt(badgeNumber = None):
+def GetStudentRecordsStmt():
     return '''
         with cte_default_image as (
           select a.imageId,
@@ -140,26 +140,70 @@ def UpdStudentRecordStmt():
 #        currentRankName = 'currentRankName'
 #        '''
 # ------------------------------------------------------------------
-def UpdStudentPicture(pictureDetails):
+def UpdStudentPicture(pictureDetails, updateDict):
     db_path = getDbPath()
     dbObj = sqlite3.connect(db_path)
     dbObj.row_factory = DictFactory
     cursor = dbObj.cursor()
-    cursor.execute(UpdStudentPictureStmt(pictureDetails))
+    cursor.execute(UpdStudentPictureStmt() ,updateDict)
     dbObj.commit()
-    rows = cursor.fetchall()
     dbObj.close()
-    return rows
 
-def UpdStudentPictureStmt(pictureDetails):
-    pattern = r"(data:image/)(.+)(;)"
-    match = re.search(pattern, pictureDetails['fileBase64'])
-    studentImageType = match.groups()[1]
-    studentImageParts = pictureDetails['fileBase64'].split(',')
+def UpdStudentPictureStmt():
     return f'''
         update students
-        set    studentImageName    = '{pictureDetails['file_name']}',
-               studentImageType    = '{studentImageType}',
-               studentImageBase64  = '{studentImageParts[1]}'
-        WHERE badgeNumber = '{pictureDetails['badgeNumber']}'
+        set    studentImageName    = :studentImageName,
+               studentImageType    = :studentImageType,
+               studentImageBase64  = :studentImageBase64
+        where  badgeNumber = :badgeNumber
+    '''
+
+def GetStudentRecordsStmtByBadge():
+    return '''
+        with cte_default_image as (
+          select a.imageId,
+                 a.imageName,
+                 a.imageType,
+                 a.imageBase64
+          from  assets a
+          where a.imageId = 428
+        )    
+        SELECT s.badgeNumber,
+               s.firstName,
+               s.lastName,
+               s.namePrefix,
+               s.email,
+               s.address,
+               s.address2,
+               s.city,
+               s.country,
+               s.state,
+               s.zip,
+               s.birthDate,
+               s.phoneHome,
+               s.phoneMobile,
+               s.status,
+               s.memberSince,
+               s.gender,
+               s.currentRank,
+               s.ethnicity,
+               s.middleName,
+               s.currentRankName,
+               b.beltTitle,
+               case when s.studentImageBase64 is not null
+                    then s.studentImageBase64 
+                    else (select imageBase64 from cte_default_image)
+               end as studentImageBase64,   
+               case when s.studentImageBase64 is not null
+                    then s.studentImageName 
+                    else (select imageName from cte_default_image)
+               end as studentImageName,   
+               case when s.studentImageBase64 is not null
+                    then s.studentImageType 
+                    else (select imageType from cte_default_image)
+               end as studentImageType   
+        from students  s
+        left join belts b
+            on s.currentRank = b.beltId
+        where s.badgeNumber  = :badgeNumber
     '''

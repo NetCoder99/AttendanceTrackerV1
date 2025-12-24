@@ -1,10 +1,18 @@
 import json
+import os
+import re
 
+import barcode
+from barcode.writer import ImageWriter
 from flask import Blueprint, render_template, request
 
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
+from services.barcodeGenerator import createBarcodeFile
 from services.list_procs import FormListToDict
-from blueprints.students.sqlite_students import GetSqliteStudents, UpdStudentPicture, UpdStudentRecord
+from blueprints.students.sqlite_students import GetSqliteStudents, UpdStudentPicture, UpdStudentRecord, \
+    GetStudentRecordsStmtByBadge
+from services.pdfGenerator import createBadgePdf
+from sqlite.sqlite_procs import GetDataWithArgs
 
 # Defining a blueprint
 students_bp = Blueprint(
@@ -56,13 +64,25 @@ def students_details_api():
 
 @students_bp.route('/save_student_picture', methods=['POST'])
 def save_student_picture():
-    data_bytes = request.data
-    data_string = data_bytes.decode('utf-8')
-    data_json = json.loads(data_string)
-    # save updated picture to database
-    updateStmt = UpdStudentPicture(data_json)
-    returnData = data_json['fileBase64']
-    return str(data_json['fileBase64'])
+    try:
+        print(f'Current route: save_student_picture')
+        data_bytes  = request.data
+        data_string = data_bytes.decode('utf-8')
+        data_json   = json.loads(data_string)
+        pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
+        matches = pattern.search(data_json['fileBase64'])
+        updateDict  = {
+            'badgeNumber' : data_json['badgeNumber'],
+            'studentImageName' : data_json['file_name'],
+            'studentImageType' : matches.group(3),
+            'studentImageBase64' : matches.group(5),
+            'fileBase64' :  data_json['fileBase64']
+        }
+        UpdStudentPicture(data_json, updateDict)
+        return json.dumps(updateDict)
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+        return json.dumps({"error" : ex.__str__()})
 
 @students_bp.route('/student_promotions')   # Focus here
 def student_promotions():
@@ -97,3 +117,13 @@ def save_student_details_api():
     if validation_results['validationResults']['status'] == 'ok':
         UpdStudentRecord(form_dict)
     return validation_results
+
+@students_bp.route('/create_badge_api', methods=['GET', 'POST'])
+def create_badge_api():
+    print(f'Current route: create_badge_api')
+    badgeNumber   = request.json['badgeNumber']
+    sqlQuery      = GetStudentRecordsStmtByBadge()
+    studentData   = GetDataWithArgs(sqlQuery, {'badgeNumber' : badgeNumber})
+    createBarcodeFile(badgeNumber)
+    createBadgePdf(badgeNumber, studentData[0])
+    return {"status" : 'ok'}

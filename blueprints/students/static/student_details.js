@@ -110,7 +110,6 @@ function ProcessSaveStudentResponse(studentSaveResponse) {
           }
       }
     }
-
     $('#divStudentMessages').removeClass('text-danger');
     $('#divStudentMessages').removeClass('text-success');
     if (errorMessage == "") {
@@ -121,11 +120,11 @@ function ProcessSaveStudentResponse(studentSaveResponse) {
         $('#divStudentMessages').addClass('text-danger');
         $('#divStudentMessages').html(errorMessage);
     }
-
-
     setTimeout(() => {
         $('#divStudentMessages').html("Awaiting input ...");
         $('#divStudentMessages').removeClass('text-danger');
         $('#divStudentMessages').addClass('text-success');
     }, 5000);
 }
+
+

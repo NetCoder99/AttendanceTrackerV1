@@ -2,6 +2,9 @@
 static/images/badges/*
 !static/images/badges/.gitkeep
 
+badgeData/*
+!badgeData/.gitkeep
+
 # Editors
 .vscode/
 .idea/
