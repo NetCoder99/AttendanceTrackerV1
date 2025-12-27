@@ -123,7 +123,20 @@ def GetUpdateStudentRankStmt():
         );
     '''
 
-
+def GetPromotionHistoryStmt():
+    return '''
+        select p.promotionId,
+           p.badgeNumber,
+           p.beltId,
+           p.beltTitle,
+           p.stripeId,
+           p.stripeTitle,
+           p.studentName,
+           p.promotionDate
+        from   promotions  p
+        where  p.badgeNumber = :badgeNumber
+        order  by p.promotionId desc;
+    '''
 # '''
 # 'frmFirstName' = {str} 'Daffy'
 # 'frmLastName' = {str} 'Duck'

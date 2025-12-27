@@ -20,9 +20,19 @@ $(document).ready(function() {
     studentDetailsTabTrigger.addEventListener('show.bs.tab', function (event) {
         var activeTab = event.target;
         const badgeNumber = $('#hdnBadgeNumber').val();
-        console.log(`badgeNumber: ${badgeNumber}`);
+        //console.log(`studentDetailsTabTrigger-badgeNumber: ${badgeNumber}`);
         processStudentDetailsLoad(badgeNumber);
     })
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    var studentPromotionsTabTrigger = document.querySelector('#tabStudentPromotions')
+    studentPromotionsTabTrigger.addEventListener('show.bs.tab', function (event) {
+        var activeTab = event.target;
+        const badgeNumber = $('#hdnBadgeNumber').val();
+        console.log(`studentPromotionsTabTrigger-badgeNumber: ${badgeNumber}`);
+        InitializePromotionsScreen(badgeNumber);
+    })
+
 })
 
 // -----------------------------------------------------------

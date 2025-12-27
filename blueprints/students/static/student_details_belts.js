@@ -1,6 +1,50 @@
 $(document).ready(function() {
-    console.log("Students Belts ready");
+    console.log("Students Details Belts ready");
 })
+
+function InitializePromotionsScreen() {
+    const badgeNumber = $('#hdnBadgeNumber').val();
+    console.log(`InitializePromotionsScreen: ${badgeNumber}`);
+    $('#lblPromotionSaveResponse').removeClass('text-success');
+    $('#lblPromotionSaveResponse').removeClass('text-danger');
+    $('#lblPromotionSaveResponse').html("Awaiting input ...");
+    $('#lblPromotionSaveResponse').addClass('text-success');
+    displayPromotionHistory(badgeNumber);
+}
+
+function displayPromotionHistory(badgeNumber) {
+    const dataToSend  = {'badgeNumber' : badgeNumber};
+    $.ajax({
+      url: '/get_promotion_history',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(dataToSend),
+      dataType: 'text',
+      success: function(response) {
+        processGetPromotionsResponse(response);
+      },
+      error: function(xhr, status, error) {
+        console.error('Error:', error);
+      }
+    });
+}
+
+function processGetPromotionsResponse(response) {
+    console.log("processGetPromotionsResponse");
+    promotionHistory = JSON.parse(response);
+    const tbodyStudentPromotions = $('#tblStudentPromotions tbody');
+    tbodyStudentPromotions.empty();
+    for (let i = 0; i < promotionHistory.length; i++) {
+        var newRow = `<tr>
+                          <td>${promotionHistory[i].beltTitle}</td>
+                          <td>${promotionHistory[i].stripeTitle}</td>
+                          <td>${promotionHistory[i].promotionDate}</td>
+                      </tr>`;
+        tbodyStudentPromotions.append(newRow);
+        console.log(promotionHistory[i]);
+    }
+
+}
 
 // ----------------------------------------------------------------------------------
 document.getElementById('studentBelt').addEventListener('change', function(event) {
@@ -52,7 +96,7 @@ $('#btnPromotionSave').click(function(event) {
         'stripeId'      : selectedStripeId,
         'stripeTitle'   : selectedStripeName,
         'studentName'   : null,
-        'promotionDate' : now.toLocaleString()
+        'promotionDate' : now.toLocaleString().replace(/,/g, '')
     };
     console.log(`btnPromotionSave, ${selectedBeltId} : ${selectedStripeId}`);
     $.ajax({
@@ -73,6 +117,15 @@ $('#btnPromotionSave').click(function(event) {
 function processSaveRankResponse(saveResponse) {
     const saveResponseDict = JSON.parse(saveResponse);
     console.log(`processSaveRankResponse was invoked: ${saveResponseDict}`);
-    $('#lblPromotionSaveResponse').html("Student rank was updated, new id is:" + saveResponseDict.lastRowId);
-    $('#lblPromotionSaveResponse').addClass('text-success');
+    $('#lblPromotionSaveResponse').removeClass('text-success');
+    $('#lblPromotionSaveResponse').removeClass('text-danger');
+    if (saveResponseDict.status == 'ok') {
+        $('#lblPromotionSaveResponse').html("Student rank was updated, new id is: " + saveResponseDict.lastRowId);
+        $('#lblPromotionSaveResponse').addClass('text-success');
+        displayPromotionHistory(saveResponseDict.badgeNumber);
+    }
+    else {
+        $('#lblPromotionSaveResponse').html(saveResponseDict.message);
+        $('#lblPromotionSaveResponse').addClass('text-danger');
+    }
 }

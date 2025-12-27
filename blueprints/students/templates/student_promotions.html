@@ -31,12 +31,12 @@
                             <div class="d-inline-block text-start ms-3" style="width: 19rem">
                                 <label class="form-label ms-1 mb-0 fw-bold">Stripe Name:</label>
                                 <select name="studentBeltStripes" id="studentBeltStripes" style="height: 2rem;">
-                                    <option value="1st Orange Stripe">1st Orange Stripe</option>
-                                    <option value="2nd Orange Stripe">2nd Orange Stripe</option>
-                                    <option value="3rd Orange Stripe">3rd Orange Stripe</option>
-                                    <option value="4th Orange Stripe">4th Orange Stripe</option>
-                                    <option value="5th Orange Stripe">5th Orange Stripe</option>
-                                    <option value="6th Orange Stripe">6th Orange Stripe</option>
+                                    <option value=58>1st Orange Stripe</option>
+                                    <option value=131>2nd Orange Stripe</option>
+                                    <option value=132>3rd Orange Stripe</option>
+                                    <option value=133>4th Orange Stripe</option>
+                                    <option value=137>5th Orange Stripe</option>
+                                    <option value=138>6th Orange Stripe</option>
                                 </select>
                             </div>
                             <button id="btnPromotionSave" name="btnPromotionSave" type="button" class="d-inline-block btn btn-sm btn-primary" style="width: 7rem; height: 2rem;">Save</button>
@@ -48,7 +48,7 @@
                             Student promotion history.
                         </h6>
                         <hr>
-                            <table class="ms-3">
+                            <table id="tblStudentPromotions" class="ms-3">
                                 <thead>
                                     <tr>
                                         <th>Belt name</th>
@@ -56,7 +56,7 @@
                                         <th>Promotion date</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="tbodyStudentPromotions">
                                     <tr>
                                         <td>White</td>
                                         <td>1st Yellow Strip</td>
