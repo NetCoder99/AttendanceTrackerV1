@@ -46,10 +46,12 @@ def GetStudentRecordsStmt():
                s.status,
                s.memberSince,
                s.gender,
-               s.currentRank,
                s.ethnicity,
                s.middleName,
+               s.currentRankNum,
                s.currentRankName,
+               s.crntStripeId,
+               s.crntStripeName,
                b.beltTitle,
                case when s.studentImageBase64 is not null
                     then s.studentImageBase64 
@@ -65,7 +67,7 @@ def GetStudentRecordsStmt():
                end as studentImageType   
         FROM students  s
         left join belts b
-            on s.currentRank = b.beltId
+            on s.currentRankNum = b.beltId
     '''
 
 # ------------------------------------------------------------------
@@ -97,6 +99,28 @@ def UpdStudentRecordStmt():
                phoneHome   = :frmPhoneHome,
                email       = :frmEmail
         WHERE  badgeNumber = :badgeNumber
+    '''
+
+def GetUpdateStudentRankStmt():
+    return '''
+        INSERT INTO promotions (
+           badgeNumber,
+           beltId,
+           beltTitle,
+           stripeId,
+           stripeTitle,
+           studentName,
+           promotionDate
+        )
+        VALUES (
+           :badgeNumber,
+           :beltId,
+           :beltTitle,
+           :stripeId,
+           :stripeTitle,
+           :studentName,
+           :promotionDate
+        );
     '''
 
 
@@ -206,4 +230,30 @@ def GetStudentRecordsStmtByBadge():
         left join belts b
             on s.currentRank = b.beltId
         where s.badgeNumber  = :badgeNumber
+    '''
+
+def GetStripeNamesByRank():
+    return '''
+        select s.rankNum, 
+               r.rankName,
+               s.stripeId,
+               s.stripeName
+        from   stripes  s
+        join   ranks    r
+          on   s.rankNum = r.rankNum
+        where  s.rankNum = :rankNum
+        order  by s.rankNum, s.seqNum
+    '''
+
+def GetMinRankClassCounts():
+    return '''
+        select s.rankNum, 
+               r.rankName,
+               sum(s.classCount) as minClassCount
+        from   stripes  s
+        where  r.rankNum = :rankNum
+        join   ranks    r
+          on   s.rankNum = r.rankNum
+        group  by s.rankNum
+        order  by s.rankNum
     '''

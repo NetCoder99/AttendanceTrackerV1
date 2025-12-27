@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------
-# pyinstaller --add-data "templates;templates" --add-data "static;static" --add-data "blueprints/students;blueprints/students" --add-data "blueprints/schedule;blueprints/schedule" main.py
+# pyinstaller --add-data "templates;templates" --add-data "static;static" --add-data "blueprints/students;blueprints/students" --add-data "blueprints/schedule;blueprints/schedule" --add-data "blueprints/belts;blueprints/belts" main.py
 # pyinstaller --add-data "templates:templates" --add-data "static:static" --add-data "blueprints/students:blueprints/students" --add-data "blueprints/schedule:blueprints/schedule" main.py
 # ------------------------------------------------------------------
 
@@ -60,6 +60,6 @@ def page_not_found(e):
 
 # Run the application
 if __name__ == '__main__':
-    #ui = FlaskUI(app=app, width=1200, height=900, fullscreen=False, server='flask')
+    #ui = FlaskUI(app=app, width=1250, height=900, fullscreen=False, server='flask')
     #ui.run()
     app.run(debug=False)

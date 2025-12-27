@@ -46,6 +46,21 @@ def GetDataWithArgs(queryStmt, queryDict):
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
 
+# ----------------------------------------------------------------------------
+def UpdDataWithArgs(queryStmt, queryDict):
+    try:
+        db_path = getDbPath()
+        dbObj = sqlite3.connect(db_path)
+        dbObj.row_factory = DictFactory
+        cursor = dbObj.cursor()
+        cursor.execute(queryStmt, queryDict)
+        dbObj.commit()
+        rows = cursor.fetchall()
+        dbObj.close()
+        return {'lastrowid' : cursor.lastrowid, 'rowcount': cursor.rowcount}
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
 
 # # ----------------------------------------------------------------------------
 # def CreateStudentsTable(db_path: str):

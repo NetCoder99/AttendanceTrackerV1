@@ -9,10 +9,9 @@ from flask import Blueprint, render_template, request
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
 from services.barcodeGenerator import createBarcodeFile
 from services.list_procs import FormListToDict
-from blueprints.students.sqlite_students import GetSqliteStudents, UpdStudentPicture, UpdStudentRecord, \
-    GetStudentRecordsStmtByBadge
+from blueprints.students.sqlite_students import *
 from services.pdfGenerator import createBadgePdf
-from sqlite.sqlite_procs import GetDataWithArgs
+from sqlite.sqlite_procs import GetDataWithArgs, UpdDataWithArgs
 
 # Defining a blueprint
 students_bp = Blueprint(
@@ -127,3 +126,17 @@ def create_badge_api():
     createBarcodeFile(badgeNumber)
     createBadgePdf(badgeNumber, studentData[0])
     return {"status" : 'ok'}
+
+@students_bp.route('/get_stripe_names', methods=['GET', 'POST'])
+def get_stripe_names():
+    print(f'Current route: get_stripe_names')
+    sqlQuery      = GetStripeNamesByRank()
+    stripeRecords = GetDataWithArgs(sqlQuery, request.json)
+    return stripeRecords
+
+@students_bp.route('/upd_student_rank', methods=['GET', 'POST'])
+def upd_student_rank():
+    print(f'Current route: upd_student_rank')
+    sqlQuery      = GetUpdateStudentRankStmt()
+    updateCounts  = UpdDataWithArgs(sqlQuery, request.json)
+    return {'status': 'ok', 'lastRowId': updateCounts['lastrowid'], 'rowCount': updateCounts['rowcount']}

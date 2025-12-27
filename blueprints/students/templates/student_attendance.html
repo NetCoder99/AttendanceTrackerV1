@@ -2,11 +2,45 @@
     <div class="row d-flex justify-content-center small">
         <div id="frmCreate" class="row w-100 d-flex justify-content-center mainForm">
             <div>
-                <h5 id="studentTitle" class="text-center">
+                <hr>
+                <h5 id="studentTitle" class="text-center fw-bold">
+                    <p id="prgPageTitle">Creating new student record.</p>
                 </h5>
+                <hr>
             </div>
+            <div class="row">
 
+                <div class="col-sm-8 pt-3">
+                    <form id="frmStudentAttendance">
+                        <div class="row">
+                            <div class="d-inline-block text-start" style="width: 11rem">
+                                <label class="form-label ms-1 mb-0">Rank</label>
+                                <select name="studentBelt" id="studentBelt">
+                                    <option value="White">White</option>
+                                    <option value="Orange">Orange</option>
+                                    <option value="Yellow">Yellow</option>
+                                    <option value="Blue">Blue</option>
+                                    <option value="Green">White</option>
+                                    <option value="Purple">Orange</option>
+                                    <option value="Brown">Yellow</option>
+                                    <option value="Black">Blue</option>
+                                </select>
+                            </div>
+                            <div class="d-inline-block text-start ms-3" style="width: 11rem">
+                                <label class="form-label ms-1 mb-0">Middle Name</label>
+                                <input id="frmMiddleName"
+                                       name="frmMiddleName"
+                                       placeholder="Middle Name"
+                                       class="d-inline-block float-left form-control"
+                                       style="width: 11rem"
+                                       onBlur=handleFieldBlur("frmMiddleName")
+                                       disabled
+                                />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details.js') }}"> </script>
