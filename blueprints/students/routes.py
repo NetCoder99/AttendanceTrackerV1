@@ -119,13 +119,16 @@ def save_student_details_api():
 
 @students_bp.route('/create_badge_api', methods=['GET', 'POST'])
 def create_badge_api():
-    print(f'Current route: create_badge_api')
-    badgeNumber   = request.json['badgeNumber']
-    sqlQuery      = GetStudentRecordsStmtByBadge()
-    studentData   = GetDataWithArgs(sqlQuery, {'badgeNumber' : badgeNumber})
-    createBarcodeFile(badgeNumber)
-    createBadgePdf(badgeNumber, studentData[0])
-    return {"status" : 'ok'}
+    try:
+        print(f'Current route: create_badge_api')
+        badgeNumber   = request.json['badgeNumber']
+        sqlQuery      = GetStudentRecordsStmtByBadge()
+        studentData   = GetDataWithArgs(sqlQuery, {'badgeNumber' : badgeNumber})
+        createBarcodeFile(badgeNumber)
+        createBadgePdf(badgeNumber, studentData[0])
+        return {"status" : 'ok'}
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
 
 @students_bp.route('/get_stripe_names', methods=['GET', 'POST'])
 def get_stripe_names():
@@ -139,16 +142,27 @@ def upd_student_rank():
     print(f'Current route: upd_student_rank')
     sqlGetQuery       = GetPromotionHistoryStmt()
     promotionHistory  = GetDataWithArgs(sqlGetQuery, request.json)
-    sqlUpdQuery          = GetUpdateStudentRankStmt()
+    updPromotionQuery = UpdatePromotionsRankStmt()
+    updStudentQuery   = UpdateStudentRankStmt()
+    updStudentDict    = {
+        'currentRankNum'    : request.json['beltId'],
+        'currentRankName'   : request.json['beltTitle'],
+        'currentStripeId'   : request.json['stripeId'],
+        'currentStripeName' : request.json['stripeTitle'],
+        'badgeNumber'       : request.json['badgeNumber']
+    }
+
     if len(promotionHistory) == 0:
-        updateCounts = UpdDataWithArgs(sqlUpdQuery, request.json)
-        return {'status': 'ok', 'badgeNumber': request.json['badgeNumber'], 'lastRowId': updateCounts['lastrowid'], 'rowCount': updateCounts['rowcount']}
+        updateCounts1 = UpdDataWithArgs(updPromotionQuery, request.json)
+        updateCounts2 = UpdDataWithArgs(updStudentQuery, updStudentDict)
+        return {'status': 'ok', 'badgeNumber': request.json['badgeNumber'], 'lastRowId': updateCounts1['lastrowid'], 'rowCount': updateCounts1['rowcount']}
     else:
         lastUpdate = promotionHistory[0]
         if str(lastUpdate['beltId']) == str(request.json['beltId']) and str(lastUpdate['stripeId']) == str(request.json['stripeId']):
             return {'status': 'error', 'badgeNumber': request.json['badgeNumber'], 'message' : 'Current promotion matches last promotion!'}
         else:
-            updateCounts  = UpdDataWithArgs(sqlUpdQuery, request.json)
+            updateCounts  = UpdDataWithArgs(updPromotionQuery, request.json)
+            updateCounts2 = UpdDataWithArgs(updStudentQuery, updStudentDict)
             return {'status': 'ok', 'badgeNumber': request.json['badgeNumber'], 'lastRowId': updateCounts['lastrowid'], 'rowCount': updateCounts['rowcount']}
 
 @students_bp.route('/get_promotion_history', methods=['GET', 'POST'])

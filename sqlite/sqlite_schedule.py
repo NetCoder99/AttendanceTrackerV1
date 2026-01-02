@@ -54,7 +54,7 @@ def GetClassRecordsStmt():
           FROM classes c
           join vw_days_of_week v
             on c.classDayOfWeek = v.dayOfWeek
-          order by c.classDayOfWeek; 
+          order by c.classDayOfWeek, c.classCheckinStart; 
     '''
 
 

@@ -60,6 +60,7 @@ def UpdDataWithArgs(queryStmt, queryDict):
         return {'lastrowid' : cursor.lastrowid, 'rowcount': cursor.rowcount}
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
+        raise ex
 
 
 # # ----------------------------------------------------------------------------

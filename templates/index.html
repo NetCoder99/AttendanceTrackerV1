@@ -22,7 +22,7 @@
             <input id="badgeNumber" type="text" class="form-control" style="width: 11rem" placeholder="Card number">
           </form>
           <div>
-            <h4 id="currentDateTime" class="fw-bold mt-4"></h4>
+            <h5 id="currentDateTime" class="fw-bold mt-4"></h5>
           </div>
         </div>
         <div class="col-md-2"></div>
@@ -61,6 +61,8 @@
         <div class="col-md-2"></div>
       </div>
 
+    <button class="open-button">Open Form</button>
+    {% include 'checkin_dialog.html' %}
     <script src="{{ url_for('static',filename='scripts/checkin.js') }}"></script>
 
 {% endblock %}

@@ -50,8 +50,8 @@ def GetStudentRecordsStmt():
                s.middleName,
                s.currentRankNum,
                s.currentRankName,
-               s.crntStripeId,
-               s.crntStripeName,
+               s.currentStripeId,
+               s.currentStripeName,
                b.beltTitle,
                case when s.studentImageBase64 is not null
                     then s.studentImageBase64 
@@ -101,7 +101,7 @@ def UpdStudentRecordStmt():
         WHERE  badgeNumber = :badgeNumber
     '''
 
-def GetUpdateStudentRankStmt():
+def UpdatePromotionsRankStmt():
     return '''
         INSERT INTO promotions (
            badgeNumber,
@@ -121,6 +121,16 @@ def GetUpdateStudentRankStmt():
            :studentName,
            :promotionDate
         );
+    '''
+
+def UpdateStudentRankStmt():
+    return '''
+        update students  
+        set    currentRankNum    = :currentRankNum,
+               currentRankName   = :currentRankName,
+               currentStripeId   = :currentStripeId,
+               currentStripeName = :currentStripeName
+        where  badgeNumber       = :badgeNumber
     '''
 
 def GetPromotionHistoryStmt():
@@ -222,11 +232,12 @@ def GetStudentRecordsStmtByBadge():
                s.status,
                s.memberSince,
                s.gender,
-               s.currentRank,
                s.ethnicity,
                s.middleName,
+               s.currentRankNum,
                s.currentRankName,
-               b.beltTitle,
+               s.currentStripeId,
+               s.currentStripeName,
                case when s.studentImageBase64 is not null
                     then s.studentImageBase64 
                     else (select imageBase64 from cte_default_image)
@@ -240,8 +251,6 @@ def GetStudentRecordsStmtByBadge():
                     else (select imageType from cte_default_image)
                end as studentImageType   
         from students  s
-        left join belts b
-            on s.currentRank = b.beltId
         where s.badgeNumber  = :badgeNumber
     '''
 

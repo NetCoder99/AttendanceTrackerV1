@@ -1,11 +1,8 @@
+
 $(document).ready(function() {
     console.log("Document ready");
-    $('#currentDateTime').text(getDisplayDate());
-    $('#badgeNumber').focus();
-    let myInterval = setInterval(function() {
-        $('#currentDateTime').text(getDisplayDate());
-        $('#badgeNumber').focus();
-    }, 1000);
+
+    startDateTimerInterval();
 
     $('#checkinTimer5').addClass("hidden");
     $('#checkinTimer4').addClass("hidden");
@@ -24,15 +21,44 @@ $(document).ready(function() {
         }
     });
 
+    // manage confirmation dialog display
+    $(".open-button").on("click", function() {
+        stopDateTimerInterval();
+        $('#slctStudentBelt').val(1);
+        $(".popup-overlay").show(); // Use .toggle() for a simple show/hide switch
+    });
+    $(".close-button, .popup-overlay").on("click", function(event) {
+        if (event.target === this || $(event.target).hasClass("close-button")) {
+            $(".popup-overlay").hide();
+            startDateTimerInterval();
+        }
+    });
+
 })
 
+
 // -------------------------------------------------------------------------------
+let dateTimerInterval;
+function startDateTimerInterval() {
+    if (!dateTimerInterval) {
+        dateTimerInterval = setInterval(function() {
+            $('#currentDateTime').text(getDisplayDate());
+            $('#badgeNumber').focus();
+        }, 1000);
+    }
+}
+function stopDateTimerInterval() {
+    clearInterval(dateTimerInterval);
+    dateTimerInterval = null
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function getDisplayDate(inpDate = new Date()) {
     const date = inpDate.toLocaleDateString();
     const time = inpDate.toLocaleTimeString();
     const day  = inpDate.toLocaleDateString('en-us',{ weekday: 'long' });
     return `${day} ${date} ${time}`;
 }
+
 
 // -------------------------------------------------------------------------------
 function processCheckinAction(event) {
@@ -52,8 +78,9 @@ function processCheckinAction(event) {
 
 // -------------------------------------------------------------------------------
 function processCheckinResponse(response) {
-    $('#badgeNumber').val(null)
-    $('#checkinMessage1').html(response.message)
+    console.log(`processCheckinResponse: ${JSON.stringify(response)}`);
+    $('#badgeNumber').val(null);
+    $('#checkinMessage1').html(response.message);
     $('#checkinMessage1').removeClass("text-success");
     $('#checkinMessage1').removeClass("text-danger");
     if (response.status == 'error') {
@@ -63,7 +90,7 @@ function processCheckinResponse(response) {
     }
     else {
         let className = response.classData.classDisplayTitle;
-        $('#checkinMessage1').html(className)
+        $('#checkinMessage1').html(`Checkin for class ${className} completed.`);
         $('#checkinMessage1').addClass("text-success");
         $('#checkinMessage2').removeClass("removed");
         $('#checkinMessage3').removeClass("removed");
@@ -95,3 +122,17 @@ function resetCheckinScreen(response) {
     $('#checkinMessage2').addClass("removed");
     $('#checkinMessage3').addClass("removed");
 }
+
+// -------------------------------------------------------------------------------
+$("#btnStudentDialog").on("click", function(event) {
+    const selectedRank = $('#slctStudentBelt').val();
+    console.log(`btnStudentDialog: ${selectedRank} `);
+    event.preventDefault();
+//    $.post("/studentDialog", {"badgeNumber": badgeNumber}, function(response) {
+//        processCheckinResponse(response);
+//    });
+
+    $(".popup-overlay").hide();
+    startDateTimerInterval();
+});
+
