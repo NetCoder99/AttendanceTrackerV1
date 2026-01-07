@@ -60,12 +60,16 @@ def verifyCheckinDateTime():
             classCheckinTimeStart = datetime.strptime(classRecord['classCheckinStart'], "%H.%M").time()
             classCheckinTimeFinis = datetime.strptime(classRecord['classCheckInFinis'], "%H.%M").time()
 
-            if classCheckinTimeStart <= currentTime <= classCheckinTimeFinis:
+            classTimeStart = datetime.strptime(classRecord['classStartTime'], "%I:%M %p").time()
+            classTimeFinis = datetime.strptime(classRecord['classFinisTime'], "%I:%M %p").time()
+
+            if (   classCheckinTimeStart <= currentTime <= classCheckinTimeFinis
+                or classTimeStart <= currentTime <= classTimeFinis):
                 return classRecord
-            else:
-                return getClosestClasses(currentDatetime, classesByDay)
-    #return classesByDay[-1]
-    return None
+
+    return getClosestClasses(currentDatetime, classesByDay)
+    # return classesByDay[-1]
+    # return None
 
 def getClosestClasses(currentDatetime: datetime, classesByDay: list[dict]):
     if len(classesByDay) == 0:

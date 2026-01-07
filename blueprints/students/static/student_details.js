@@ -3,11 +3,6 @@ $(document).ready(function() {
     $( "#frmBirthDate" ).datepicker();
 })
 
-//function handleReturnClick() {
-//    console.log("handleReturnClick was invoked.");
-//    window.location.href = "/students";
-//}
-
 // -----------------------------------------------------------
 function processStudentDetailsLoad(badgeNumber) {
     console.log(`processPageLoad: ${badgeNumber}`);

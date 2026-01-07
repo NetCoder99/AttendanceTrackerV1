@@ -34,6 +34,7 @@ function processGetPromotionsResponse(response) {
     promotionHistory = JSON.parse(response);
     const tbodyStudentPromotions = $('#tblStudentPromotions tbody');
     tbodyStudentPromotions.empty();
+    setBeltSelectionDropdowns(promotionHistory);
     for (let i = 0; i < promotionHistory.length; i++) {
         var newRow = `<tr>
                           <td>${promotionHistory[i].beltTitle}</td>
@@ -41,16 +42,56 @@ function processGetPromotionsResponse(response) {
                           <td>${promotionHistory[i].promotionDate}</td>
                       </tr>`;
         tbodyStudentPromotions.append(newRow);
-        console.log(promotionHistory[i]);
+        //console.log(promotionHistory[i]);
     }
 
 }
 
+function setBeltSelectionDropdowns(promotionHistory) {
+    const selectBeltElement   = $('#studentBelt');
+    const selectStripeElement = $('#studentBeltStripes');
+
+    $('#studentBelt').val($('#studentBelt option:first').val())
+    $('#studentBeltStripes').val($('#studentBeltStripes option:first').val())
+
+    if (promotionHistory.length == 0) {
+        $('#studentBelt').val($('#studentBelt option:first').val())
+        $('#studentBeltStripes').val($('#studentBeltStripes option:first').val())
+        updateStripeDropdown($('#studentBelt').val());
+
+        //$('#studentBelt')[0].selectedIndex = 0;
+        //$('#studentBeltStripes')[0].selectedIndex = 0;
+    }
+    else {
+        $('#studentBelt').val(promotionHistory[0].beltId);
+        updateStripeDropdown($('#studentBelt').val());
+    }
+}
+
+
 // ----------------------------------------------------------------------------------
 document.getElementById('studentBelt').addEventListener('change', function(event) {
-    var selectedValue = event.target.value;
-    console.log("Belt selected value is: " + selectedValue);
-    const dataToSend = {'rankNum':selectedValue};
+    var rankNum = event.target.value;
+    console.log("Belt selected value is: " + rankNum);
+    updateStripeDropdown(rankNum);
+//    const dataToSend = {'rankNum':selectedValue};
+//    $.ajax({
+//      url: '/get_stripe_names',
+//      type: 'POST',
+//      contentType: 'application/json',
+//      data: JSON.stringify(dataToSend),
+//      dataType: 'text',
+//      success: function(response) {
+//        processSelectRankResponse(response);
+//      },
+//      error: function(xhr, status, error) {
+//        console.error('Error:', error);
+//      }
+//    });
+});
+
+function updateStripeDropdown(rankNum) {
+    const dataToSend = {'rankNum':rankNum};
     $.ajax({
       url: '/get_stripe_names',
       type: 'POST',
@@ -64,7 +105,8 @@ document.getElementById('studentBelt').addEventListener('change', function(event
         console.error('Error:', error);
       }
     });
-});
+}
+
 
 function processSelectRankResponse(stripeNameRecords) {
     const stripeNamesArray = JSON.parse(stripeNameRecords);

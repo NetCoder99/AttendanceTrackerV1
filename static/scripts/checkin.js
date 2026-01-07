@@ -23,9 +23,10 @@ $(document).ready(function() {
 
     // manage confirmation dialog display
     $(".open-button").on("click", function() {
-        stopDateTimerInterval();
-        $('#slctStudentBelt').val(1);
-        $(".popup-overlay").show(); // Use .toggle() for a simple show/hide switch
+        showRankConfirmation();
+//        stopDateTimerInterval();
+//        $('#slctStudentBelt').val(1);
+//        $(".popup-overlay").show(); // Use .toggle() for a simple show/hide switch
     });
     $(".close-button, .popup-overlay").on("click", function(event) {
         if (event.target === this || $(event.target).hasClass("close-button")) {
@@ -36,6 +37,12 @@ $(document).ready(function() {
 
 })
 
+// -------------------------------------------------------------------------------
+function showRankConfirmation() {
+    stopDateTimerInterval();
+    $('#slctStudentBelt').val(1);
+    $(".popup-overlay").show(); // Use .toggle() for a simple show/hide switch
+}
 
 // -------------------------------------------------------------------------------
 let dateTimerInterval;
@@ -78,39 +85,53 @@ function processCheckinAction(event) {
 
 // -------------------------------------------------------------------------------
 function processCheckinResponse(response) {
-    console.log(`processCheckinResponse: ${JSON.stringify(response)}`);
-    $('#badgeNumber').val(null);
-    $('#checkinMessage1').html(response.message);
-    $('#checkinMessage1').removeClass("text-success");
-    $('#checkinMessage1').removeClass("text-danger");
-    if (response.status == 'error') {
+    try {
+        console.log(`processCheckinResponse: ${JSON.stringify(response)}`);
+
+        if (response.received_data.needsRankConfirmation == 'Y') {
+            showRankConfirmation();
+        }
+
+        $('#badgeNumber').val(null);
+        $('#checkinMessage1').html(response.message);
+        $('#checkinMessage1').removeClass("text-success");
+        $('#checkinMessage1').removeClass("text-danger");
+        if (response.status == 'error') {
+            $('#checkinMessage1').addClass("text-danger");
+            $('#checkinMessage2').addClass("removed");
+            $('#checkinMessage3').addClass("removed");
+        }
+        else {
+            let className = response.classData.classDisplayTitle;
+            $('#checkinMessage1').html(`${className}`);
+            $('#checkinMessage1').addClass("text-success");
+            $('#checkinMessage2').removeClass("removed");
+            $('#checkinMessage3').removeClass("removed");
+        }
+    }
+    catch (error) {
+        $('#checkinMessage1').html(error.message);
         $('#checkinMessage1').addClass("text-danger");
         $('#checkinMessage2').addClass("removed");
         $('#checkinMessage3').addClass("removed");
-    }
-    else {
-        let className = response.classData.classDisplayTitle;
-        $('#checkinMessage1').html(`Checkin for class ${className} completed.`);
-        $('#checkinMessage1').addClass("text-success");
-        $('#checkinMessage2').removeClass("removed");
-        $('#checkinMessage3').removeClass("removed");
-    }
-    let count = 5;
-    const intervalID = setInterval(() => {
-      console.log(`Tick: ${count}`);
-      $('#checkinTimer'+count).addClass("hidden");
-      count--;
-      checkinTimer5
-    }, 1000);
+    } finally {
+        let count = 5;
+        const intervalID = setInterval(() => {
+          console.log(`Tick: ${count}`);
+          $('#checkinTimer'+count).addClass("hidden");
+          count--;
+          checkinTimer5
+        }, 1000);
 
-    setTimeout(() => {
-      clearInterval(intervalID);
-      console.log("Interval stopped.");
-    }, 6000);
+        setTimeout(() => {
+          clearInterval(intervalID);
+          console.log("Interval stopped.");
+        }, 6000);
 
-    setTimeout(() => {
-      resetCheckinScreen();
-    }, 6000);
+        setTimeout(() => {
+          resetCheckinScreen();
+        }, 6000);
+    }
 }
 
 // -------------------------------------------------------------------------------
