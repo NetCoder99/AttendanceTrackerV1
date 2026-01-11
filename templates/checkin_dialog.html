@@ -1,10 +1,11 @@
 <div class="popup-overlay">
   <div class="popup-content">
-    <span class="close-button">&times;</span>
-    <h4 class="ms-2 me-2">Please select your rank</h4>
+<!--    <span class="close-button">&times;</span>-->
+    <h4 class="ms-1 me-1">Please confirm your rank</h4>
+    <input id="hdnBadgeNumber" name="hdnBadgeNumber" type="hidden">
     <form>
         <label class="form-label ms-2 mb-0 fw-bold me-2">Rank Name:</label>
-        <select name="slctStudentBelt" id="slctStudentBelt" style="height: 2rem; padding-bottom: 6px">
+        <select name="slctStudentBelt" id="slctStudentBelt" style="height: 2rem; padding-bottom: 6px" class="ms-2">
             <option value="1">White</option>
             <option value="2">Orange</option>
             <option value="3">Yellow</option>
@@ -14,12 +15,20 @@
             <option value="7">Brown</option>
             <option value="8">Black</option>
         </select>
-      <button id="btnStudentDialog"
-              name="btnStudentDialog"
+        <select name="slctStudentStripe" id="slctStudentStripe" style="height: 2rem; padding-bottom: 6px" class="ms-2">
+        </select>
+      <button id="btnSaveStudentRankDialog"
+              name="btnSaveStudentRankDialog"
               type="button"
               class="btn btn-sm btn-primary ms-2"
               style="height: 2rem; padding-bottom: 6px"
       >Save</button>
+      <button id="btnCancelStudentRankDialog"
+              name="btnCancelStudentRankDialog"
+              type="button"
+              class="btn btn-sm btn-danger ms-2"
+              style="height: 2rem; padding-bottom: 6px"
+      >Cancel</button>
       <div>
         <label id="lblStudentDialog" class="d-inline-block ms-2 text-success">Awaiting input</label>
       </div>

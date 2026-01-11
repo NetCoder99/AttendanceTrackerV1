@@ -1,6 +1,6 @@
 
 $(document).ready(function() {
-    console.log("Document ready");
+    console.log("Document Checkin ready");
 
     startDateTimerInterval();
 
@@ -20,13 +20,9 @@ $(document).ready(function() {
           console.log("Enter key pressed, default action prevented.");
         }
     });
-
     // manage confirmation dialog display
     $(".open-button").on("click", function() {
-        showRankConfirmation();
-//        stopDateTimerInterval();
-//        $('#slctStudentBelt').val(1);
-//        $(".popup-overlay").show(); // Use .toggle() for a simple show/hide switch
+        showRankConfirmation(null);
     });
     $(".close-button, .popup-overlay").on("click", function(event) {
         if (event.target === this || $(event.target).hasClass("close-button")) {
@@ -34,14 +30,49 @@ $(document).ready(function() {
             startDateTimerInterval();
         }
     });
-
 })
+// ----------------------------------------------------------------------------------
+document.getElementById('slctStudentBelt').addEventListener('change', function(event) {
+    var rankNum = event.target.value;
+    console.log("Checkin belt selected value is: " + rankNum);
+    updateStripeDropdownCheckin(rankNum);
+});
 
 // -------------------------------------------------------------------------------
-function showRankConfirmation() {
+function showRankConfirmation(received_data) {
+    console.log(`showRankConfirmation: ${JSON.stringify(received_data)}`);
+    $('#hdnBadgeNumber').val(received_data.badgeNumber);
+
     stopDateTimerInterval();
     $('#slctStudentBelt').val(1);
+    updateStripeDropdownCheckin(1);
     $(".popup-overlay").show(); // Use .toggle() for a simple show/hide switch
+}
+
+function updateStripeDropdownCheckin(rankNum) {
+    const dataToSend = {'rankNum':rankNum};
+    $.ajax({
+      url: '/get_stripe_names',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(dataToSend),
+      dataType: 'text',
+      success: function(response) {
+        processSelectRankResponseCheckin(response);
+      },
+      error: function(xhr, status, error) {
+        console.error('Error:', error);
+      }
+    });
+}
+function processSelectRankResponseCheckin(stripeNameRecords) {
+    const stripeNamesArray = JSON.parse(stripeNameRecords);
+    console.log(`processSelectRankResponseCheckin was invoked: ${stripeNamesArray}`);
+    $('#slctStudentStripe').empty();
+    for (let i = 0; i < stripeNamesArray.length; i++) {
+        console.log(stripeNamesArray[i]);
+        $('#slctStudentStripe').append(`<option value=${stripeNamesArray[i].stripeId}>${stripeNamesArray[i].stripeName}</option>`);
+    }
 }
 
 // -------------------------------------------------------------------------------
@@ -89,7 +120,7 @@ function processCheckinResponse(response) {
         console.log(`processCheckinResponse: ${JSON.stringify(response)}`);
 
         if (response.received_data.needsRankConfirmation == 'Y') {
-            showRankConfirmation();
+            showRankConfirmation(response.received_data);
         }
 
         $('#badgeNumber').val(null);
@@ -105,8 +136,8 @@ function processCheckinResponse(response) {
             let className = response.classData.classDisplayTitle;
             $('#checkinMessage1').html(`${className}`);
             $('#checkinMessage1').addClass("text-success");
-            $('#checkinMessage2').removeClass("removed");
-            $('#checkinMessage3').removeClass("removed");
+            //$('#checkinMessage2').removeClass("removed");
+            //$('#checkinMessage3').removeClass("removed");
         }
     }
     catch (error) {
@@ -145,15 +176,51 @@ function resetCheckinScreen(response) {
 }
 
 // -------------------------------------------------------------------------------
-$("#btnStudentDialog").on("click", function(event) {
-    const selectedRank = $('#slctStudentBelt').val();
-    console.log(`btnStudentDialog: ${selectedRank} `);
+$("#btnSaveStudentRankDialog").on("click", function(event) {
+//    const badgeNumber    = $('#badgeNumber').val();
+//    const selectedRank   = $('#slctStudentBelt').val();
+//    const selectedStripe = $('#slctStudentStripe').val();
+//$('#hdnBadgeNumber').val
+    var now = new Date();
+    const badgeNumber        = $('#hdnBadgeNumber').val();
+    const selectedBeltId     = $("#slctStudentBelt").val();
+    const selectedStripeId   = $("#slctStudentStripe").val();
+    const selectedBeltName   = $("#slctStudentBelt option:selected").text();
+    const selectedStripeName = $("#slctStudentStripe option:selected").text();
+
+    const dataToSend = {
+        'badgeNumber'   : badgeNumber,
+        'beltId'        : selectedBeltId,
+        'beltTitle'     : selectedBeltName,
+        'stripeId'      : selectedStripeId,
+        'stripeTitle'   : selectedStripeName,
+        'studentName'   : null,
+        'promotionDate' : now.toLocaleString().replace(/,/g, '')
+    };
+
+    console.log(`btnSaveStudentRankDialog: ${selectedBeltId} `);
     event.preventDefault();
-//    $.post("/studentDialog", {"badgeNumber": badgeNumber}, function(response) {
-//        processCheckinResponse(response);
-//    });
+    $.ajax({
+      url: '/upd_student_rank',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(dataToSend),
+      dataType: 'text',
+      success: function(response) {
+        console.log("Success:", response);
+      },
+      error: function(xhr, status, error) {
+        console.error('Error:', error);
+      }
+    });
 
     $(".popup-overlay").hide();
     startDateTimerInterval();
 });
 
+$("#btnCancelStudentRankDialog").on("click", function(event) {
+    console.log(`btnCancelStudentRankDialog`);
+    event.preventDefault();
+    $(".popup-overlay").hide();
+    startDateTimerInterval();
+});

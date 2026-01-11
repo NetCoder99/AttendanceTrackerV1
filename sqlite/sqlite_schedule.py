@@ -117,7 +117,9 @@ def InsertNewClassStmt():
           allowedRanks, 
           classDisplayTitle, 
           allowedAges,
-          isPromotions
+          isPromotions,
+          classCheckinStart,
+          classCheckInFinis
         )
         VALUES (
           :className, 
@@ -130,7 +132,9 @@ def InsertNewClassStmt():
           :allowedRanks, 
           :classDisplayTitle, 
           :allowedAges,
-          :isPromotions
+          :isPromotions,
+          :classCheckinStart,
+          :classCheckInFinis
         )
     '''
 

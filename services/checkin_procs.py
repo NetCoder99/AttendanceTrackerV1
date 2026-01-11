@@ -1,44 +1,93 @@
+import json
 from datetime import datetime
 
+from sqlite.sqlite_attendance import insAttendanceRecordStmt
+from sqlite.sqlite_procs import UpdDataWithArgs
 from sqlite.sqlite_schedule import GetClassRecords
 from blueprints.students.sqlite_students import GetSqliteStudents
 
-def validateCheckin(data: any):
-    data['needsClassConfirmation'] = 'Y'
-    data['needsRankConfirmation']  = 'Y'
-    if data['badgeNumber'] is None or data['badgeNumber'] == '':
+def validateCheckin(receivedData: any):
+    receivedData['needsClassConfirmation'] = 'Y'
+    receivedData['needsRankConfirmation']  = 'Y'
+    if receivedData['badgeNumber'] is None or receivedData['badgeNumber'] == '':
         return {
             "message": "No badge number was entered!",
             "status" : "error",
             "class"  : "text-danger",
-            "received_data": data
+            "received_data": receivedData
         }
 
-    studentData = verifyBadgeNumber(data)
+    studentData = verifyBadgeNumber(receivedData)
     if studentData is None:
         return {
             "message": "No student found for that badge number!",
             "status": "error",
             "class": "text-danger",
-            "received_data": data
+            "received_data": receivedData
         }
 
+    if studentData['currentRankNum'] is not None:
+        receivedData['needsRankConfirmation'] = 'N'
+
     classData = verifyCheckinDateTime()
+
+    # check for already checked in for the day
+    
+    #save checkin record
+    checkinData = saveCheckinRecord(receivedData, studentData, classData)
+
     if classData is None:
         return {
             "message": "No classes are available for this time!",
             "status": "error",
             "class": "text-danger",
-            "received_data": data
+            "received_data": receivedData
+        }
+    else:
+        return {
+            "message": "Data received successfully!",
+            "status": "success",
+            "class": "text-success",
+            "received_data": receivedData,
+            "classData": classData,
         }
 
-    return {
-        "message": "Data received successfully!",
-        "status": "success",
-        "class": "text-success",
-        "received_data": data,
-        "classData": classData,
-    }
+def saveCheckinRecord(receivedData: dict, studentData: dict, classData: dict):
+    print(f'receivedData: {json.dumps(receivedData)}')
+    # print(f'studentData: {json.dumps(studentData)}')
+    print(f'classData: {json.dumps(classData)}')
+
+    try:
+        currentTime = datetime.now()
+        checkinDateTime = currentTime.strftime("%Y-%m-%d %H:%M:%S")
+        checkinDate     = currentTime.strftime("%m/%d/%Y")
+        checkinTime     = currentTime.strftime("%I:%M %p")
+
+        attendanceRecord = {
+            'badgeNumber'      : studentData['badgeNumber'],
+            'checkinDateTime'  : checkinDateTime,
+            'checkinDate'      : checkinDate,
+            'checkinTime'      : checkinTime,
+            'studentFirstName' : studentData['firstName'],
+            'studentLastName'  : studentData['lastName'],
+            'studentStatus'    : studentData['status'],
+            'studentRankNum'   : studentData['currentRankNum'],
+            'studentRankName'  : studentData['currentRankName'],
+            'studentStripeId'  : studentData['currentStripeId'],
+            'studentStripeName': studentData['currentStripeName'],
+            'classNum'         : classData['classNum'] if classData else None,
+            'className'        : None,
+            'classStartTime'   : classData['classStartTime'] if classData else None,
+            'styleNum'         : classData['styleNum'] if classData else None,
+            'appliesPromotion' : classData['isPromotions'] if classData else None,
+        }
+        insStmt = insAttendanceRecordStmt()
+        UpdDataWithArgs(insStmt, attendanceRecord)
+
+        return None
+    except Exception as ex:
+        print(f'saveCheckinRecord error: {ex.__str__()}')
+        return None
 
 def verifyBadgeNumber(data):
     studentRecords = GetSqliteStudents()
@@ -52,6 +101,7 @@ def verifyCheckinDateTime():
     classRecords    = GetClassRecords()
     currentDatetime = datetime.now()
     dayNumber       = currentDatetime.weekday() + 1
+    dayNumber       = 0 if dayNumber > 6 else dayNumber
     currentTime     = currentDatetime.time()
 
     classesByDay = [x for x in classRecords if str(x['classDayOfWeek']) == str(dayNumber)]

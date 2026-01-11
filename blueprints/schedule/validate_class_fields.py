@@ -100,7 +100,9 @@ def getSqlClassInsertDict(classData, vldStartTime, vldClassDuration, vldFinisTim
         'allowedRanks'   : getSelectedRanksAsString(classData),
         'classDisplayTitle' : getFieldValue(classData, 'inpClassName'),
         'allowedAges'       : getFieldValue(classData, 'inpAllowedAges'),
-        'isPromotions' : getFieldValue(classData, 'chkApplies')
+        'isPromotions'      : getFieldValue(classData, 'chkApplies'),
+        'classCheckinStart' : calculateCheckinTime(vldStartTime['value'], -15),
+        'classCheckInFinis' : calculateCheckinTime(vldFinisTime['value'], +15),
     }
 
 def getSqlClassUpdateDict(classData):
@@ -113,6 +115,10 @@ def getSqlClassUpdateDict(classData):
         # 'classStartTime' : vldStartTime['value'],
         # 'classFinisTime' : vldFinisTime['value'],
         # 'classDuration'  : vldClassDuration['value'],
+
+        #'classCheckinStart' : calculateCheckinTime(, -15),
+        #'classCheckInFinis' : calculateCheckinTime(, +15),
+
         'allowedRanks'   : getSelectedRanksAsString(classData),
         'classDisplayTitle' : getFieldValue(classData, 'inpClassName'),
         'allowedAges'       : getFieldValue(classData, 'inpAllowedAges'),
@@ -179,6 +185,13 @@ def calculateFinisTime(chkAmPm, vldStartTime, vldClassDuration):
     minutesToAdd    = timedelta(minutes=int(inpClassDuration))
     tempNewDateTime = tempDateTime + minutesToAdd
     return {'status': 'ok', 'message': 'Class duration was valid', 'value' : tempNewDateTime.strftime("%I:%M %p").lstrip('0')}
+
+# ---------------------------------------------------------------------------------------------------
+def calculateCheckinTime(inpClassTime: str, inpMinutesOffset: int):
+    # 3:00 PM
+    # 17.45
+    checkinTime = datetime.strptime(inpClassTime, "%I:%M %p") + timedelta(minutes=inpMinutesOffset)
+    return checkinTime.strftime("%H.%M")
 
 # ---------------------------------------------------------------------------------------------------
 def validate_time_format(time_string, time_format):

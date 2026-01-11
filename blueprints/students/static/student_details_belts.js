@@ -74,20 +74,6 @@ document.getElementById('studentBelt').addEventListener('change', function(event
     var rankNum = event.target.value;
     console.log("Belt selected value is: " + rankNum);
     updateStripeDropdown(rankNum);
-//    const dataToSend = {'rankNum':selectedValue};
-//    $.ajax({
-//      url: '/get_stripe_names',
-//      type: 'POST',
-//      contentType: 'application/json',
-//      data: JSON.stringify(dataToSend),
-//      dataType: 'text',
-//      success: function(response) {
-//        processSelectRankResponse(response);
-//      },
-//      error: function(xhr, status, error) {
-//        console.error('Error:', error);
-//      }
-//    });
 });
 
 function updateStripeDropdown(rankNum) {
