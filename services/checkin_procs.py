@@ -29,14 +29,14 @@ def validateCheckin(receivedData: any):
     if studentData['currentRankNum'] is not None:
         receivedData['needsRankConfirmation'] = 'N'
 
-    classData = verifyCheckinDateTime()
+    classData = verifyCheckinDateTime(studentData)
 
     # check for already checked in for the day
     
     #save checkin record
     checkinData = saveCheckinRecord(receivedData, studentData, classData)
 
-    if classData is None:
+    if classData or classData['classNum'] is None:
         return {
             "message": "No classes are available for this time!",
             "status": "error",
@@ -82,7 +82,7 @@ def saveCheckinRecord(receivedData: dict, studentData: dict, classData: dict):
             'appliesPromotion' : classData['isPromotions'] if classData else None,
         }
         insStmt = insAttendanceRecordStmt()
-        UpdDataWithArgs(insStmt, attendanceRecord)
+        checkin_results = UpdDataWithArgs(insStmt, attendanceRecord)
 
         return None
     except Exception as ex:
@@ -97,7 +97,7 @@ def verifyBadgeNumber(data):
     else:
         return None
 
-def verifyCheckinDateTime():
+def verifyCheckinDateTime(studentData):
     classRecords    = GetClassRecords()
     currentDatetime = datetime.now()
     dayNumber       = currentDatetime.weekday() + 1
@@ -116,33 +116,58 @@ def verifyCheckinDateTime():
             if (   classCheckinTimeStart <= currentTime <= classCheckinTimeFinis
                 or classTimeStart <= currentTime <= classTimeFinis):
                 return classRecord
-
-    return getClosestClasses(currentDatetime, classesByDay)
+    return getNoClassFoundRec(studentData)
+    # return getClosestClasses(currentDatetime, classesByDay)
     # return classesByDay[-1]
     # return None
 
-def getClosestClasses(currentDatetime: datetime, classesByDay: list[dict]):
-    if len(classesByDay) == 0:
-        return None
+def getNoClassFoundRec(studentData):
+    currentTime = datetime.now()
+    checkinDateTime = currentTime.strftime("%Y-%m-%d %H:%M:%S")
+    checkinDate = currentTime.strftime("%m/%d/%Y")
+    checkinTime = currentTime.strftime("%I:%M %p")
 
-    currentTime     = currentDatetime.time()
+    return {
+        'badgeNumber': studentData['badgeNumber'],
+        'checkinDateTime': checkinDateTime,
+        'checkinDate': checkinDate,
+        'checkinTime': checkinTime,
+        'studentFirstName': studentData['firstName'],
+        'studentLastName': studentData['lastName'],
+        'studentStatus': studentData['status'],
+        'studentRankNum': studentData['currentRankNum'],
+        'studentRankName': studentData['currentRankName'],
+        'studentStripeId': studentData['currentStripeId'],
+        'studentStripeName': studentData['currentStripeName'],
+        'classNum': None,
+        'className': None,
+        'classStartTime': None,
+        'styleNum': None,
+        'isPromotions': None,
+    }
 
-    firstClass = classesByDay[0]
-    firstCheckinTimeStart = datetime.strptime(firstClass['classCheckinStart'], "%H.%M").time()
-    firstCheckinTimeFinis = datetime.strptime(firstClass['classCheckInFinis'], "%H.%M").time()
-
-    lastClass = classesByDay[-1]
-    lastCheckinTimeStart = datetime.strptime(lastClass['classCheckinStart'], "%H.%M").time()
-    lastCheckinTimeFinis = datetime.strptime(lastClass['classCheckInFinis'], "%H.%M").time()
-
-    # if no classes before:
-    if currentTime <= firstCheckinTimeStart:
-        # classesByDay[0]['needsClassConfirmation'] = 'Y'
-        return classesByDay[0]
-
-    # if no classes after
-    if currentTime > lastCheckinTimeFinis:
-        # classesByDay[-1]['needsClassConfirmation'] = 'Y'
-        return classesByDay[-1]
-
-    #    return classesByDay[0]
+# def getClosestClasses(currentDatetime: datetime, classesByDay: list[dict]):
+#     if len(classesByDay) == 0:
+#         return None
+#
+#     currentTime     = currentDatetime.time()
+#
+#     firstClass = classesByDay[0]
+#     firstCheckinTimeStart = datetime.strptime(firstClass['classCheckinStart'], "%H.%M").time()
+#     firstCheckinTimeFinis = datetime.strptime(firstClass['classCheckInFinis'], "%H.%M").time()
+#
+#     lastClass = classesByDay[-1]
+#     lastCheckinTimeStart = datetime.strptime(lastClass['classCheckinStart'], "%H.%M").time()
+#     lastCheckinTimeFinis = datetime.strptime(lastClass['classCheckInFinis'], "%H.%M").time()
+#
+#     # if no classes before:
+#     if currentTime <= firstCheckinTimeStart:
+#         # classesByDay[0]['needsClassConfirmation'] = 'Y'
+#         return classesByDay[0]
+#
+#     # if no classes after
+#     if currentTime > lastCheckinTimeFinis:
+#         # classesByDay[-1]['needsClassConfirmation'] = 'Y'
+#         return classesByDay[-1]
+#
+#     #    return classesByDay[0]

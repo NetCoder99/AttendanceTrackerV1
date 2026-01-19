@@ -111,14 +111,6 @@ def getSqlClassUpdateDict(classData):
         'className'      : getFieldValue(classData, 'inpClassName'),
         'styleNum'       : getFieldValue(classData, 'slctStyleNum'),
         'styleName'      : getStyleName(getFieldValue(classData, 'slctStyleNum')),
-        # 'classDayOfWeek' : getFieldValue(classData, 'slctDayOfWeek'),
-        # 'classStartTime' : vldStartTime['value'],
-        # 'classFinisTime' : vldFinisTime['value'],
-        # 'classDuration'  : vldClassDuration['value'],
-
-        #'classCheckinStart' : calculateCheckinTime(, -15),
-        #'classCheckInFinis' : calculateCheckinTime(, +15),
-
         'allowedRanks'   : getSelectedRanksAsString(classData),
         'classDisplayTitle' : getFieldValue(classData, 'inpClassName'),
         'allowedAges'       : getFieldValue(classData, 'inpAllowedAges'),

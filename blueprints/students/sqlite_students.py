@@ -70,6 +70,58 @@ def GetStudentRecordsStmt():
             on s.currentRankNum = b.beltId
     '''
 
+def GetStudentRecordsStmtByBadge():
+    return '''
+        with cte_default_image as (
+          select a.imageId,
+                 a.imageName,
+                 a.imageType,
+                 a.imageBase64
+          from  assets a
+          where a.imageId = 428
+        )    
+        SELECT s.badgeNumber,
+               s.firstName,
+               s.lastName,
+               s.namePrefix,
+               s.email,
+               s.address,
+               s.address2,
+               s.city,
+               s.country,
+               s.state,
+               s.zip,
+               s.birthDate,
+               s.phoneHome,
+               s.phoneMobile,
+               s.status,
+               s.memberSince,
+               s.gender,
+               s.ethnicity,
+               s.middleName,
+               s.currentRankNum,
+               s.currentRankName,
+               s.currentStripeId,
+               s.currentStripeName,
+               b.beltTitle,
+               case when s.studentImageBase64 is not null
+                    then s.studentImageBase64 
+                    else (select imageBase64 from cte_default_image)
+               end as studentImageBase64,   
+               case when s.studentImageBase64 is not null
+                    then s.studentImageName 
+                    else (select imageName from cte_default_image)
+               end as studentImageName,   
+               case when s.studentImageBase64 is not null
+                    then s.studentImageType 
+                    else (select imageType from cte_default_image)
+               end as studentImageType   
+        from students  s
+        left join belts b
+            on s.currentRankNum = b.beltId
+        where  s.badgeNumber    = :badgeNumber    
+    '''
+
 # ------------------------------------------------------------------
 def UpdStudentRecord(studentRecord):
     try:
@@ -278,4 +330,23 @@ def GetMinRankClassCounts():
           on   s.rankNum = r.rankNum
         group  by s.rankNum
         order  by s.rankNum
+    '''
+
+def GetStudentAttendanceRecords():
+    return '''
+        select a.attendance_id,
+               a.checkinDateTime,
+               a.checkinDate,
+               a.checkinTime,
+               a.classNum,
+               a.className,
+               a.studentRankNum,
+               a.studentRankName,
+               a.appliesPromotion,
+               c.classDayOfWeek
+        from   attendance  a
+        left   join   classes     c
+          on   a.classNum    = c.classNum        
+        where  a.badgeNumber = :badgeNumber
+        order  by a.checkinDateTime desc
     '''

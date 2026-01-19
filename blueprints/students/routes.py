@@ -95,7 +95,7 @@ def student_promotions():
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
 
-@students_bp.route('/student_attendance')   # Focus here
+@students_bp.route('/student_attendance', methods=['GET', 'POST'])   # Focus here
 def student_attendance():
     try:
         badgeNumber = request.args['badgeNumber']
@@ -106,6 +106,25 @@ def student_attendance():
         return render_template('student_attendance.html', studentFields=student_record)
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
+
+@students_bp.route('/student_attendance_api', methods=['GET', 'POST'])   # Focus here
+def student_attendance_api():
+    try:
+        badgeNumber     = request.json['badgeNumber']
+        sqlQueryStudent = GetStudentRecordsStmtByBadge()
+        studentData     = GetDataWithArgs(sqlQueryStudent, {'badgeNumber' : badgeNumber})
+
+        sqlQueryAttendance = GetStudentAttendanceRecords()
+        attendanceData     = GetDataWithArgs(sqlQueryAttendance, {'badgeNumber' : badgeNumber})
+
+        rtnData = {
+            'studentData'    : studentData[0],
+            'attendanceData' : attendanceData
+        }
+        return rtnData
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
 
 @students_bp.route('/save_student_details_api', methods=['GET', 'POST'])
 def save_student_details_api():
@@ -171,3 +190,10 @@ def get_promotion_history():
     sqlQuery          = GetPromotionHistoryStmt()
     promotionHistory  = GetDataWithArgs(sqlQuery, request.json)
     return promotionHistory
+
+# @students_bp.route('/get_student_details', methods=['GET', 'POST'])
+# def get_student_details():
+#     print(f'Current route: get_student_details')
+#     sqlQuery          = GetPromotionHistoryStmt()
+#     promotionHistory  = GetDataWithArgs(sqlQuery, request.json)
+#     return promotionHistory

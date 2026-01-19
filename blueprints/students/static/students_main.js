@@ -33,6 +33,14 @@ $(document).ready(function() {
         InitializePromotionsScreen(badgeNumber);
     })
 
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    var studentAttendanceTabTrigger = document.querySelector('#tabStudentAttendance')
+    studentAttendanceTabTrigger.addEventListener('show.bs.tab', function (event) {
+        var activeTab = event.target;
+        const badgeNumber = $('#hdnBadgeNumber').val();
+        console.log(`studentAttendanceTabTrigger-badgeNumber: ${badgeNumber}`);
+        InitializeStudentAttendanceScreen(badgeNumber);
+    })
 })
 
 // -----------------------------------------------------------
