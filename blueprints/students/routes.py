@@ -8,6 +8,7 @@ from flask import Blueprint, render_template, request
 
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
 from services.barcodeGenerator import createBarcodeFile
+from services.battoDoGenerator import createBattoDoBadgePdf
 from services.list_procs import FormListToDict
 from blueprints.students.sqlite_students import *
 from services.pdfGenerator import createBadgePdf
@@ -145,6 +146,20 @@ def create_badge_api():
         studentData   = GetDataWithArgs(sqlQuery, {'badgeNumber' : badgeNumber})
         createBarcodeFile(badgeNumber)
         createBadgePdf(badgeNumber, studentData[0])
+        return {"status" : 'ok'}
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
+@students_bp.route('/create_batto_do_badge_api', methods=['GET', 'POST'])
+def create_batto_do_badge_api():
+    try:
+        print(f'Current route: create_batto_do_badge_api')
+        badgeNumber   = request.json['badgeNumber']
+        sqlQuery      = GetStudentRecordsStmtByBadge()
+        studentData   = GetDataWithArgs(sqlQuery, {'badgeNumber' : badgeNumber})
+        createBarcodeFile(badgeNumber)
+        createBattoDoBadgePdf(badgeNumber, studentData[0])
+        #createBadgePdf(badgeNumber, studentData[0])
         return {"status" : 'ok'}
     except Exception as ex:
         print(f'Error: {ex.__str__()}')

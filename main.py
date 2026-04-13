@@ -62,4 +62,4 @@ def page_not_found(e):
 if __name__ == '__main__':
     #ui = FlaskUI(app=app, width=1250, height=900, fullscreen=False, server='flask')
     #ui.run()
-    app.run(debug=False)
+    app.run(debug=False, port=5001)

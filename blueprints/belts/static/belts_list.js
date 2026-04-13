@@ -127,14 +127,20 @@ function getRankTable(rankData) {
           height: '50px',
           alt: rankData.rankName
     });
+
     $rankImage.addClass("float-start");
     const $rankHeader = (`<h4 class="d-inline-block fw-bold mt-2 ms-5">${rankData.rankName}</h4>`);
     const $lnkBtn = $(`<button id=btnRank${rankData.rankNum} class="btn btn-link float-end slctAddNewStripe"></button>`);
     $lnkBtn.text(`Add new ${rankData.rankName} stripe`)
     const $th1 = $(`<th colspan="3"></th>`);
+
     $th1.append($rankImage);
     $th1.append($rankHeader);
     $th1.append($lnkBtn);
+
+    const $promotionCount = (`<h4 class="d-inline-block fw-bold mt-2 ms-5">${rankData.rankName}</h4>`);
+
+
     $headerRow.append($th1);
 
 //    const $th2 = $(`<th id="td${rankData.rankName}" colspan="1" class=""></th>`);

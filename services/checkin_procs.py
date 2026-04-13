@@ -98,28 +98,32 @@ def verifyBadgeNumber(data):
         return None
 
 def verifyCheckinDateTime(studentData):
-    classRecords    = GetClassRecords()
-    currentDatetime = datetime.now()
-    dayNumber       = currentDatetime.weekday() + 1
-    dayNumber       = 0 if dayNumber > 6 else dayNumber
-    currentTime     = currentDatetime.time()
+    try:
+        classRecords    = GetClassRecords()
+        currentDatetime = datetime.now()
+        dayNumber       = currentDatetime.weekday() + 1
+        dayNumber       = 0 if dayNumber > 6 else dayNumber
+        currentTime     = currentDatetime.time()
 
-    classesByDay = [x for x in classRecords if str(x['classDayOfWeek']) == str(dayNumber)]
-    for classRecord in classesByDay:
-        if str(classRecord['classDayOfWeek']) == str(dayNumber):
-            classCheckinTimeStart = datetime.strptime(classRecord['classCheckinStart'], "%H.%M").time()
-            classCheckinTimeFinis = datetime.strptime(classRecord['classCheckInFinis'], "%H.%M").time()
+        classesByDay = [x for x in classRecords if str(x['classDayOfWeek']) == str(dayNumber)]
+        for classRecord in classesByDay:
+            if str(classRecord['classDayOfWeek']) == str(dayNumber):
+                classCheckinTimeStart = datetime.strptime(classRecord['classCheckinStart'], "%H.%M").time()
+                classCheckinTimeFinis = datetime.strptime(classRecord['classCheckInFinis'], "%H.%M").time()
 
-            classTimeStart = datetime.strptime(classRecord['classStartTime'], "%I:%M %p").time()
-            classTimeFinis = datetime.strptime(classRecord['classFinisTime'], "%I:%M %p").time()
+                classTimeStart = datetime.strptime(classRecord['classStartTime'], "%I:%M %p").time()
+                classTimeFinis = datetime.strptime(classRecord['classFinisTime'], "%I:%M %p").time()
 
-            if (   classCheckinTimeStart <= currentTime <= classCheckinTimeFinis
-                or classTimeStart <= currentTime <= classTimeFinis):
-                return classRecord
-    return getNoClassFoundRec(studentData)
-    # return getClosestClasses(currentDatetime, classesByDay)
-    # return classesByDay[-1]
-    # return None
+                if (   classCheckinTimeStart <= currentTime <= classCheckinTimeFinis
+                    or classTimeStart <= currentTime <= classTimeFinis):
+                    return classRecord
+        return getNoClassFoundRec(studentData)
+        # return getClosestClasses(currentDatetime, classesByDay)
+        # return classesByDay[-1]
+        # return None
+    except Exception as ex:
+        print(f'verifyCheckinDateTime error: {ex.__str__()}')
+        return None
 
 def getNoClassFoundRec(studentData):
     currentTime = datetime.now()

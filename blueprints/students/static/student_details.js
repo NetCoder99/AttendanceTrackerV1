@@ -76,11 +76,15 @@ $('#btnSaveStudentUpdate').off().on('click', function() {
     })
     .then(response    => response.json())
     .then(studentSaveResponse => ProcessSaveStudentResponse(studentSaveResponse))
-    .catch(error      => console.error('Error:', error));
+    .catch(error      => console.error('Error:', ProcessSaveStudentError(error)));
 });
 
+function ProcessSaveStudentError(studentSaveResponse) {
+    console.log(`ProcessSaveStudentError: ${JSON.stringify(studentSaveResponse)}`);
+};
+
 function ProcessSaveStudentResponse(studentSaveResponse) {
-    console.log(`DisplayStudentSaveResponse: ${JSON.stringify(studentSaveResponse.validationResults)}`);
+    console.log(`ProcessSaveStudentResponse: ${JSON.stringify(studentSaveResponse.validationResults)}`);
     const validationStudentResults = studentSaveResponse.validationResults;
 
     let errorMessage = "";

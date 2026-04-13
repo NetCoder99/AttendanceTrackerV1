@@ -9,39 +9,26 @@ from sqlite.sqlite_procs import GetDataNoArgs, GetDataWithArgs
 
 
 def validateStudentFieldsUpdate(classData):
-    validationResults = {}
+    try:
+        validationResults = {}
+        validationResults['frmFirstName'] = validateStudentFirstName(classData['frmFirstName'])
+        validationResults['frmLastName'] = validateStudentLastName(classData['frmLastName'])
+        validationResults['frmPhoneHome'] = validatePhoneNumberHome(classData['frmPhoneHome'])
+        validationResults['frmState'] = validateStudentState(classData['frmState'])
+        validationResults['frmZip'] = validateStudentZipCode(classData['frmZip'])
+        validationResults['frmBirthDate'] = validateStudentBirthDate(classData['frmBirthDate'])
+        validationResults['frmEmail'] = validateStudentEmail(classData['frmEmail'])
 
-    validationResults['frmFirstName'] = validateStudentFirstName(classData['frmFirstName'])
-    validationResults['frmLastName'] = validateStudentLastName(classData['frmLastName'])
-    validationResults['frmPhoneHome'] = validatePhoneNumberHome(classData['frmPhoneHome'])
-    validationResults['frmState'] = validateStudentState(classData['frmState'])
-    validationResults['frmZip'] = validateStudentZipCode(classData['frmZip'])
-    validationResults['frmBirthDate'] = validateStudentBirthDate(classData['frmBirthDate'])
-    validationResults['frmEmail'] = validateStudentEmail(classData['frmEmail'])
-
-    # '''
-    # 	Line  20:                                 <input id="selectStudentPicture" style="display:none;" type="file">
-    # 	Line  55:                                 <input id="frmFirstName"
-    # 	Line  65:                                 <input id="frmMiddleName"
-    # 	Line  76:                                 <input id="frmLastName"
-    # 	Line  88:                                 <input id="frmAddress"
-    # 	Line 100:                                 <input id="frmAddress2"
-    # 	Line 113:                                 <input id="frmCity"
-    # 	Line 126:                                 <input id="frmState"
-    # 	Line 136:                                 <input id="frmZip"
-    # 	Line 146:                                 <input id="frmBirthDate"
-    # 	Line 159:                                 <input id="frmPhoneHome"
-    # 	Line 169:                                 <input id="frmEmail"
-    # 	Line 193:                             <div id="divStudentMessages" class="fw-bold text-success">Awaiting input ...</div>
-    # '''
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    errCount = len({k: v for k, v in validationResults.items() if v['status'] == 'error'})
-    if errCount == 0:
-        validationResults['validationResults'] = {'status': 'ok', 'message': 'Class changes have been saved'}
-    else:
-        validationResults['validationResults'] = {'status': 'error', 'message': f'Validation error count : {errCount}'}
-    return validationResults
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        errCount = len({k: v for k, v in validationResults.items() if v['status'] == 'error'})
+        if errCount == 0:
+            validationResults['validationResults'] = {'status': 'ok', 'message': 'Class changes have been saved'}
+        else:
+            validationResults['validationResults'] = {'status': 'error', 'message': f'Validation error count : {errCount}'}
+        return validationResults
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+        return {'status': 'error', 'message': ex.__str__()}
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -87,10 +74,15 @@ def validateStudentState(frmState):
         return {'status': 'error', 'message': 'State code must be 2 characters'}
     frmState = frmState.upper()
     stateCodesStmt = GetStateCodesStmt()
+
     stateCodes = GetDataNoArgs(stateCodesStmt)
+    if not stateCodes:
+        return {'status': 'error', 'message': 'State code was not found'}
+
     foundEntry = [z for z in stateCodes if z['physicalState'] == frmState]
     if len(foundEntry) == 0:
         return {'status': 'error', 'message': 'State code was not found'}
+
     return {'status': 'ok', 'message': 'Student state code was valid'}
 
 # ---------------------------------------------------------------------------------------------------
@@ -102,6 +94,10 @@ def validateStudentZipCode(frmZip):
         return {'status': 'error', 'message': 'Student zip code must be 5 digits'}
     stateCodesStmt = GetZipCodesStmt()
     zipCodes = GetDataWithArgs(stateCodesStmt, {'physicalZip' : frmZip})
+
+    if not zipCodes:
+        return {'status': 'error', 'message': 'State code was not found'}
+
     if len(zipCodes) == 0:
         return {'status': 'error', 'message': 'Student zip code was not found'}
     return {'status': 'ok', 'message': 'Student zip code was valid'}

@@ -2,6 +2,7 @@ $(document).ready(function() {
     console.log("Students Badge ready");
 })
 
+// ------------------------------------------------------------------
 $('#btnCreateStudentBadge').off().on('click', function() {
     console.log("btnCreateStudentBadge was invoked");
     const badgeNumber = $('#hdnBadgeNumber').val();
@@ -25,5 +26,32 @@ $('#btnCreateStudentBadge').off().on('click', function() {
 
 function processCreateBadgeResponse() {
     console.log("processCreateBadgeResponse was invoked");
+
+}
+
+// ------------------------------------------------------------------
+$('#btnCreateStudentBadgeBattoDo').off().on('click', function() {
+    console.log("btnCreateStudentBadgeBattoDo was invoked");
+    const badgeNumber = $('#hdnBadgeNumber').val();
+    console.log(`btnCreateStudentBadge - badgeNumber: ${badgeNumber}`);
+    const dataToSend = {'badgeNumber':badgeNumber};
+    $.ajax({
+      url: '/create_batto_do_badge_api',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(dataToSend),
+      dataType: 'text',
+      success: function(response) {
+        processCreateBattaDoBadgeResponse(response);
+      },
+      error: function(xhr, status, error) {
+        console.error('Error:', error);
+      }
+    });
+
+})
+
+function processCreateBattaDoBadgeResponse() {
+    console.log("processCreateBattaDoBadgeResponse was invoked");
 
 }
