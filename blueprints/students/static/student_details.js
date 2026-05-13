@@ -5,7 +5,7 @@ $(document).ready(function() {
 
 // -----------------------------------------------------------
 function processStudentDetailsLoad(badgeNumber) {
-    console.log(`processPageLoad: ${badgeNumber}`);
+    console.log(`processStudentDetailsLoad: ${badgeNumber}`);
     if (badgeNumber) {
         $("#prgPageTitle").html(`Updating student record - ${badgeNumber}`);
         $('#tabStudentDetails').prop('disabled', false);

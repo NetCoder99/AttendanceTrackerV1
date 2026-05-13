@@ -4,7 +4,7 @@ import re
 
 import barcode
 from barcode.writer import ImageWriter
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
 from services.barcodeGenerator import createBarcodeFile
@@ -28,18 +28,18 @@ def students_bp_home():
     student_records = GetSqliteStudents()
     return render_template('students_main.html', student_records=student_records)
 
-@students_bp.route('/student_details', methods=['GET', 'POST'])   # Focus here
-def students_bp_details():
-    print(f'Current route: students_bp_details')
-    try:
-        badgeNumber     = request.json['badgeNumber']
-        student_records = GetSqliteStudents()
-        student_record  = [x for x in student_records if
-                          str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
-        student_record['headerMessage'] = 'Updating a student record.'
-        return render_template('student_details.html', studentFields=student_record)
-    except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+# @students_bp.route('/student_details', methods=['GET', 'POST'])   # Focus here
+# def students_bp_details():
+#     print(f'Current route: students_bp_details')
+#     try:
+#         badgeNumber     = request.json['badgeNumber']
+#         student_records = GetSqliteStudents()
+#         student_record  = [x for x in student_records if
+#                           str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
+#         student_record['headerMessage'] = 'Updating a student record.'
+#         return render_template('student_details.html', studentFields=student_record)
+#     except Exception as ex:
+#         print(f'Error: {ex.__str__()}')
 
 @students_bp.route('/student_list_api', methods=['GET', 'POST'])
 def student_list_api():

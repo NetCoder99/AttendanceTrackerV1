@@ -1,3 +1,17 @@
+.dt-search {
+    margin: 15px 0;
+    float: left;
+    text-align: left;
+}
+
+.dt-search input {
+    width: 30rem
+}
+.btn-new-student{
+    margin: 15px 0;
+    float: right;
+    text-align: right;
+}
 .my-custom-navbar {
   background-color: #ff5733; /* Example custom color */
   /* You can also add gradients or background images here */

@@ -1,25 +1,57 @@
 $(document).ready(function() {
     console.log("Student List Document ready");
+//    var studentListTable = $('#studentListTable').DataTable({
+//        dom: '<"toolbar">frtip',
+//        columnDefs: [{
+//                targets: '_all', // Target all columns
+//                className: 'dt-left' // Apply left alignment
+//        }],
+//        initComplete: function () {
+//            $('div.toolbar').html('<button id="btnNewStudent" class="btn btn-success btn-new-student">New Student</button>');
+//            $('#btnNewStudent').on('click', function() {
+//                alert('Button clicked!');
+//            });
+//        }
+//    });
+
+
     var studentListTable = $('#studentListTable').DataTable({
-        dom: 'Bfrtip',
-        buttons: [{
-                text: 'New Student',
-                className: 'btn btn-success',
-                action: function ( e, dt, node, config ) {
-                    alert('Custom button activated!');
+        dom: '<"toolbar">frtip',
+        initComplete: function () {
+            $('div.toolbar').html('<button id="btnNewStudent" class="btn btn-success btn-new-student">New Student</button>');
+            $('#btnNewStudent').on('click', function() {
+                alert('Button clicked!');
+            });
+        },
+        "ajax": {
+            "url": "student_list_api", // URL of your Python API
+            "type": "GET",
+            "dataSrc": ""   // Property in the JSON response
+        },
+        "columns": [
+            {
+                data: 'studentImageBase64',
+                render: function(data, type, row, meta) {
+                    // Combine prefix with base64 data from API
+                    return '<img src="data:image/jpeg;base64,' + data + '" height="50" width="auto" />';
                 }
-        }],
-        columnDefs: [{
-                targets: '_all', // Target all columns
-                className: 'dt-left' // Apply left alignment
-        }]
+            },
+            { "data": "badgeNumber" },
+            {
+                data: null,
+                render: function(data, type, row, meta) {
+                    return row.firstName + ' ' + row.lastName;
+                }
+            },
+            { "data": "currentRankName" },
+        ]
     });
 
     $('#studentListTable tbody').on('click', 'tr', function() {
         console.log(`student row was clicked`);
         var rowData = studentListTable.row(this).data();
-        $("#hdnBadgeNumber").val(rowData[1]);
-        processStudentEditClick(rowData[1]);
+        $("#hdnBadgeNumber").val(rowData['badgeNumber']);
+        processStudentEditClick(rowData['badgeNumber']);
     });
 })
 
@@ -47,5 +79,6 @@ function InitializeStudentsList() {
 
 function DisplayStudentRecords(studentRecords) {
     console.log(`DisplayStudentRecords was invoked: ${studentRecords.length}`);
-
+    var table = $('#studentListTable').DataTable();
+    table.ajax.reload();
 }
