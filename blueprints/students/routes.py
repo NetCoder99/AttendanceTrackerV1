@@ -1,9 +1,4 @@
 import json
-import os
-import re
-
-import barcode
-from barcode.writer import ImageWriter
 from flask import Blueprint, render_template, request, jsonify
 
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
@@ -12,7 +7,7 @@ from services.battoDoGenerator import createBattoDoBadgePdf
 from services.list_procs import FormListToDict
 from blueprints.students.sqlite_students import *
 from services.pdfGenerator import createBadgePdf
-from sqlite.sqlite_procs import GetDataWithArgs, UpdDataWithArgs
+from sqlite.sqlite_procs import GetDataWithArgs, UpdDataWithArgs, GetDataNoArgs
 
 # Defining a blueprint
 students_bp = Blueprint(
@@ -41,6 +36,16 @@ def students_bp_home():
 #     except Exception as ex:
 #         print(f'Error: {ex.__str__()}')
 
+@students_bp.route('/student_create', methods=['GET', 'POST'])
+def student_create():
+    print(f'Current route: student_create')
+    try:
+        imageData   = GetDataWithArgs(GetDefaultImageStmt(), {'imageName' : 'RSM_Logo2.webp'})[0]
+        student_record = {'':''}
+        return render_template('student_create.html', studentFields=student_record)
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
 @students_bp.route('/student_list_api', methods=['GET', 'POST'])
 def student_list_api():
     print(f'Current route: student_list_api')
@@ -58,6 +63,15 @@ def students_details_api():
         student_records = GetSqliteStudents()
         student_record  = [x for x in student_records if
                           str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
+        return json.dumps(student_record)
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
+@students_bp.route('/student_create_api', methods=['GET', 'POST'])
+def student_create_api():
+    print(f'Current route: student_create_api')
+    try:
+        student_record  = GetDataNoArgs(GetDefaultStudentDataStmt())[0]
         return json.dumps(student_record)
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
@@ -130,11 +144,16 @@ def student_attendance_api():
 @students_bp.route('/save_student_details_api', methods=['GET', 'POST'])
 def save_student_details_api():
     print(f'Current route: save_student_details_api')
-    #data_bytes = request.data
     form_dict  = FormListToDict(request.json)
     validation_results = validateStudentFieldsUpdate(form_dict)
     if validation_results['validationResults']['status'] == 'ok':
-        UpdStudentRecord(form_dict)
+        badgeNumber     = form_dict['badgeNumber']
+        sqlQueryStudent = GetStudentRecordsStmtByBadge()
+        studentData     = GetDataWithArgs(sqlQueryStudent, {'badgeNumber' : badgeNumber})
+        if len(studentData) == 0:
+            InsStudentRecord(form_dict)
+        else:
+            UpdStudentRecord(form_dict)
     return validation_results
 
 @students_bp.route('/create_badge_api', methods=['GET', 'POST'])

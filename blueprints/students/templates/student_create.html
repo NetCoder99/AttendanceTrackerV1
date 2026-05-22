@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Student related functions
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="static/students.css">
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+{% endblock %}
+
+{% block content %}
+      {% include 'student_details.html' %}
+<script type="application/javascript" src="{{ url_for('students_bp.static',filename='students_main.js') }}"></script>
+<script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details.js') }}"></script>
+<script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details_image.js') }}"></script>
+<script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details_badge.js') }}"></script>
+{% endblock %}

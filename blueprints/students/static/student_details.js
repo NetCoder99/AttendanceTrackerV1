@@ -1,5 +1,9 @@
 $(document).ready(function() {
     console.log("Student Details Document ready");
+    if (window.location.pathname == '/student_create') {
+        console.log(`pathname: ${window.location.pathname}`);
+        InitializeStudentDetailsFormEmpty();
+    }
     $( "#frmBirthDate" ).datepicker();
 })
 
@@ -23,6 +27,35 @@ function processStudentDetailsLoad(badgeNumber) {
 
 function InitializeStudentDetailsFormEmpty() {
     console.log("InitializeStudentDetailsFormEmpty");
+    fetch('/student_create_api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(studentData => DisplayNewStudentData(studentData))
+    .catch(error => console.error('Error:', error));
+}
+
+function DisplayNewStudentData(studentData) {
+    console.log(`DisplayNewStudentData: ${JSON.stringify(studentData)}`);
+    const imageDataStr = `data:image/${studentData.studentImageType};base64,${studentData.studentImageBase64}`;
+    $("#studentImageTmp").attr("src", imageDataStr);
+    $("#studentImageName").html(studentData.studentImageName);
+    $('#hdnBadgeNumber').val(studentData.badgeNumber);
+    $('#prgPageTitle').html(`Creating new student record - ${studentData.badgeNumber}`);
+
+//    $('#frmFirstName').val(studentData.firstName);
+//    $('#frmLastName').val(studentData.lastName);
+//    $('#frmAddress').val(studentData.address);
+//    $('#frmAddress2').val(studentData.address2);
+//    $('#frmCity').val(studentData.city);
+//    $('#frmState').val(studentData.state);
+//    $('#frmZip').val(studentData.zip);
+//    $('#frmBirthDate').val(studentData.birthDate);
+//    $('#frmPhoneHome').val(studentData.phoneHome);
+//    $('#frmEmail').val(studentData.email);
 }
 
 function InitializeStudentDetailsFormBadge(badgeNumber) {

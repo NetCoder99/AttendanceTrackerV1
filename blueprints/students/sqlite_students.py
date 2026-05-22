@@ -123,6 +123,51 @@ def GetStudentRecordsStmtByBadge():
     '''
 
 # ------------------------------------------------------------------
+def InsStudentRecord(studentRecord):
+    try:
+        db_path = getDbPath()
+        dbObj = sqlite3.connect(db_path)
+        dbObj.row_factory = DictFactory
+        cursor = dbObj.cursor()
+        cursor.execute(InsStudentRecordStmt(), studentRecord)
+        dbObj.commit()
+        rows = cursor.fetchall()
+        dbObj.close()
+        return rows
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+def InsStudentRecordStmt():
+    return '''
+        insert into students (
+          badgeNumber,
+          firstName,
+          lastName,
+          address,
+          address2,
+          city,
+          state,
+          zip,
+          birthDate,
+          phoneHome,
+          email
+        )
+        values (
+          :badgeNumber,
+          :frmFirstName,
+          :frmLastName,
+          :frmAddress,
+          :frmAddress2,
+          :frmCity,
+          :frmState,
+          :frmZip,
+          :frmBirthDate,
+          :frmPhoneHome,
+          :frmEmail
+        )  
+    '''
+
+# ------------------------------------------------------------------
 def UpdStudentRecord(studentRecord):
     try:
         db_path = getDbPath()
@@ -199,45 +244,62 @@ def GetPromotionHistoryStmt():
         where  p.badgeNumber = :badgeNumber
         order  by p.promotionId desc;
     '''
-# '''
-# 'frmFirstName' = {str} 'Daffy'
-# 'frmLastName' = {str} 'Duck'
-# 'frmAddress' = {str} '100 Looney Lane'
-# 'frmAddress2' = {str} ''
-# 'frmCity' = {str} 'Cartoon Town'
-# 'frmState' = {str} ''
-# 'frmZip' = {str} ''
-# 'frmBirthDate' = {str} '06/02/2025'
-# 'frmPhoneHome' = {str} ''
-# 'frmEmail' = {str} ''
-# 'badgeNumber' = {str} '100'
-# __len__ = {int} 11
-#        firstName = 'firstName',
-#        lastName = 'lastName',
-#        namePrefix = 'namePrefix',
-#        email = 'email',
-#        address = 'address',
-#        address2 = 'address2',
-#        city = 'city',
-#        country = 'country',
-#        state = 'state',
-#        zip = 'zip',
-#        birthDate = 'birthDate',
-#        phoneHome = 'phoneHome',
-#        phoneMobile = 'phoneMobile',
-#        status = 'status',
-#        memberSince = 'memberSince',
-#        gender = 'gender',
-#        currentRank = 'currentRank',
-#        ethnicity = 'ethnicity',
-#        studentImageBytes = 'studentImageBytes',
-#        studentImagePath = 'studentImagePath',
-#        studentImageBase64 = 'studentImageBase64',
-#        middleName = 'middleName',
-#        studentImageName = 'studentImageName',
-#        studentImageType = 'studentImageType',
-#        currentRankName = 'currentRankName'
-#        '''
+
+def GetDefaultImageStmt():
+    return f'''
+        select imageId,
+               imageName,
+               imageBase64,
+               imageBytes,
+               imageType,
+               createDateTime,
+               updateDateTime
+        from   assets
+        where  imageName = :imageName
+    '''
+
+def GetDefaultStudentDataStmt():
+    return f'''
+        with cte_default_image as (
+          select a.imageId,
+                 a.imageName,
+                 a.imageType,
+                 a.imageBase64
+          from  assets a
+          where a.imageId = 428
+        )   
+        select max(badgeNumber) + 10 as badgeNumber,
+          ''  as firstName,
+          ''  as lastName,
+          ''  as namePrefix,
+          ''  as email,
+          ''  as address,
+          ''  as address2,
+          ''  as city,
+          ''  as country,
+          ''  as state,
+          ''  as zip,
+          ''  as birthDate,
+          ''  as phoneHome,
+          ''  as phoneMobile,
+          ''  as status,
+          ''  as memberSince,
+          ''  as gender,
+          ''  as ethnicity,
+          null as studentImageBytes,
+          ''  as studentImagePath,
+          (select imageBase64 from cte_default_image)  as studentImageBase64,
+          ''  as middleName,
+          (select imageName from cte_default_image)  as studentImageName,
+          (select imageType from cte_default_image)  as studentImageType,
+          0   as currentRankNum,
+          ''  as currentRankName,
+          0   as currentStripeId,
+          ''  as currentStripeName,
+          ''  as createDateTime
+        from  students     
+    '''
+
 # ------------------------------------------------------------------
 def UpdStudentPicture(pictureDetails, updateDict):
     db_path = getDbPath()
@@ -257,7 +319,7 @@ def UpdStudentPictureStmt():
         where  badgeNumber = :badgeNumber
     '''
 
-def GetStudentRecordsStmtByBadge():
+def GetDefatulStudentRecord():
     return '''
         with cte_default_image as (
           select a.imageId,

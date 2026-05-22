@@ -15,12 +15,13 @@ $(document).ready(function() {
 //    });
 
 
+    DataTable.type('num', 'className', 'dt-body-left');
     var studentListTable = $('#studentListTable').DataTable({
         dom: '<"toolbar">frtip',
         initComplete: function () {
             $('div.toolbar').html('<button id="btnNewStudent" class="btn btn-success btn-new-student">New Student</button>');
             $('#btnNewStudent').on('click', function() {
-                alert('Button clicked!');
+                window.location.replace("/student_create");
             });
         },
         "ajax": {

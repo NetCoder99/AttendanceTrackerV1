@@ -2,45 +2,53 @@ $(document).ready(function() {
     console.log("Student Main Document ready");
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    var studentSearchTabTrigger = document.querySelector('#tabStudentSearch')
-    studentSearchTabTrigger.addEventListener('show.bs.tab', function (event) {
-        //const badgeNumber = activeTab.setAttribute('data-badge-number', '');
-        //console.log(`studentSearchTabTrigger badgeNumber: ${badgeNumber}`);
-        console.log(`studentSearchTabTrigger`);
-        var activeTab = event.target;
-        $("#hdnBadgeNumber").val('');
-        $('#tabStudentDetails').prop('disabled', true);
-        $('#tabStudentPromotions').prop('disabled', true);
-        $('#tabStudentAttendance').prop('disabled', true);
-        InitializeStudentsList();
-    })
+    if (document.querySelector("#tabStudentSearch")) {
+        var studentSearchTabTrigger = document.querySelector('#tabStudentSearch')
+        studentSearchTabTrigger.addEventListener('show.bs.tab', function (event) {
+            //const badgeNumber = activeTab.setAttribute('data-badge-number', '');
+            //console.log(`studentSearchTabTrigger badgeNumber: ${badgeNumber}`);
+            console.log(`studentSearchTabTrigger`);
+            var activeTab = event.target;
+            $("#hdnBadgeNumber").val('');
+            $('#tabStudentDetails').prop('disabled', true);
+            $('#tabStudentPromotions').prop('disabled', true);
+            $('#tabStudentAttendance').prop('disabled', true);
+            InitializeStudentsList();
+        })
+    }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    var studentDetailsTabTrigger = document.querySelector('#tabStudentDetails')
-    studentDetailsTabTrigger.addEventListener('show.bs.tab', function (event) {
-        var activeTab = event.target;
-        const badgeNumber = $('#hdnBadgeNumber').val();
-        //console.log(`studentDetailsTabTrigger-badgeNumber: ${badgeNumber}`);
-        processStudentDetailsLoad(badgeNumber);
-    })
+    if (document.querySelector("#tabStudentDetails")) {
+        var studentDetailsTabTrigger = document.querySelector('#tabStudentDetails')
+            studentDetailsTabTrigger.addEventListener('show.bs.tab', function (event) {
+                var activeTab = event.target;
+                const badgeNumber = $('#hdnBadgeNumber').val();
+                //console.log(`studentDetailsTabTrigger-badgeNumber: ${badgeNumber}`);
+                processStudentDetailsLoad(badgeNumber);
+        })
+    }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    var studentPromotionsTabTrigger = document.querySelector('#tabStudentPromotions')
-    studentPromotionsTabTrigger.addEventListener('show.bs.tab', function (event) {
-        var activeTab = event.target;
-        const badgeNumber = $('#hdnBadgeNumber').val();
-        console.log(`studentPromotionsTabTrigger-badgeNumber: ${badgeNumber}`);
-        InitializePromotionsScreen(badgeNumber);
-    })
+    if (document.querySelector("#tabStudentPromotions")) {
+        var studentPromotionsTabTrigger = document.querySelector('#tabStudentPromotions')
+        studentPromotionsTabTrigger.addEventListener('show.bs.tab', function (event) {
+            var activeTab = event.target;
+            const badgeNumber = $('#hdnBadgeNumber').val();
+            console.log(`studentPromotionsTabTrigger-badgeNumber: ${badgeNumber}`);
+            InitializePromotionsScreen(badgeNumber);
+        })
+    }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    var studentAttendanceTabTrigger = document.querySelector('#tabStudentAttendance')
-    studentAttendanceTabTrigger.addEventListener('show.bs.tab', function (event) {
-        var activeTab = event.target;
-        const badgeNumber = $('#hdnBadgeNumber').val();
-        console.log(`studentAttendanceTabTrigger-badgeNumber: ${badgeNumber}`);
-        InitializeStudentAttendanceScreen(badgeNumber);
-    })
+    if (document.querySelector("#tabStudentAttendance")) {
+        var studentAttendanceTabTrigger = document.querySelector('#tabStudentAttendance')
+        studentAttendanceTabTrigger.addEventListener('show.bs.tab', function (event) {
+            var activeTab = event.target;
+            const badgeNumber = $('#hdnBadgeNumber').val();
+            console.log(`studentAttendanceTabTrigger-badgeNumber: ${badgeNumber}`);
+            InitializeStudentAttendanceScreen(badgeNumber);
+        })
+    }
 })
 
 // -----------------------------------------------------------
