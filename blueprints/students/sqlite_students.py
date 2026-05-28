@@ -371,12 +371,12 @@ def GetDefatulStudentRecord():
 def GetStripeNamesByRank():
     return '''
         select s.rankNum, 
-               r.rankName,
+               r.beltTitle,
                s.stripeId,
                s.stripeName
         from   stripes  s
-        join   ranks    r
-          on   s.rankNum = r.rankNum
+        join   belts    r
+          on   s.rankNum = r.beltId
         where  s.rankNum = :rankNum
         order  by s.rankNum, s.seqNum
     '''

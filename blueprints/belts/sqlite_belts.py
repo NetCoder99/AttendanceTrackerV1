@@ -16,16 +16,14 @@ def GetRanksRecords():
     return rows
 def GetRanksRecordsStmt():
     return '''
-        select r.rankNum,
-               r.rankName,
-               r.styleNum,
-               r.styleName,
-               r.imageSource,
-               s.styleName
-        from ranks  r
-        left join styles s
-          on r.styleNum = s.styleNum
-        order by r.rankNum
+        select b.beltId     as rankNum,
+               b.beltTitle  as rankName,
+               s.styleNum,
+               s.styleName,
+               b.imageSource
+        from   belts b
+        left   join styles s
+          on   b.styleNum = s.styleNum
     '''
 # ------------------------------------------------------------------
 def GetBeltsRecords():
@@ -59,27 +57,31 @@ def GetStripeRecords(searchData):
     return rows
 def GetStripeRecordsStmt():
     return '''
+        with cte_classCount as (
+          select 5 as rankClassCount 
+        )
         select s.stripeId,
                s.stripeName,
                s.rankNum,
                s.seqNum,
-               r.rankClassCount,
-               s.seqNum *  r.rankClassCount as stripeClassCount,
-               r.rankName,
+               c.rankClassCount,
+               s.seqNum *  c.rankClassCount as stripeClassCount,
+               r.beltTitle,
                (
                  select max(s1.seqNum)
                  from   stripes  s1
-                 where  s1.rankNum = r.rankNum
+                 where  s1.rankNum = r.beltId
                ) as maxSeqNum,
                case when                (
                  select max(s1.seqNum)
                  from   stripes  s1
-                 where  s1.rankNum = r.rankNum
+                 where  s1.rankNum = r.beltId
                ) = s.seqNum 
                then true else false end as lastStripeFlag
         from   stripes  s
-        join   ranks    r
-          on   s.rankNum = r.rankNum
+        join   belts    r
+          on   s.rankNum = r.beltId
+        join   cte_classCount c  
         where  s.rankNum = :rankNum
         order  by s.seqNum;
     '''
