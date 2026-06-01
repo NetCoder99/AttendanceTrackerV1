@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}
+Class management functions
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+{% endblock %}
+
+{% block content %}
+<h2>Requirements Manager</h2>
+
+<div id="divRequirementsList" style="" class="px-5 border rounded w-100 mx-auto">
+    <table id="requirementsListTable" class="table cell-border">
+        <thead>
+            <tr>
+                <th style="text-align: left;">Id</th>
+                <th style="text-align: left;">Belt Name</th>
+                <th style="text-align: left;">Stripe Name</th>
+                <th style="text-align: left;">Class Count</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script type="application/javascript" src="{{ url_for('requirements_bp.static',filename='requirements_list.js') }}"></script>
+
+{% endblock %}
