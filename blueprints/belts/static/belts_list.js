@@ -123,20 +123,55 @@ function getRankTable(rankData) {
     const $headerRow = $('<tr></tr>');
     const $rankImage = $('<img />', {
           id:  `rankImage${rankData.rankNum}`,
-          src: `static/images/belt_images/${rankData.imageSource}`,
+          src: `static/images/${rankData.imageSource}`,
           height: '50px',
           alt: rankData.rankName
     });
 
     $rankImage.addClass("float-start");
+
     const $rankHeader = (`<h4 class="d-inline-block fw-bold mt-2 ms-5">${rankData.rankName}</h4>`);
-    const $lnkBtn = $(`<button id=btnRank${rankData.rankNum} class="btn btn-link float-end slctAddNewStripe"></button>`);
-    $lnkBtn.text(`Add new ${rankData.rankName} stripe`)
+
+    const rankStripesLbl = document.createElement('label');
+    rankStripesLbl.textContent = 'Max Stripes:';
+    rankStripesLbl.className = 'form-label d-inline-block ms-2';
+    const rankStripes = document.createElement('input');
+    rankStripes.type = 'numeric';
+    rankStripes.placeholder = '6';
+    rankStripes.style.width = '60px';
+    rankStripes.className = 'form-control d-inline-block mb-1 ms-3';
+    rankStripes.defaultValue = rankData.stripeCount;
+
+    const rankCountLbl = document.createElement('label');
+    rankCountLbl.textContent = 'Classes:';
+    rankCountLbl.className = 'form-label d-inline-block ms-4';
+    const rankCount = document.createElement('input');
+    rankCount.type = 'numeric';
+    rankCount.placeholder = '6';
+    rankCount.style.width = '60px';
+    rankCount.className = 'form-control d-inline-block mb-1 ms-3';
+    rankCount.defaultValue = rankData.classCount;
+
+    const rankSaveBtn = document.createElement('button');
+    rankSaveBtn.innerText  = 'Save';
+    rankSaveBtn.className = 'btn btn-success d-inline-block mb-1 ms-3';
+    rankSaveBtn.disabled = true;
+
+    const rankNewStripeBtn = document.createElement('button');
+    rankNewStripeBtn.innerText  = 'Add New Stripe';
+    rankNewStripeBtn.className = 'btn btn-success d-inline-block mt-3 float-end';
+    rankNewStripeBtn.disabled = true;
+
     const $th1 = $(`<th colspan="3"></th>`);
 
     $th1.append($rankImage);
     $th1.append($rankHeader);
-    $th1.append($lnkBtn);
+    $th1.append(rankStripesLbl);
+    $th1.append(rankStripes);
+    $th1.append(rankCountLbl);
+    $th1.append(rankCount);
+    $th1.append(rankSaveBtn);
+    $th1.append(rankNewStripeBtn);
 
     const $promotionCount = (`<h4 class="d-inline-block fw-bold mt-2 ms-5">${rankData.rankName}</h4>`);
 
@@ -175,10 +210,10 @@ function buildStripesRows($tableObj, stripeData) {
     console.log(`buildStripesRows: ${JSON.stringify(stripeData)}`);
     const tbody = $('<tbody></tbody');
     for (let i = 0; i < stripeData.length; i++) {
-        const trId = `#inpStripe${stripeData[i].rankNum}_${stripeData[i].stripeId}`;
+        const trId = `#inpStripe${stripeData[i].RankNumId}_${stripeData[i].RankNumId}`;
 
-        const tr = $(`<tr id=#inpStripe${stripeData[i].rankNum}_${stripeData[i].stripeId}></tr>`);
-        console.log(`processing stripeEntry: ${stripeData[i].stripeId, stripeData[i].stripeName}`)
+        const tr = $(`<tr id=#inpStripe${stripeData[i].RankNumId}_${stripeData[i].RankNumId}></tr>`);
+        //console.log(`processing stripeEntry: ${stripeData[i].stripeId, stripeData[i].stripeName}`)
         const td1 = $('<td></td>');
         td1.append(GetStripeNameInputBox(stripeData[i]));
         tr.append(td1);
@@ -186,10 +221,11 @@ function buildStripesRows($tableObj, stripeData) {
         td2.append(GetStripeClassCount(stripeData[i]));
         tr.append(td2);
         const td3 = $('<td></td>');
-        td3.append($(`<img id=delIcon_${stripeData[i].rankNum}_${stripeData[i].stripeId} src="static/images/icons/trash.svg" style="cursor:pointer;" title="Save" class="ms-2 del-icon">`));
-        if (!stripeData[i].lastStripeFlag) {
-            td3.find('img').addClass('hidden');
-        }
+//        td3.append($(`<img id=delIcon_${stripeData[i].rankNum}_${stripeData[i].stripeId} src="static/images/icons/trash.svg" style="cursor:pointer;" title="Save" class="ms-2 del-icon">`));
+//        td3.find('img').addClass('hidden');
+//        if (!stripeData[i].lastStripeFlag) {
+//            td3.find('img').addClass('hidden');
+//        }
         tr.append(td3);
         tbody.append(tr);
     }
@@ -198,21 +234,21 @@ function buildStripesRows($tableObj, stripeData) {
 
 function GetStripeNameInputBox(stripeData) {
     const rtnInput = $(`<input type="text"
-              id=inpStripe${stripeData.rankNum}_${stripeData.seqNum}
-              name=inpStripe${stripeData.rankNum}_${stripeData.seqNum}
+              id=inpStripe${stripeData.RankNumId}
+              name=inpStripe${stripeData.RankNumId}
               disabled
     />`)
-    rtnInput.val(stripeData.stripeName);
+    rtnInput.val(stripeData.StripeName);
     return rtnInput;
 }
 function GetStripeClassCount(stripeData) {
     const rtnInput = $(`<input type="text"
-          id=inpClassCount${stripeData.rankNum}_${stripeData.seqNum}
-          name=inpClassCount${stripeData.rankNum}_${stripeData.seqNum}
+          id=inpClassCount${stripeData.RankNumId}
+          name=inpClassCount${stripeData.RankNumId}
           style="width: 50px;"
           disabled
     />`)
-    rtnInput.val(stripeData.stripeClassCount);
+    rtnInput.val(stripeData.TotalRequiredClasses);
     return rtnInput;
 }
 function GetFunctionsRow(stripeData) {

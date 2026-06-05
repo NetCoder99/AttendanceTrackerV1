@@ -20,7 +20,9 @@ def GetRanksRecordsStmt():
                b.beltTitle  as rankName,
                s.styleNum,
                s.styleName,
-               b.imageSource
+               b.imageSource,
+               b.classCount,
+               b.stripeCount 
         from   belts b
         left   join styles s
           on   b.styleNum = s.styleNum
@@ -51,40 +53,49 @@ def GetStripeRecords(searchData):
     dbObj = sqlite3.connect(db_path)
     dbObj.row_factory = DictFactory
     cursor = dbObj.cursor()
-    cursor.execute(GetStripeRecordsStmt(), searchData)
+    cursor.execute(GetStripeRecordsStmt(searchData))
     rows = cursor.fetchall()
     dbObj.close()
     return rows
-def GetStripeRecordsStmt():
-    return '''
-        with cte_classCount as (
-          select 5 as rankClassCount 
-        )
-        select s.stripeId,
-               s.stripeName,
-               s.rankNum,
-               s.seqNum,
-               c.rankClassCount,
-               s.seqNum *  c.rankClassCount as stripeClassCount,
-               r.beltTitle,
-               (
-                 select max(s1.seqNum)
-                 from   stripes  s1
-                 where  s1.rankNum = r.beltId
-               ) as maxSeqNum,
-               case when                (
-                 select max(s1.seqNum)
-                 from   stripes  s1
-                 where  s1.rankNum = r.beltId
-               ) = s.seqNum 
-               then true else false end as lastStripeFlag
-        from   stripes  s
-        join   belts    r
-          on   s.rankNum = r.beltId
-        join   cte_classCount c  
-        where  s.rankNum = :rankNum
-        order  by s.seqNum;
+def GetStripeRecordsStmt(searchData):
+    return f'''
+        select r.RankNumId,
+               r.RankName,
+               trim(replace(replace(r.RankName, substr(r.RankName, 1, instr(r.RankName, ' ') - 1), ''), 'Belt', '')) AS StripeName,
+               r.TotalRequiredClasses
+        from   ranks  r
+        where  r.beltId = cast({searchData['rankNum']} as integer)
     '''
+
+
+#
+# with cte_classCount as (
+#   select 5 as rankClassCount
+# )
+# select s.stripeId,
+#        s.stripeName,
+#        s.rankNum,
+#        s.seqNum,
+#        c.rankClassCount,
+#        s.seqNum *  c.rankClassCount as stripeClassCount,
+#        r.beltTitle,
+#        (
+#          select max(s1.seqNum)
+#          from   stripes  s1
+#          where  s1.rankNum = r.beltId
+#        ) as maxSeqNum,
+#        case when                (
+#          select max(s1.seqNum)
+#          from   stripes  s1
+#          where  s1.rankNum = r.beltId
+#        ) = s.seqNum
+#        then true else false end as lastStripeFlag
+# from   stripes  s
+# join   belts    r
+#   on   s.rankNum = r.beltId
+# join   cte_classCount c
+# where  s.rankNum = :rankNum
+# order  by s.seqNum;
 
 # ------------------------------------------------------------------
 def GetNextStripeName(searchData):

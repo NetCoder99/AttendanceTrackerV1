@@ -33,6 +33,9 @@ def GetRequirementsListStmt():
           on r.beltId = b.beltId
         order  by r.beltId, r.stripeId      
     '''
+
+def GenerateRequirementsRecords():
+    belts = ''
 # # ----------------------------------------------------------------------------
 # def GetDataNoArgs(queryStmt):
 #     try:
