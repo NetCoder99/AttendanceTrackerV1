@@ -206,8 +206,10 @@ def UpdatePromotionsRankStmt():
            beltTitle,
            stripeId,
            stripeTitle,
-           studentName,
-           promotionDate
+           studentFirstName,
+           studentLastName,
+           promotionDate,
+           comments
         )
         VALUES (
            :badgeNumber,
@@ -215,8 +217,10 @@ def UpdatePromotionsRankStmt():
            :beltTitle,
            :stripeId,
            :stripeTitle,
-           :studentName,
-           :promotionDate
+           :studentFirstName,
+           :studentLastName,
+           :promotionDate,
+           :comments
         );
     '''
 

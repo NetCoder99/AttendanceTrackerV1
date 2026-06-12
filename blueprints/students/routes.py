@@ -1,6 +1,10 @@
 import json
+from dateutil.parser import parse, ParserError
+from datetime import date, datetime
+
 from flask import Blueprint, render_template, request, jsonify
 
+import constants
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
 from services.barcodeGenerator import createBarcodeFile
 from services.battoDoGenerator import createBattoDoBadgePdf
@@ -193,6 +197,7 @@ def get_stripe_names():
 @students_bp.route('/upd_student_rank', methods=['GET', 'POST'])
 def upd_student_rank():
     print(f'Current route: upd_student_rank')
+    studentData       = GetDataWithArgs(GetStudentRecordsStmtByBadge(), {'badgeNumber': request.json['badgeNumber']})
     sqlGetQuery       = GetPromotionHistoryStmt()
     promotionHistory  = GetDataWithArgs(sqlGetQuery, request.json)
     updPromotionQuery = UpdatePromotionsRankStmt()
@@ -205,9 +210,18 @@ def upd_student_rank():
         'badgeNumber'       : request.json['badgeNumber']
     }
 
+    # adjust the date to consistent format
+    promotionDate    = parse(request.json['promotionDate'], fuzzy=False)
+    promotionDateStr = datetime.strftime(promotionDate, constants.fmtDateTime)
+    request.json['promotionDate'] = promotionDateStr
+
+    request.json['studentFirstName'] = studentData[0]['firstName']
+    request.json['studentLastName']  = studentData[0]['lastName']
+    request.json['comments']         = 'Promotion'
+
     if len(promotionHistory) == 0:
         updateCounts1 = UpdDataWithArgs(updPromotionQuery, request.json)
-        updateCounts2 = UpdDataWithArgs(updStudentQuery, updStudentDict)
+        #updateCounts2 = UpdDataWithArgs(updStudentQuery, updStudentDict)
         return {'status': 'ok', 'badgeNumber': request.json['badgeNumber'], 'lastRowId': updateCounts1['lastrowid'], 'rowCount': updateCounts1['rowcount']}
     else:
         lastUpdate = promotionHistory[0]
@@ -215,7 +229,7 @@ def upd_student_rank():
             return {'status': 'error', 'badgeNumber': request.json['badgeNumber'], 'message' : 'Current promotion matches last promotion!'}
         else:
             updateCounts  = UpdDataWithArgs(updPromotionQuery, request.json)
-            updateCounts2 = UpdDataWithArgs(updStudentQuery, updStudentDict)
+            #updateCounts2 = UpdDataWithArgs(updStudentQuery, updStudentDict)
             return {'status': 'ok', 'badgeNumber': request.json['badgeNumber'], 'lastRowId': updateCounts['lastrowid'], 'rowCount': updateCounts['rowcount']}
 
 @students_bp.route('/get_promotion_history', methods=['GET', 'POST'])
