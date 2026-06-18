@@ -5,7 +5,7 @@
 
 import os
 import sys
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Blueprint
 from flaskwebgui import FlaskUI
 
 from blueprints.belts.routes import belts_bp
@@ -13,7 +13,7 @@ from blueprints.schedule.routes import schedule_bp
 from blueprints.students.routes import students_bp
 from blueprints.requirements.routes import requirements_bp
 from services.checkin_procs import validateCheckin
-
+#students_bp = Blueprint("students", __name__, template_folder='templates')
 # ----------------------------------------------------------------------------------
 base_dir = '.'
 if hasattr(sys, '_MEIPASS'):
@@ -29,21 +29,17 @@ app.register_blueprint(requirements_bp)
 # ----------------------------------------------------------------------------------
 @app.route('/')
 def index():
-    checkinMessage = {
-        "imageSrc" : "static/images/misc_images/RSM_Logo1.jpg",
-        "message"  : "Waiting ...",
-        "responseClass" : "fw-bold border-bottom error"}
-    return render_template('index.html', checkinMessage=checkinMessage)
+    return redirect(url_for('students_bp.students_bp_home'))
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('students.html')
 
-@app.route('/checkin', methods=['POST'])
-def checkin():
-    if request.method == 'POST':
-        data = request.form.to_dict()
-        return jsonify(validateCheckin(request.form.to_dict()))
+# @app.route('/checkin', methods=['POST'])
+# def checkin():
+#     if request.method == 'POST':
+#         data = request.form.to_dict()
+#         return jsonify(validateCheckin(request.form.to_dict()))
 
 @app.errorhandler(404)
 @app.errorhandler(500)

@@ -37,17 +37,14 @@ function processGetPromotionsResponse(response) {
     promotionHistory = JSON.parse(response);
     const tbodyStudentPromotions = $('#tblStudentPromotions tbody');
     tbodyStudentPromotions.empty();
-    setBeltSelectionDropdowns(promotionHistory);
+    //setBeltSelectionDropdowns(promotionHistory);
     for (let i = 0; i < promotionHistory.length; i++) {
-
         const inpPromotionDate = document.createElement('input');
         inpPromotionDate.type = 'date';
         inpPromotionDate.id = 'dynamic-date';
         inpPromotionDate.name = 'appointment-date';
-
         const tdPromotionDate = document.createElement('td')
         tdPromotionDate.appendChild(inpPromotionDate);
-
         var newRow = `<tr>
                           <td>${promotionHistory[i].beltTitle}</td>
                           <td>${promotionHistory[i].stripeTitle}</td>
@@ -56,9 +53,7 @@ function processGetPromotionsResponse(response) {
                           </td>
                       </tr>`;
         tbodyStudentPromotions.append(newRow);
-        //console.log(promotionHistory[i]);
     }
-
 }
 
 function setBeltSelectionDropdowns(promotionHistory) {
@@ -197,12 +192,12 @@ function displayCurrentRankAndStripe(badgeNumber) {
 
 function setCurrentRankAndStripeDropdowns(promotionHistory) {
     const promotionHistoryList = JSON.parse(promotionHistory);
-    console.log(`displayCurrentRankAndStripe was invoked: ${promotionHistoryList}`);
+    console.log(`setCurrentRankAndStripeDropdowns was invoked: ${promotionHistoryList}`);
     const textToFind = promotionHistoryList[0].stripeTitle;
     const dropdown = document.getElementById('studentBeltStripes');
 //    // Find the index where the option text matches exactly
     const targetIndex = [...dropdown.options].findIndex(option => option.text === textToFind);
-    console.log(`displayCurrentRankAndStripe:targetIndex: ${targetIndex}`);
+    console.log(`setCurrentRankAndStripeDropdowns:targetIndex: ${targetIndex}`);
 //    // Set the dropdown to that index if found
 //    if (targetIndex !== -1) {
 //      dropdown.selectedIndex = targetIndex;
