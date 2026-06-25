@@ -13,7 +13,16 @@ Class management functions
 {% endblock %}
 
 {% block content %}
-<h2>Ranks / Belts Manager</h2>
+<h2>
+    <span>Ranks / Belts Manager</span>
+    <a  id="btnPrintBeltsPDF"
+        name="btnPrintBeltsPDF"
+        class="small float-end align-self-end me-2 mt-3"
+        href="#"
+        style="font-size: 1.00rem; color: white">
+    Print
+    </a>
+</h2>
 <!--<h5 style="background-color: orange;" class="p-2 text-center fw-bold">Under Construction</h5>-->
 <div id="ranks-table-container"></div>
 <script type="application/javascript" src="{{ url_for('belts_bp.static',filename='belts_list.js') }}"> </script>

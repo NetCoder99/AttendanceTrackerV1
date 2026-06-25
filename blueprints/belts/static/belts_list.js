@@ -118,13 +118,13 @@ function getRankTable(rankData) {
     console.log(`getRankTable: ${rankData.rankNum}`);
     const $tableObj = $('<table></table');
     $tableObj.attr('id', `ranksTable${rankData.rankNum}`);
-    $tableObj.addClass("table table-bordered table-striped w-75 mx-auto")
+    $tableObj.addClass("table table-bordered table-striped w-100 mx-auto")
     const $tableHead = $('<thead></thead');
     const $headerRow = $('<tr></tr>');
     const $rankImage = $('<img />', {
           id:  `rankImage${rankData.rankNum}`,
           src: `static/images/${rankData.imageSource}`,
-          height: '50px',
+          height: '75px',
           alt: rankData.rankName
     });
 
@@ -141,6 +141,7 @@ function getRankTable(rankData) {
     rankStripes.style.width = '60px';
     rankStripes.className = 'form-control d-inline-block mb-1 ms-3';
     rankStripes.defaultValue = rankData.stripeCount;
+    rankStripes.disabled = true;
 
     const rankCountLbl = document.createElement('label');
     rankCountLbl.textContent = 'Classes:';
@@ -151,6 +152,7 @@ function getRankTable(rankData) {
     rankCount.style.width = '60px';
     rankCount.className = 'form-control d-inline-block mb-1 ms-3';
     rankCount.defaultValue = rankData.classCount;
+    rankCount.disabled = true;
 
     const rankSaveBtn = document.createElement('button');
     rankSaveBtn.innerText  = 'Save';
@@ -269,3 +271,20 @@ function GetNewStripeCell(rankData) {
     return td3;
 }
 
+// ------------------------------------------------------------------
+$('#btnPrintBeltsPDF').off().on('click', function() {
+    console.log("btnPrintBeltsPDF was invoked");
+    $.ajax({
+      url: '/print_belt_api',
+      type: 'POST',
+      contentType: 'application/json',
+      data: null,
+      dataType: 'text',
+      success: function(response) {
+        processCreateBadgeResponse(response);
+      },
+      error: function(xhr, status, error) {
+        console.error('Error:', error);
+      }
+    });
+})

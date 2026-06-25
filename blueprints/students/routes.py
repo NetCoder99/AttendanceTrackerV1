@@ -104,6 +104,7 @@ def save_student_picture():
 
 @students_bp.route('/student_promotions')   # Focus here
 def student_promotions():
+    print(f'Current route: student_promotions')
     try:
         badgeNumber = request.args['badgeNumber']
         student_records = GetSqliteStudents()

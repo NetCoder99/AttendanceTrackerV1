@@ -21,7 +21,6 @@ $('#btnCreateStudentBadge').off().on('click', function() {
         console.error('Error:', error);
       }
     });
-
 })
 
 function processCreateBadgeResponse() {

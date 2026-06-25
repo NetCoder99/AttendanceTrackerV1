@@ -3,6 +3,7 @@ import copy
 
 from flask import Blueprint, render_template, request, jsonify
 
+from blueprints.belts.print_belts import createBeltsPdf
 from blueprints.belts.sqlite_belts import *
 
 belts_bp = Blueprint(
@@ -58,3 +59,27 @@ def delStripe_api():
     #print(f'searchData: {json.dumps(searchData)}')
     return {"data": ""}
 
+
+@belts_bp.route('/print_belt_api', methods=['GET', 'POST'])
+def print_belt_api():
+    try:
+
+#         '''
+# select b.beltTitle,
+#        r.stripeTitle,
+#        r.*
+# from   requirements  r
+# join   belts b
+#   on   r.beltId = b.beltId
+# order  by beltId
+#         '''
+
+        print(f'Current route: print_belt_api')
+        # badgeNumber   = request.json['badgeNumber']
+        # sqlQuery      = GetStudentRecordsStmtByBadge()
+        # studentData   = GetDataWithArgs(sqlQuery, {'badgeNumber' : badgeNumber})
+        # createBarcodeFile(badgeNumber)
+        createBeltsPdf()
+        return {"status" : 'ok'}
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')

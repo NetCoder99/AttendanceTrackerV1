@@ -199,6 +199,7 @@ function setCurrentRankAndStripeDropdowns(promotionHistory) {
     const targetIndex = [...dropdown.options].findIndex(option => option.text === textToFind);
     console.log(`setCurrentRankAndStripeDropdowns:targetIndex: ${targetIndex}`);
 //    // Set the dropdown to that index if found
-//    if (targetIndex !== -1) {
-//      dropdown.selectedIndex = targetIndex;
+    if (targetIndex !== -1) {
+      dropdown.selectedIndex = targetIndex;
+    }
 }
