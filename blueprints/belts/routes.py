@@ -64,15 +64,15 @@ def delStripe_api():
 def print_belt_api():
     try:
 
-#         '''
-# select b.beltTitle,
-#        r.stripeTitle,
-#        r.*
-# from   requirements  r
-# join   belts b
-#   on   r.beltId = b.beltId
-# order  by beltId
-#         '''
+        '''
+select b.beltTitle,
+       r.stripeTitle,
+       r.*
+from   requirements  r
+join   belts b
+  on   r.beltId = b.beltId
+order  by beltId
+        '''
 
         print(f'Current route: print_belt_api')
         # badgeNumber   = request.json['badgeNumber']

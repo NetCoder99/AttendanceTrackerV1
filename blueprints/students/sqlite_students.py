@@ -45,6 +45,7 @@ def GetStudentRecordsStmt():
                s.phoneMobile,
                s.status,
                s.memberSince,
+               s.memberSinceDate,
                s.gender,
                s.ethnicity,
                s.middleName,
@@ -53,6 +54,7 @@ def GetStudentRecordsStmt():
                s.currentStripeId,
                s.currentStripeName,
                b.beltTitle,
+               s.createDateTime,
                case when s.studentImageBase64 is not null
                     then s.studentImageBase64 
                     else (select imageBase64 from cte_default_image)

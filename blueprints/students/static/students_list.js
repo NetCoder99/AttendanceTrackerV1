@@ -1,20 +1,5 @@
 $(document).ready(function() {
     console.log("Student List Document ready");
-//    var studentListTable = $('#studentListTable').DataTable({
-//        dom: '<"toolbar">frtip',
-//        columnDefs: [{
-//                targets: '_all', // Target all columns
-//                className: 'dt-left' // Apply left alignment
-//        }],
-//        initComplete: function () {
-//            $('div.toolbar').html('<button id="btnNewStudent" class="btn btn-success btn-new-student">New Student</button>');
-//            $('#btnNewStudent').on('click', function() {
-//                alert('Button clicked!');
-//            });
-//        }
-//    });
-
-
     DataTable.type('num', 'className', 'dt-body-left');
     var studentListTable = $('#studentListTable').DataTable({
         dom: '<"toolbar">frtip',
@@ -45,6 +30,22 @@ $(document).ready(function() {
                 }
             },
             { "data": "currentRankName" },
+            { "data": "memberSinceDate",
+                className: 'dt-left',
+                render: function (data, type, row) {
+                    if (!data) return '';
+                    if (type === 'display') {
+                        const date = new Date(data);
+                        return date.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        }); // Returns MM/DD/YYYY
+                    }
+                    return data;
+                }
+            },
+
         ]
     });
 
