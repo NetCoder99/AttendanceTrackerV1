@@ -73,7 +73,8 @@ function InitializeStudentDetailsFormBadge(badgeNumber) {
 }
 
 function DisplayStudentData(studentData) {
-    console.log(`DisplayStudentData: ${JSON.stringify(studentData)}`);
+    //console.log(`DisplayStudentData: ${JSON.stringify(studentData)}`);
+    console.log(`DisplayStudentData: ${studentData.badgeNumber}`);
     const imageDataStr = `data:image/${studentData.studentImageType};base64,${studentData.studentImageBase64}`;
     $("#studentImageTmp").attr("src", imageDataStr);
     $("#studentImageName").html(studentData.studentImageName);

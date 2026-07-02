@@ -6,6 +6,7 @@
 import os
 import sys
 from flask import Flask, render_template, request, jsonify, redirect, url_for, Blueprint
+from flask_htmx import HTMX
 from flaskwebgui import FlaskUI
 
 from blueprints.belts.routes import belts_bp
@@ -25,6 +26,8 @@ app.register_blueprint(students_bp)
 app.register_blueprint(schedule_bp)
 app.register_blueprint(belts_bp)
 app.register_blueprint(requirements_bp)
+
+htmx = HTMX(app)
 
 # ----------------------------------------------------------------------------------
 @app.route('/')
@@ -58,6 +61,6 @@ def page_not_found(e):
 
 # Run the application
 if __name__ == '__main__':
-    #ui = FlaskUI(app=app, width=1250, height=900, fullscreen=False, server='flask')
-    #ui.run()
-    app.run(debug=False, port=5001)
+    ui = FlaskUI(app=app, width=1250, height=900, fullscreen=False, server='flask')
+    ui.run()
+    #app.run(debug=False, port=5001)

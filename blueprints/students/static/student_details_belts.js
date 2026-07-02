@@ -12,9 +12,8 @@ function InitializePromotionsScreen() {
     $('#lblPromotionSaveResponse').html("Awaiting input ...");
     $('#lblPromotionSaveResponse').addClass('text-success');
 
-    const promotionDate = $('#studentPromotionDate');
-    const displayToday  = getDisplayableDate();
-    $('#studentPromotionDate').value = getDisplayableDate();
+    const promotionDate = document.getElementById('studentPromotionDate');
+    promotionDate.valueAsDate = new Date()
     displayStudentDetails(badgeNumber);
 
     //displayPromotionHistory(badgeNumber);
@@ -22,6 +21,10 @@ function InitializePromotionsScreen() {
 }
 
 function displayStudentDetails(badgeNumber) {
+    // get stripes relevant to the student
+
+
+
     console.log(`displayStudentDetails:${badgeNumber} `);
     const dataToSend  = {'badgeNumber' : badgeNumber};
     $.ajax({
@@ -40,8 +43,9 @@ function displayStudentDetails(badgeNumber) {
 }
 
 function processStudentPromotionDetails(student_details) {
-    console.log(`processStudentPromotionDetails:${student_details}`);
+    //console.log(`processStudentPromotionDetails:${student_details}`);
     student_details_json = JSON.parse(student_details);
+
     const hdrStudentPromotionTitle     = document.getElementById('hdrStudentPromotionTitle');
     hdrStudentPromotionTitle.innerText = `Updating promotion details for - ${student_details_json.firstName} ${student_details_json.lastName}`;
 
@@ -49,23 +53,47 @@ function processStudentPromotionDetails(student_details) {
     const studentBeltStripes   = document.getElementById('studentBeltStripes');
     const studentPromotionDate = document.getElementById('studentPromotionDate');
 
+    // check if the student has a rank, if not set to white with no stripes
+    if (!student_details_json.currentRankNum || (typeof student_details_json.currentRankNum === 'string' && student_details_json.currentRankNum.trim() === '')) {
+        studentBeltNames.selectedIndex = 0;
+        studentBeltStripes.selectedIndex = 0;
+    } else {
+        const beltTargetIndex = [...studentBeltNames.options].findIndex(option => option.text === student_details_json.currentRankName);
+        studentBeltNames.selectedIndex = beltTargetIndex;
+        console.log(`updating stripes dropdown for :${student_details_json.currentRankNum}`);
+        // Trigger a POST request to your Python server manually
+        htmx.ajax('POST', '/getStripes_htmx', {
+            target: '#studentBeltStripes', // Element where the returned HTML goes
+            swap: 'innerHTML',          // How to insert the HTML snippet
+            values: { rankNum: student_details_json.currentRankNum } // Data passed to Python backend
+        })
+        .then(function() {
+            console.log(`stripes dropdown was updated for :${student_details_json.currentRankNum}`);
+            const stripeTargetIndex = [...studentBeltStripes.options].find(option => option.value === student_details_json.currentStripeId).index;
+            studentBeltStripes.selectedIndex = stripeTargetIndex;
+        });
+
+
+        //studentBeltStripes.selectedIndex = 0;
+    }
+
 //    console.log(`processStudentPromotionDetails: setting default values`);
 //    studentBeltNames.selectedIndex = 0;
 //    studentBeltStripes.selectedIndex = 0;
 //    studentPromotionDate.valueAsDate = new Date();
 
-    // Find the index where the option text matches exactly
-    const targetIndex = [...studentBeltNames.options].findIndex(option => option.text === student_details_json.currentRankName);
-    if (targetIndex !== -1) {
-      studentBeltNames.selectedIndex = targetIndex;
-    } else {
-        console.log(`processStudentPromotionDetails: setting default values`);
-        studentBeltNames.selectedIndex = 0;
-        studentBeltStripes.selectedIndex = 0;
-        studentPromotionDate.valueAsDate = new Date();
-    }
-
-
+//    // Find the index where the option text matches exactly
+//    const targetIndex = [...studentBeltNames.options].findIndex(option => option.text === student_details_json.currentRankName);
+//    if (targetIndex !== -1) {
+//      studentBeltNames.selectedIndex = targetIndex;
+//    } else {
+//        console.log(`processStudentPromotionDetails: setting default values`);
+//        studentBeltNames.selectedIndex = 0;
+//        studentBeltStripes.selectedIndex = 0;
+//        studentPromotionDate.valueAsDate = new Date();
+//    }
+//
+//
 
 }
 

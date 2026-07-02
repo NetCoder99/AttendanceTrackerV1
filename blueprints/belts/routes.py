@@ -2,9 +2,11 @@ import json
 import copy
 
 from flask import Blueprint, render_template, request, jsonify
+from flask_htmx import htmx
 
 from blueprints.belts.print_belts import createBeltsPdf
 from blueprints.belts.sqlite_belts import *
+from sqlite.sqlite_procs import GetDataWithArgs
 
 belts_bp = Blueprint(
     'belts_bp', __name__,
@@ -12,6 +14,18 @@ belts_bp = Blueprint(
     static_folder='static',
     static_url_path='/belts_bp_static'
 )
+
+@belts_bp.route('/getStripes_htmx', methods=['POST', 'GET'])
+def getStripes_htmx():
+    selectStripesStmt = GetStripesForRankStmt()
+    if len(request.args) > 0:
+        currentRankNum = request.args['studentBeltNames']
+    else:
+        currentRankNum = request.values['rankNum']
+
+    stripeRecords = GetDataWithArgs(selectStripesStmt, {'rankNum': currentRankNum})
+    return render_template('stripes_list.html', stripeRecords=stripeRecords)
+
 
 @belts_bp.route('/belts')
 def schedule_bp_home():
@@ -33,6 +47,11 @@ def getStripesList_api():
     searchData = request.json
     beltsRecords = GetStripeRecords(searchData)
     return jsonify({"data": beltsRecords})
+
+
+
+
+
 
 @belts_bp.route('/addNextStripe_api', methods=['POST', 'GET'])
 def addNextStripe_api():

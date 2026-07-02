@@ -68,6 +68,22 @@ def GetStripeRecordsStmt(searchData):
     '''
 
 
+def GetStripesForRankStmt():
+    return f'''
+        select
+            s.stripeName,
+            s.rankNum,
+            s.stripeId,
+            s.classCount,
+            s.seqNum,
+            s.createDateTime,
+            s.updateDateTime
+        from   stripes   s
+        where  s.rankNum = :rankNum
+        order  by s.seqNum 
+    '''
+
+
 #
 # with cte_classCount as (
 #   select 5 as rankClassCount

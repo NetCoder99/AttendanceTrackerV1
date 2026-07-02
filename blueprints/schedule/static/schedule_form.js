@@ -236,7 +236,7 @@ function displayClassDetails(classModal, classDetails) {
     isPromotionsFlag = classDetails.isPromotions == 'on' ? true : false
     classModal.find("#chkApplies").prop("checked", isPromotionsFlag);
 
-    $('input[name="chkAmPm"]').prop('disabled', true);
+    //$('input[name="chkAmPm"]').prop('disabled', true);
 }
 
 //{

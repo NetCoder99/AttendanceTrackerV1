@@ -5,6 +5,7 @@ from datetime import date, datetime
 from flask import Blueprint, render_template, request, jsonify
 
 import constants
+from blueprints.belts.sqlite_belts import GetBeltsRecords, GetStripeRecords
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
 from services.barcodeGenerator import createBarcodeFile
 from services.battoDoGenerator import createBattoDoBadgePdf
@@ -102,18 +103,22 @@ def save_student_picture():
         print(f'Error: {ex.__str__()}')
         return json.dumps({"error" : ex.__str__()})
 
-@students_bp.route('/student_promotions')   # Focus here
-def student_promotions():
-    print(f'Current route: student_promotions')
-    try:
-        badgeNumber = request.args['badgeNumber']
-        student_records = GetSqliteStudents()
-        student_record = [x for x in student_records if
-                          str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
-        student_record['headerMessage'] = 'Reviewing student promotions.'
-        return render_template('student_promotions.html', studentFields=student_record)
-    except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+# @students_bp.route('/student_promotions')   # Focus here
+# def student_promotions():
+#     print(f'Current route: student_promotions')
+#     try:
+#         badgeNumber     = request.args['badgeNumber']
+#         studentData     = GetDataWithArgs(GetStudentRecordsStmtByBadge(), {'badgeNumber': request.args['badgeNumber']})
+#         belt_records    = GetBeltsRecords()
+#
+#         stripe_records  = GetStripeRecords({'rankNum': '1'})
+#         #student_record['headerMessage'] = 'Reviewing student promotions.'
+#
+#         return render_template('student_promotions.html', studentFields=studentData)
+#
+#
+#     except Exception as ex:
+#         print(f'Error: {ex.__str__()}')
 
 @students_bp.route('/student_attendance', methods=['GET', 'POST'])   # Focus here
 def student_attendance():
