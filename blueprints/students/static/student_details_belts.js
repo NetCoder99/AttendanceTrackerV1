@@ -2,6 +2,7 @@ $(document).ready(function() {
     console.log("Students Details Belts ready");
 })
 
+//--------------------------------------------------------------------------
 function InitializePromotionsScreen() {
     console.log('InitializePromotionsScreen');
     const badgeNumber = $('#hdnBadgeNumber').val();
@@ -10,8 +11,72 @@ function InitializePromotionsScreen() {
     $('#lblPromotionSaveResponse').removeClass('text-danger');
     $('#lblPromotionSaveResponse').html("Awaiting input ...");
     $('#lblPromotionSaveResponse').addClass('text-success');
-    displayPromotionHistory(badgeNumber);
-    displayCurrentRankAndStripe(badgeNumber);
+
+    const promotionDate = $('#studentPromotionDate');
+    const displayToday  = getDisplayableDate();
+    $('#studentPromotionDate').value = getDisplayableDate();
+    displayStudentDetails(badgeNumber);
+
+    //displayPromotionHistory(badgeNumber);
+    //displayCurrentRankAndStripe(badgeNumber);
+}
+
+function displayStudentDetails(badgeNumber) {
+    console.log(`displayStudentDetails:${badgeNumber} `);
+    const dataToSend  = {'badgeNumber' : badgeNumber};
+    $.ajax({
+      url: '/get_student_details',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(dataToSend),
+      dataType: 'text',
+      success: function(response) {
+        processStudentPromotionDetails(response);
+      },
+      error: function(xhr, status, error) {
+        console.error('Error:', error);
+      }
+    });
+}
+
+function processStudentPromotionDetails(student_details) {
+    console.log(`processStudentPromotionDetails:${student_details}`);
+    student_details_json = JSON.parse(student_details);
+    const hdrStudentPromotionTitle     = document.getElementById('hdrStudentPromotionTitle');
+    hdrStudentPromotionTitle.innerText = `Updating promotion details for - ${student_details_json.firstName} ${student_details_json.lastName}`;
+
+    const studentBeltNames     = document.getElementById('studentBeltNames');
+    const studentBeltStripes   = document.getElementById('studentBeltStripes');
+    const studentPromotionDate = document.getElementById('studentPromotionDate');
+
+//    console.log(`processStudentPromotionDetails: setting default values`);
+//    studentBeltNames.selectedIndex = 0;
+//    studentBeltStripes.selectedIndex = 0;
+//    studentPromotionDate.valueAsDate = new Date();
+
+    // Find the index where the option text matches exactly
+    const targetIndex = [...studentBeltNames.options].findIndex(option => option.text === student_details_json.currentRankName);
+    if (targetIndex !== -1) {
+      studentBeltNames.selectedIndex = targetIndex;
+    } else {
+        console.log(`processStudentPromotionDetails: setting default values`);
+        studentBeltNames.selectedIndex = 0;
+        studentBeltStripes.selectedIndex = 0;
+        studentPromotionDate.valueAsDate = new Date();
+    }
+
+
+
+}
+
+//--------------------------------------------------------------------------
+
+function getDisplayableDate() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
 }
 
 function displayPromotionHistory(badgeNumber) {
@@ -79,12 +144,12 @@ function setBeltSelectionDropdowns(promotionHistory) {
 }
 
 
-// ----------------------------------------------------------------------------------
-document.getElementById('studentBelt').addEventListener('change', function(event) {
-    var rankNum = event.target.value;
-    console.log("Belt selected value is: " + rankNum);
-    updateStripeDropdownForRankChange(rankNum);
-});
+//// ----------------------------------------------------------------------------------
+//document.getElementById('studentBelt').addEventListener('change', function(event) {
+//    var rankNum = event.target.value;
+//    console.log("Belt selected value is: " + rankNum);
+//    updateStripeDropdownForRankChange(rankNum);
+//});
 
 function updateStripeDropdownForRankChange(rankNum) {
     console.log("updateStripeDropdownForRankChange: " + rankNum);
@@ -117,58 +182,6 @@ function processSelectRankResponse(stripeNameRecords) {
     }
 }
 
-// ----------------------------------------------------------------------------------
-$('#btnPromotionSave').click(function(event) {
-    console.log(`btnPromotionSave`);
-    event.preventDefault();
-
-    var now = new Date();
-    const badgeNumber        = $('#hdnBadgeNumber').val();
-    const selectedBeltId     = $("#studentBelt").val();
-    const selectedStripeId   = $("#studentBeltStripes").val();
-    const selectedBeltName   = $("#studentBelt option:selected").text();
-    const selectedStripeName = $("#studentBeltStripes option:selected").text();
-
-    const dataToSend = {
-        'badgeNumber'   : badgeNumber,
-        'beltId'        : selectedBeltId,
-        'beltTitle'     : selectedBeltName,
-        'stripeId'      : selectedStripeId,
-        'stripeTitle'   : selectedStripeName,
-        'studentName'   : null,
-        'promotionDate' : now.toLocaleString().replace(/,/g, '')
-    };
-    console.log(`btnPromotionSave, ${selectedBeltId} : ${selectedStripeId}`);
-    $.ajax({
-      url: '/upd_student_rank',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(dataToSend),
-      dataType: 'text',
-      success: function(response) {
-        processSaveRankResponse(response);
-      },
-      error: function(xhr, status, error) {
-        console.error('Error:', error);
-      }
-    });
-});
-
-function processSaveRankResponse(saveResponse) {
-    const saveResponseDict = JSON.parse(saveResponse);
-    console.log(`processSaveRankResponse was invoked: ${saveResponseDict}`);
-    $('#lblPromotionSaveResponse').removeClass('text-success');
-    $('#lblPromotionSaveResponse').removeClass('text-danger');
-    if (saveResponseDict.status == 'ok') {
-        $('#lblPromotionSaveResponse').html("Student rank was updated, new id is: " + saveResponseDict.lastRowId);
-        $('#lblPromotionSaveResponse').addClass('text-success');
-        displayPromotionHistory(saveResponseDict.badgeNumber);
-    }
-    else {
-        $('#lblPromotionSaveResponse').html(saveResponseDict.message);
-        $('#lblPromotionSaveResponse').addClass('text-danger');
-    }
-}
 
 function displayCurrentRankAndStripe(badgeNumber) {
     console.log(`displayCurrentRankAndStripe was invoked: ${badgeNumber}`);

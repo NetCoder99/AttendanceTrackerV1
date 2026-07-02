@@ -27,18 +27,18 @@ def students_bp_home():
     student_records = GetSqliteStudents()
     return render_template('students_main.html', student_records=student_records)
 
-# @students_bp.route('/student_details', methods=['GET', 'POST'])   # Focus here
-# def students_bp_details():
-#     print(f'Current route: students_bp_details')
-#     try:
-#         badgeNumber     = request.json['badgeNumber']
-#         student_records = GetSqliteStudents()
-#         student_record  = [x for x in student_records if
-#                           str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
-#         student_record['headerMessage'] = 'Updating a student record.'
-#         return render_template('student_details.html', studentFields=student_record)
-#     except Exception as ex:
-#         print(f'Error: {ex.__str__()}')
+@students_bp.route('/get_student_details', methods=['GET', 'POST'])   # Focus here
+def get_student_details():
+    print(f'Current route: get_student_details')
+    try:
+        badgeNumber     = request.json['badgeNumber']
+        sqlQueryStudent = GetStudentRecordsStmtByBadge()
+        student_records = GetDataWithArgs(sqlQueryStudent, {'badgeNumber' : badgeNumber})
+        if len(student_records) != 1:
+            raise Exception("Invalid student record count.")
+        return student_records[0]
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
 
 @students_bp.route('/student_create', methods=['GET', 'POST'])
 def student_create():
@@ -199,39 +199,77 @@ def get_stripe_names():
 def upd_student_rank():
     print(f'Current route: upd_student_rank')
     studentData       = GetDataWithArgs(GetStudentRecordsStmtByBadge(), {'badgeNumber': request.json['badgeNumber']})
-    sqlGetQuery       = GetPromotionHistoryStmt()
-    promotionHistory  = GetDataWithArgs(sqlGetQuery, request.json)
-    updPromotionQuery = UpdatePromotionsRankStmt()
+    promotionHistory  = GetDataWithArgs(GetPromotionHistoryStmt(), request.json)
+
+    # do not apply if no changes
+    if IsDuplicatePromotion(studentData, request.json):
+        return {'status': 'error', 'badgeNumber': request.json['badgeNumber'],
+                'message': 'Current promotion matches last promotion!'}
+
     updStudentQuery   = UpdateStudentRankStmt()
     updStudentDict    = {
         'currentRankNum'    : request.json['beltId'],
         'currentRankName'   : request.json['beltTitle'],
         'currentStripeId'   : request.json['stripeId'],
         'currentStripeName' : request.json['stripeTitle'],
-        'badgeNumber'       : request.json['badgeNumber']
+        'badgeNumber'       : request.json['badgeNumber'],
+        # 'studentPromotionDate': request.json['promotionDate']
     }
 
     # adjust the date to consistent format
-    promotionDate    = parse(request.json['promotionDate'], fuzzy=False)
-    promotionDateStr = datetime.strftime(promotionDate, constants.fmtDateTime)
-    request.json['promotionDate'] = promotionDateStr
+    studentPromotionDate = parse(request.json['promotionDate'], fuzzy=False).strftime(constants.fmtDateTime)
+    updStudentDict['studentPromotionDate'] = studentPromotionDate
+    updStudentDict['comments'] = 'Promotion'
 
-    request.json['studentFirstName'] = studentData[0]['firstName']
-    request.json['studentLastName']  = studentData[0]['lastName']
-    request.json['comments']         = 'Promotion'
+    # update the student record
+    updateCounts = UpdDataWithArgs(updStudentQuery, updStudentDict)
 
-    if len(promotionHistory) == 0:
-        updateCounts1 = UpdDataWithArgs(updPromotionQuery, request.json)
-        #updateCounts2 = UpdDataWithArgs(updStudentQuery, updStudentDict)
-        return {'status': 'ok', 'badgeNumber': request.json['badgeNumber'], 'lastRowId': updateCounts1['lastrowid'], 'rowCount': updateCounts1['rowcount']}
-    else:
-        lastUpdate = promotionHistory[0]
-        if str(lastUpdate['beltId']) == str(request.json['beltId']) and str(lastUpdate['stripeId']) == str(request.json['stripeId']):
-            return {'status': 'error', 'badgeNumber': request.json['badgeNumber'], 'message' : 'Current promotion matches last promotion!'}
-        else:
-            updateCounts  = UpdDataWithArgs(updPromotionQuery, request.json)
-            #updateCounts2 = UpdDataWithArgs(updStudentQuery, updStudentDict)
-            return {'status': 'ok', 'badgeNumber': request.json['badgeNumber'], 'lastRowId': updateCounts['lastrowid'], 'rowCount': updateCounts['rowcount']}
+    #insert the history record
+    insertPromotionStmt = InsertPromotionsRankStmt()
+    insertPromotionDict = GetInsertPromotionDict(studentData, updStudentDict)
+    insertCounts        = UpdDataWithArgs(insertPromotionStmt, insertPromotionDict)
+
+    return {'status': 'ok',
+            'badgeNumber': request.json['badgeNumber'],
+            'lastRowId': updateCounts['lastrowid'],
+            'rowCount': updateCounts['rowcount']
+            }
+
+
+def GetInsertPromotionDict(studentData: dict, updStudentDict: dict):
+    return {
+        'badgeNumber': studentData[0]['badgeNumber'],
+        'beltId':      updStudentDict['currentRankNum'],
+        'beltTitle':   updStudentDict['currentRankName'],
+        'stripeId':    updStudentDict['currentStripeId'],
+        'stripeTitle': updStudentDict['currentStripeName'],
+        'studentFirstName': studentData[0]['firstName'],
+        'studentLastName' : studentData[0]['lastName'],
+        'promotionDate'   : updStudentDict['studentPromotionDate'],
+        'comments'        : updStudentDict['comments']
+    }
+
+
+def IsDuplicatePromotion(studentData, requestJson) -> bool:
+    if studentData[0]['currentRankNum'] is None:
+        return False
+
+    currentRankNum   = int(studentData[0]['currentRankNum'])
+    selectedBeltId   = int(requestJson['beltId'])
+    currentStripeId  = int(studentData[0]['currentStripeId'])
+    selectedStripeId = int(requestJson['stripeId'])
+    currentPromotionDate  = parse(studentData[0]['studentPromotionDate'], fuzzy=False).date()
+    selectedPromotionDate = parse(request.json['promotionDate'], fuzzy=False).date()
+
+    if (   currentRankNum == selectedBeltId
+       and currentStripeId == selectedStripeId
+       and currentPromotionDate == selectedPromotionDate):
+        return True
+
+    return False
+
+def getPromotionMessage():
+    pass
 
 @students_bp.route('/get_promotion_history', methods=['GET', 'POST'])
 def get_promotion_history():

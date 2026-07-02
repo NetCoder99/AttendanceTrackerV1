@@ -105,6 +105,7 @@ def GetStudentRecordsStmtByBadge():
                s.currentRankName,
                s.currentStripeId,
                s.currentStripeName,
+               s.studentPromotionDate,
                b.beltTitle,
                case when s.studentImageBase64 is not null
                     then s.studentImageBase64 
@@ -200,7 +201,7 @@ def UpdStudentRecordStmt():
         WHERE  badgeNumber = :badgeNumber
     '''
 
-def UpdatePromotionsRankStmt():
+def InsertPromotionsRankStmt():
     return '''
         INSERT INTO promotions (
            badgeNumber,
@@ -229,10 +230,11 @@ def UpdatePromotionsRankStmt():
 def UpdateStudentRankStmt():
     return '''
         update students  
-        set    currentRankNum    = :currentRankNum,
-               currentRankName   = :currentRankName,
-               currentStripeId   = :currentStripeId,
-               currentStripeName = :currentStripeName
+        set    currentRankNum       = :currentRankNum,
+               currentRankName      = :currentRankName,
+               currentStripeId      = :currentStripeId,
+               currentStripeName    = :currentStripeName,
+               studentPromotionDate = :studentPromotionDate
         where  badgeNumber       = :badgeNumber
     '''
 

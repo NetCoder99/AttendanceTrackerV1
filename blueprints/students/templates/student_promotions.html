@@ -3,34 +3,33 @@
         <div id="frmCreate" class="row w-100 d-flex justify-content-center mainForm">
             <div>
                 <hr>
-                <h5 id="studentTitle" class="text-center fw-bold">
-                    <p id="prgPageTitle">Manage student rank.</p>
+                <h5 id="hdrStudentPromotionTitle" class="text-center fw-bold">
                 </h5>
                 <hr>
             </div>
             <div class="row">
-                <div class="col-sm-8 pt-3">
+                <div class="col-sm-10 pt-3">
                     <form id="frmStudentPromotions">
                         <h6 id="hdrStudentRank" class="fw-bold">
-                            <p id="prgStudentRank">Current student rank.</p>
+                            <p id="prgStudentRank">Please set the current student rank:</p>
                         </h6>
                         <div class="row">
-                            <div class="d-inline-block text-start" style="width: 12rem">
+                            <div class="d-inline-block text-start" style="width: 10rem;" >
                                 <label class="form-label ms-1 mb-0 fw-bold">Rank Name:</label>
-                                <select name="studentBelt" id="studentBelt" style="height: 2rem;">
-                                    <option value="1">White</option>
-                                    <option value="2">Orange</option>
-                                    <option value="3">Yellow</option>
-                                    <option value="4">Blue</option>
-                                    <option value="5">Green</option>
-                                    <option value="6">Purple</option>
-                                    <option value="7">Brown</option>
-                                    <option value="8">Black</option>
+                                <select name="studentBeltNames" id="studentBeltNames" class="form-select">
+                                    <option value="1">White Belt</option>
+                                    <option value="2">Orange Belt</option>
+                                    <option value="3">Yellow Belt</option>
+                                    <option value="4">Blue Belt</option>
+                                    <option value="5">Green Belt</option>
+                                    <option value="6">Purple Belt</option>
+                                    <option value="7">Brown Belt</option>
+                                    <option value="8">Black Belt</option>
                                 </select>
                             </div>
-                            <div class="d-inline-block text-start ms-3" style="width: 19rem">
+                            <div class="d-inline-block text-start ms-1" style="width: 14rem;">
                                 <label class="form-label ms-1 mb-0 fw-bold">Stripe Name:</label>
-                                <select name="studentBeltStripes" id="studentBeltStripes" style="height: 2rem;">
+                                <select name="studentBeltStripes" id="studentBeltStripes" class="form-select">
                                     <option value=58>1st Orange Stripe</option>
                                     <option value=131>2nd Orange Stripe</option>
                                     <option value=132>3rd Orange Stripe</option>
@@ -39,7 +38,21 @@
                                     <option value=138>6th Orange Stripe</option>
                                 </select>
                             </div>
-                            <button id="btnPromotionSave" name="btnPromotionSave" type="button" class="d-inline-block btn btn-sm btn-primary" style="width: 7rem; height: 2rem;">Save</button>
+
+                            <div class="d-inline-block text-start ms-1" style="width: 14rem;" >
+                                <label class="form-label ms-1 mb-0 fw-bold">Promotion Date:</label>
+                                <input id="studentPromotionDate" name="studentPromotionDate" type="date" class="form-control">
+                            </div>
+
+                            <div class="d-inline-block text-start ms-1" style="width: 5rem;" >
+                                <label class="form-label ms-1 mb-0 fw-bold">&nbsp;</label>
+                                <button id="btnPromotionSave"
+                                        name="btnPromotionSave"
+                                        type="button"
+                                        class="d-inline-block btn btn-sm btn-primary"
+                                        onclick="fncPromotionSave()"
+                                        style="height: 2rem;">Save</button>
+                            </div>
                             <label id="lblPromotionSaveResponse" class="fw-bold ms-1">Awaiting input ...</label>
                         </div>
 
@@ -57,16 +70,6 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tbodyStudentPromotions">
-                                    <tr>
-                                        <td>White</td>
-                                        <td>1st Yellow Strip</td>
-                                        <td>01/01/1900</td>
-                                    </tr>
-                                    <tr>
-                                        <td>White</td>
-                                        <td>2nd Yellow Strip</td>
-                                        <td>01/01/1900</td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
