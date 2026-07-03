@@ -263,7 +263,12 @@ def IsDuplicatePromotion(studentData, requestJson) -> bool:
     selectedBeltId   = int(requestJson['beltId'])
     currentStripeId  = int(studentData[0]['currentStripeId'])
     selectedStripeId = int(requestJson['stripeId'])
-    currentPromotionDate  = parse(studentData[0]['studentPromotionDate'], fuzzy=False).date()
+
+    if studentData[0]['studentPromotionDate'] is None:
+        currentPromotionDate = datetime.fromisoformat("1900-01-01T00:00:00")
+    else:
+        currentPromotionDate = parse(studentData[0]['studentPromotionDate'], fuzzy=False).date()
+
     selectedPromotionDate = parse(request.json['promotionDate'], fuzzy=False).date()
 
     if (   currentRankNum == selectedBeltId
