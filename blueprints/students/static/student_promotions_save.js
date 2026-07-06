@@ -51,7 +51,7 @@ function processSaveRankResponse(saveResponse) {
     if (saveResponseDict.status == 'ok') {
         $('#lblPromotionSaveResponse').html("Student rank was updated, new id is: " + saveResponseDict.lastRowId);
         $('#lblPromotionSaveResponse').addClass('text-success');
-//        displayPromotionHistory(saveResponseDict.badgeNumber);
+        displayPromotionHistory(saveResponseDict.badgeNumber);
     }
     else {
         $('#lblPromotionSaveResponse').html(saveResponseDict.message);

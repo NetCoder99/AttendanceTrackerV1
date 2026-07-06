@@ -11,13 +11,10 @@ function InitializePromotionsScreen() {
     $('#lblPromotionSaveResponse').removeClass('text-danger');
     $('#lblPromotionSaveResponse').html("Awaiting input ...");
     $('#lblPromotionSaveResponse').addClass('text-success');
-
     const promotionDate = document.getElementById('studentPromotionDate');
     promotionDate.valueAsDate = new Date()
     displayStudentDetails(badgeNumber);
-
-    //displayPromotionHistory(badgeNumber);
-    //displayCurrentRankAndStripe(badgeNumber);
+    displayPromotionHistory(badgeNumber);
 }
 
 function displayStudentDetails(badgeNumber) {
@@ -47,7 +44,7 @@ function processStudentPromotionDetails(student_details) {
     student_details_json = JSON.parse(student_details);
 
     const hdrStudentPromotionTitle     = document.getElementById('hdrStudentPromotionTitle');
-    hdrStudentPromotionTitle.innerText = `Updating promotion details for - ${student_details_json.firstName} ${student_details_json.lastName}`;
+    hdrStudentPromotionTitle.innerText = `Manage promotions for - ${student_details_json.firstName} ${student_details_json.lastName}`;
 
     const studentBeltNames     = document.getElementById('studentBeltNames');
     const studentBeltStripes   = document.getElementById('studentBeltStripes');
@@ -144,7 +141,14 @@ function processGetPromotionsResponse(response) {
                           <td>${promotionHistory[i].beltTitle}</td>
                           <td>${promotionHistory[i].stripeTitle}</td>
                           <td>
-                            <input type="date" id="start-date" name="trip-start" value=${promotionHistory[i].promotionDate} >
+                            <input type="date" id="promotion-date" name="promotion-date" value=${promotionHistory[i].promotionDate} >
+                          </td>
+                          <td>
+                            <button type="button"
+                                    id="save_promotion_date"
+                                    class="btn btn-sm btn-success">
+                                Save
+                            </button>
                           </td>
                       </tr>`;
         tbodyStudentPromotions.append(newRow);
