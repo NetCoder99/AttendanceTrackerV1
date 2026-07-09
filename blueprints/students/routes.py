@@ -5,7 +5,7 @@ from datetime import date, datetime
 from flask import Blueprint, render_template, request, jsonify
 
 import constants
-from blueprints.belts.sqlite_belts import GetBeltsRecords, GetStripeRecords
+from blueprints.belts.sqlite_belts import GetBeltsRecords, GetStripeRecords, GetRanksRecords, GetStripesForRankStmt
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
 from services.barcodeGenerator import createBarcodeFile
 from services.battoDoGenerator import createBattoDoBadgePdf
@@ -162,9 +162,40 @@ def save_student_details_api():
         studentData     = GetDataWithArgs(sqlQueryStudent, {'badgeNumber' : badgeNumber})
         if len(studentData) == 0:
             InsStudentRecord(form_dict)
+            SetInitialRank(badgeNumber)
         else:
             UpdStudentRecord(form_dict)
     return validation_results
+
+def SetInitialRank(badgeNumber):
+    beltData          = GetRanksRecords()
+    stripeData        = GetDataWithArgs(GetStripesForRankStmt(), {'rankNum' : 1})
+    whiteBelt         = [x for x in beltData if x['rankNum'] == 1][0]
+    whiteStripe       = stripeData[0]
+
+    updStudentDict    = {
+        'currentRankNum'    : whiteBelt['rankNum'],
+        'currentRankName'   : whiteBelt['rankName'],
+        'currentStripeId'   : whiteStripe['stripeId'],
+        'currentStripeName' : whiteStripe['stripeName'],
+        'badgeNumber'       : badgeNumber,
+        # 'studentPromotionDate': request.json['promotionDate']
+    }
+
+    # adjust the date to consistent format
+    studentPromotionDate = datetime.now().strftime(constants.fmtDateTime)
+    updStudentDict['studentPromotionDate'] = studentPromotionDate
+    updStudentDict['comments'] = 'Initial Rank'
+
+    # update the student record
+    updStudentQuery   = UpdateStudentRankStmt()
+    updateCounts      = UpdDataWithArgs(updStudentQuery, updStudentDict)
+
+    #insert the history record
+    insertPromotionStmt = InsertPromotionsRankStmt()
+    studentData         = GetDataWithArgs(GetStudentRecordsStmtByBadge(), {'badgeNumber': badgeNumber})
+    insertPromotionDict = GetInsertPromotionDict(studentData, updStudentDict)
+    insertCounts        = UpdDataWithArgs(insertPromotionStmt, insertPromotionDict)
 
 @students_bp.route('/create_badge_api', methods=['GET', 'POST'])
 def create_badge_api():
