@@ -58,3 +58,22 @@ function processSaveRankResponse(saveResponse) {
         $('#lblPromotionSaveResponse').addClass('text-danger');
     }
 }
+
+function savePromotionDate(promotionId) {
+    console.log(`savePromotionDate was invoked: ${promotionId}`);
+    const promotionDateBoxId = `#promotion-date-inp-${promotionId}`
+    const promotionDateBox   = $(promotionDateBoxId)
+    htmx.ajax('POST', '/save_promotion_date', {
+        target: '#lblPromotionSaveResponse', // Where the backend HTML goes
+        swap: 'innerHTML',     // How to replace the content
+        values: { promotionId: promotionId, promotionDate: promotionDateBox.val()} // Data payload
+    }).then(() => {
+        setTimeout(() => {
+            $('#lblPromotionSaveResponse').html("Awaiting input ...");
+        }, 4000);
+    });
+}
+
+function delPromotionDate(promotionId){
+    console.log(`delPromotionDate was invoked: ${promotionId}`);
+}

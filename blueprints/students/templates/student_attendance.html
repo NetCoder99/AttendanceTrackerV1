@@ -1,10 +1,21 @@
+<div id="new-attendance-record"></div>
+
 <div style="background-color: #f2ffe6;" class="pt-2 pb-2 ps-3">
     <div class="row d-flex justify-content-center small">
         <div id="frmCreate" class="row w-100 d-flex justify-content-center mainForm">
             <div>
                 <hr>
                 <h5 id="studentTitle" class="text-center fw-bold">
-                    <p id="studentAttendancePageTitle">Review student attendance for .</p>
+                    <p id="studentAttendancePageTitle" class="d-inline-block">Review student attendance for .</p>
+                    <button type="button"
+                            id="btn_new_attendance_record"
+                            name="btn_new_attendance_record"
+                            class="btn btn-sm btn-success d-inline-block float-end" style="width: 5rem;"
+                            hx-get="/get_attendance_dialog"
+                            hx-target="#new-attendance-record"
+                            hx-include="#hdnBadgeNumber"
+
+                    >New</button>
                 </h5>
                 <hr>
             </div>
@@ -38,3 +49,16 @@
         </div>
     </div>
 </div>
+
+<script>
+// ---------------------------------------------------------------------------
+// This is activated when we need to show the student rank modal dialog
+// ---------------------------------------------------------------------------
+document.body.addEventListener('show_rank_required_dialog', () => {
+    console.log(`show_rank_required_dialog was activated`);
+    const modal_rank_required_elmnt = document.getElementById('modal_rank_required');
+    const modal_rank_required_bs5   = new bootstrap.Modal(modal_rank_required_elmnt, {backdrop: 'static'});
+    modal_rank_required_bs5.show();
+    console.log(`modal_rank_required was shown`);
+});
+</script>

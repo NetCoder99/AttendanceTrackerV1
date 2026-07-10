@@ -137,18 +137,29 @@ function processGetPromotionsResponse(response) {
         inpPromotionDate.name = 'appointment-date';
         const tdPromotionDate = document.createElement('td')
         tdPromotionDate.appendChild(inpPromotionDate);
+        const buttonId = `save_promotion_date_${promotionHistory[i].promotionId}`
         var newRow = `<tr>
                           <td>${promotionHistory[i].beltTitle}</td>
                           <td>${promotionHistory[i].stripeTitle}</td>
                           <td>
-                            <input type="date" id="promotion-date" name="promotion-date" value=${promotionHistory[i].promotionDate} >
+                            <input type="date" id="promotion-date-inp-${promotionHistory[i].promotionId}" name="promotion-date-inp-${promotionHistory[i].promotionId}" value=${promotionHistory[i].promotionDate} >
                           </td>
                           <td>
-                            <button type="button"
-                                    id="save_promotion_date"
-                                    class="btn btn-sm btn-success">
+                            <button type  = "button"
+                                    id    = "save-${buttonId}"
+                                    class = "btn btn-sm btn-success"
+                                    onclick = "savePromotionDate(${promotionHistory[i].promotionId})">
                                 Save
                             </button>
+                            <button type  = "button"
+                                    id    = "del-${buttonId}"
+                                    class = "btn btn-sm btn-success"
+                                    onclick = "delPromotionDate(${promotionHistory[i].promotionId})">
+                                Del
+                            </button>
+                          </td>
+                          <td>
+                            <label id="promotion-response_${promotionHistory[i].promotionId}"></label>
                           </td>
                       </tr>`;
         tbodyStudentPromotions.append(newRow);

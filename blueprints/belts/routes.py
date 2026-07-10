@@ -17,6 +17,7 @@ belts_bp = Blueprint(
 
 @belts_bp.route('/getStripes_htmx', methods=['POST', 'GET'])
 def getStripes_htmx():
+    print(f'Current route: getStripes_htmx')
     selectStripesStmt = GetStripesForRankStmt()
     if len(request.args) > 0:
         currentRankNum = request.args['studentBeltNames']

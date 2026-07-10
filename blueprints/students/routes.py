@@ -3,9 +3,11 @@ from dateutil.parser import parse, ParserError
 from datetime import date, datetime
 
 from flask import Blueprint, render_template, request, jsonify
+from flask_htmx import make_response
 
 import constants
 from blueprints.belts.sqlite_belts import GetBeltsRecords, GetStripeRecords, GetRanksRecords, GetStripesForRankStmt
+from blueprints.students.student_attendance import UpdPromotionDateStmt
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
 from services.barcodeGenerator import createBarcodeFile
 from services.battoDoGenerator import createBattoDoBadgePdf
@@ -318,6 +320,42 @@ def get_promotion_history():
     sqlQuery          = GetPromotionHistoryStmt()
     promotionHistory  = GetDataWithArgs(sqlQuery, request.json)
     return promotionHistory
+
+@students_bp.route('/save_promotion_date', methods=['GET', 'POST'])
+def save_promotion_date():
+    print(f'Current route: save_promotion_date')
+    promotionId   = request.form['promotionId']
+    promotionDate = parse(request.form['promotionDate'], fuzzy=False).strftime(constants.fmtDateTime)
+    updateDate    = datetime.now().strftime(constants.fmtDateTime)
+    updateDict    = {
+        'promotionDate'  :promotionDate,
+        'updateDateTime' :updateDate,
+        'promotionId'    :promotionId
+    }
+    updateCounts = UpdDataWithArgs(UpdPromotionDateStmt(), updateDict)
+    return "Promotion date was updated."
+
+@students_bp.route('/get_attendance_dialog', methods=['GET', 'POST'])
+def get_attendance_dialog():
+    print(f'Current route: get_attendance_dialog')
+
+
+    if 'hdnBadgeNumber' in request.args:
+        badge_number = request.args['hdnBadgeNumber']
+    elif  'hdnBadgeNumber' in request.form:
+        badge_number = request.form['hdnBadgeNumber']
+    if not badge_number:
+        raise Exception ("Badge number is required!")
+
+    modal_rank = render_template(
+        "partials/new_attendance_record.html",
+    )
+    response = make_response(modal_rank)
+    response.headers['HX-Retarget'] = '#new-attendance-record'
+    response.headers['HX-Reswap'] = 'innerHTML'
+    response.headers['HX-Trigger-After-Settle'] = 'show_rank_required_dialog'
+    return response
+
 
 # @students_bp.route('/get_student_details', methods=['GET', 'POST'])
 # def get_student_details():
