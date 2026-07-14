@@ -1,53 +1,79 @@
 <div id="modal_rank_required" class="modal p-3" hx-ext="debug">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
             <h4 id="studentGreeting" class="fw-bold mb-2 mt-1 text-center ">Add new attendance record.</h4>
 
             <form id="frm_required_rank"
+                  hx-post="/update_attendance_record"
+                  hx-target="#attendance_update_message"
+                  hx-swap="innerHTML"
                   class="mb-4 p-4">
                 <input type="hidden" name="badge_number" value="{{ badge_number }}"/>
-                <div class="row">
-                    <div id="div_required_ranks_label" class="col-6">
-                        <span class="label-text fw-bold">Your current rank</span>
-                    </div>
+                <div class="mb-3">
+                    <label for="frm_checkinDateTime" class="form-label">Checkin Date</label>
+                    <input
+                        type="datetime-local"
+                        class="form-control d-inline-block w-75"
+                        id="frm_checkinDateTime"
+                        name="frm_checkinDateTime"
+                        value="2026-07-14T17:00"
+                        required>
+                    <img
+                        src="static/images/icons/search-icon.svg"
+                        class="d-inline-block hover-pointer"
+                        alt="Search"
+                        hx-get="/get_attendance_class"
+                        hx-trigger="click"
+                        hx-include="#frm_checkinDateTime"
+                        hx-target="#attendance_update_message"
+                        height={24}
+                    />
                 </div>
-                <div class="row mt-3">
-                    <div id="div_belt_stripes_label " class="col-6">
-                        <span class="fw-bold">How many stripes</span>
-                    </div>
+
+                <div id="div-class-details" name="div-class-details" class="mb-3 d-inline-block" hx-oob-swap="true">
+                    <table id="classTable" class="table table-bordered table-striped" >
+                      <thead>
+                        <tr>
+                          <th>Day of Week</th>
+                          <th>Class Name</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tbodyClassDays">
+                        <tr>
+                          <td id="td_ClassDayName" >{{classDayName}}</td>
+                          <td id="td_ClassName"    >{{className}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
                 </div>
-                <div class="modal-action d-flex mt-3">
-                    <div class="">
-                        <h5 id="rank_update_message" class="text-success fw-bold text-center mb-3">Rank update
-                            message</h5>
-                    </div>
-                    <div class="ms-auto">
-                        <button id="btn_rank_modal_close"
-                                name="btn_rank_modal_close"
-                                type="reset"
-                                class="btn btn-danger me-3"
-                                onclick="clearAllRankRequiredInputs(); "
-                                data-bs-dismiss="modal"
-                        >Cancel
-                        </button>
-                    </div>
-                </div>
+
+                <h5 id="attendance_update_message" class="text-success fw-bold text-center mb-3">Rank update message</h5>
+
+                <!--                <div id="div_new_attendance_messages" name="div_new_attendance_messages" class="modal-action d-flex mt-3">-->
+<!--                    <div class="">-->
+<!--                        <h5 id="attendance_update_message" class="text-success fw-bold text-center mb-3">Rank update-->
+<!--                            message</h5>-->
+<!--                    </div>-->
+<!--                    <div id="div_new_attendance_buttons" name="div_new_attendance_buttons" class="ms-auto">-->
+<!--                        <button id="btn_rank_modal_save"-->
+<!--                                name="btn_rank_modal_save"-->
+<!--                                type="submit"-->
+<!--                                class="btn btn-success me-3"-->
+<!--                        >Save-->
+<!--                        </button>-->
+<!--                        <button id="btn_rank_modal_close"-->
+<!--                                name="btn_rank_modal_close"-->
+<!--                                type="reset"-->
+<!--                                class="btn btn-danger me-3"-->
+<!--                                onclick="clearAllRankRequiredInputs(); "-->
+<!--                                data-bs-dismiss="modal"-->
+<!--                        >Cancel-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                </div>-->
             </form>
         </div>
     </div>
 </div>
 
-<script>
-    function clearAllRankRequiredInputs() {
-        console.log(`clearAllRankRequiredInputs`);
-        var inputs = document.querySelectorAll('#contact_modal input');
-        inputs.forEach(function(input) {
-            input.value = '';
-        });
-        document.getElementById('badgeNumber').disabled = false;
-        document.getElementById('checkinMessage').innerHTML = "";
-        document.getElementById('promotionMessage').innerHTML = "";
-        document.getElementById('otherMessage').innerHTML = "";
-    }
-</script>

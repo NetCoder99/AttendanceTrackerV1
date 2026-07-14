@@ -9,8 +9,10 @@ import constants
 from blueprints.belts.sqlite_belts import GetBeltsRecords, GetStripeRecords, GetRanksRecords, GetStripesForRankStmt
 from blueprints.students.student_attendance import UpdPromotionDateStmt
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
+from models import Classes
 from services.barcodeGenerator import createBarcodeFile
 from services.battoDoGenerator import createBattoDoBadgePdf
+from services.checkin_procs import GetCurrentClass
 from services.list_procs import FormListToDict
 from blueprints.students.sqlite_students import *
 from services.pdfGenerator import createBadgePdf
@@ -338,8 +340,6 @@ def save_promotion_date():
 @students_bp.route('/get_attendance_dialog', methods=['GET', 'POST'])
 def get_attendance_dialog():
     print(f'Current route: get_attendance_dialog')
-
-
     if 'hdnBadgeNumber' in request.args:
         badge_number = request.args['hdnBadgeNumber']
     elif  'hdnBadgeNumber' in request.form:
@@ -348,7 +348,7 @@ def get_attendance_dialog():
         raise Exception ("Badge number is required!")
 
     modal_rank = render_template(
-        "partials/new_attendance_record.html",
+        "partials/new_attendance_record.html", badge_number=badge_number
     )
     response = make_response(modal_rank)
     response.headers['HX-Retarget'] = '#new-attendance-record'
@@ -356,6 +356,68 @@ def get_attendance_dialog():
     response.headers['HX-Trigger-After-Settle'] = 'show_rank_required_dialog'
     return response
 
+# --------------------------------------------------------------------
+@students_bp.route('/update_attendance_record', methods=['POST'])
+def update_attendance_record():
+    try:
+        badge_number = request.form['badge_number']
+        return getAttendanceUpdateMessage('completed', 'Student rank was updated!')
+        #return update_required_rank_func()
+    except Exception as ex:
+        print(str(ex))
+        return getAttendanceUpdateMessage('error', str(ex))
+
+# -------------------------------------------------------
+def getAttendanceUpdateMessage(status, message):
+    alert_class = "text-danger" if status == 'error' else "text-success"
+    html_snippet = f'<h5 id="rank_update_message" class="{alert_class} fw-bold text-center mb-3">{message}</h5>'
+    response = make_response(html_snippet)
+    response.headers['HX-Trigger'] = f'ranks_response_{status}'  # CSS Selector
+    return response
+
+# --------------------------------------------------------------------
+@students_bp.route('/get_attendance_class', methods=['GET', 'POST'])
+def get_attendance_class():
+    validation_results = validate_class_search(request.args)
+    if not validation_results[0]:
+        status = 'error'
+        alert_class = "text-danger" # if status == 'error' else "text-success"
+        message = validation_results[1]
+        message_snippet = f'<h5 id="rank_update_message" class="{alert_class} fw-bold text-center mb-3">{message}</h5>'
+        response = make_response(message_snippet)
+        #response.headers['HX-Trigger'] = f'ranks_response_{status}'  # CSS Selector
+        return response
+    else:
+        status       = 'completed'
+        alert_class  = "text-danger" if status == 'error' else "text-success"
+        message      = "Class search completed"
+        class_data   = validation_results[1]
+        class_details = render_template(
+            "partials/class_details.html",
+            classDayName = "Monday",
+            className = class_data.classDisplayTitle
+        )
+        message_snippet = f'<h5 id="rank_update_message" class="{alert_class} fw-bold text-center mb-3">{message}</h5>'
+        #response = make_response(message_snippet, class_details)
+        #response.headers['HX-Trigger'] = f'ranks_response_{status}'  # CSS Selector
+        return f"{class_details}{message_snippet}"   #response
+
+def validate_class_search(form_args: dict) -> (bool, Classes):
+    if len(form_args) == 0:
+        return False, "Attendance form had no values!"
+    if not str(form_args['frm_checkinDateTime']):
+        return False, "Checkin date and time is required!"
+
+    try:
+        checkin_date_time = parse(form_args['frm_checkinDateTime'])
+        selected_class    = GetCurrentClass(checkin_date_time)
+        if not selected_class:
+            return False, "No class found for that date and time!"
+    except Exception as ex:
+        print(f'{str(ex)}')
+        return False, str(ex)
+
+    return True, selected_class
 
 # @students_bp.route('/get_student_details', methods=['GET', 'POST'])
 # def get_student_details():

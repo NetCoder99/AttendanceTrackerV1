@@ -1,10 +1,15 @@
 import json
-from datetime import datetime
+from datetime import datetime, time, date
 
+from models import Classes
+from sqlite.sqlite_alchemy import db_session, getDbSession
 from sqlite.sqlite_attendance import insAttendanceRecordStmt
 from sqlite.sqlite_procs import UpdDataWithArgs
 from sqlite.sqlite_schedule import GetClassRecords
 from blueprints.students.sqlite_students import GetSqliteStudents
+
+# ------------------------------------------------------------------------------------------
+db_session = getDbSession()
 
 def validateCheckin(receivedData: any):
     receivedData['needsClassConfirmation'] = 'Y'
@@ -175,3 +180,24 @@ def getNoClassFoundRec(studentData):
 #         return classesByDay[-1]
 #
 #     #    return classesByDay[0]
+
+# --------------------------------------------------------------------
+# Search for a class within the start and stop times
+# --------------------------------------------------------------------
+def GetCurrentClass(checkin_datetime: date = datetime.now()):
+
+    day_of_week: int = checkin_datetime.weekday() + 1
+    #class_times = Classes.objects.filter(class_day_of_week=today).order_by('class_start_time')
+    class_times = db_session.query(Classes).filter_by(classDayOfWeek=day_of_week)
+
+    #current_date = datetime.now()
+    current_date_str = checkin_datetime.strftime("%m/%d/%Y")
+    date_format = "%m/%d/%Y %I:%M %p"
+    for class_record in class_times:
+        checkin_start_str  = current_date_str + ' ' + class_record.classStartTime
+        checkin_start_date = datetime.strptime(checkin_start_str, date_format)
+        checkin_finis_str  = current_date_str + ' ' + class_record.classFinisTime
+        checkin_finis_date = datetime.strptime(checkin_finis_str, date_format)
+        if checkin_start_date <= checkin_datetime <= checkin_finis_date:
+            return class_record
+    return None
