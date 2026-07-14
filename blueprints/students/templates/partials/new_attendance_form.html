@@ -26,52 +26,37 @@
                         hx-get="/get_attendance_class"
                         hx-trigger="click"
                         hx-include="#frm_checkinDateTime"
-                        hx-target="#attendance_update_message"
+                        hx-target="#div_class_details"
+                        hx-on:htmx:after-request="alert('Request finished!')"
                         height={24}
                     />
                 </div>
 
-                <div id="div-class-details" name="div-class-details" class="mb-3 d-inline-block" hx-oob-swap="true">
+                <div id="div_class_details" name="div_class_details" class="mb-3 d-inline-block">
                     <table id="classTable" class="table table-bordered table-striped" >
                       <thead>
                         <tr>
                           <th>Day of Week</th>
                           <th>Class Name</th>
-                        </tr>
+                          <th>Start Time</th>
+                          <th>End Time</th>
+                       </tr>
                       </thead>
                       <tbody id="tbodyClassDays">
                         <tr>
-                          <td id="td_ClassDayName" >{{classDayName}}</td>
-                          <td id="td_ClassName"    >{{className}}</td>
+                          <td id="td_ClassDayName"   class="fw-bold"></td>
+                          <td id="td_ClassName"      class="fw-bold"></td>
+                          <td id="td_ClassStartTime" class="fw-bold"></td>
+                          <td id="td_ClassFinisTime" class="fw-bold"></td>
                         </tr>
                       </tbody>
                     </table>
                 </div>
 
-                <h5 id="attendance_update_message" class="text-success fw-bold text-center mb-3">Rank update message</h5>
+                <div id="div_attendance_messages" name="div_attendance_messages" class="mb-3 d-inline-block" hx-oob-swap="true">
+                    <h5 id="attendance_update_message" class="text-success fw-bold text-center mb-3">Awaiting input ...</h5>
+                </div>
 
-                <!--                <div id="div_new_attendance_messages" name="div_new_attendance_messages" class="modal-action d-flex mt-3">-->
-<!--                    <div class="">-->
-<!--                        <h5 id="attendance_update_message" class="text-success fw-bold text-center mb-3">Rank update-->
-<!--                            message</h5>-->
-<!--                    </div>-->
-<!--                    <div id="div_new_attendance_buttons" name="div_new_attendance_buttons" class="ms-auto">-->
-<!--                        <button id="btn_rank_modal_save"-->
-<!--                                name="btn_rank_modal_save"-->
-<!--                                type="submit"-->
-<!--                                class="btn btn-success me-3"-->
-<!--                        >Save-->
-<!--                        </button>-->
-<!--                        <button id="btn_rank_modal_close"-->
-<!--                                name="btn_rank_modal_close"-->
-<!--                                type="reset"-->
-<!--                                class="btn btn-danger me-3"-->
-<!--                                onclick="clearAllRankRequiredInputs(); "-->
-<!--                                data-bs-dismiss="modal"-->
-<!--                        >Cancel-->
-<!--                        </button>-->
-<!--                    </div>-->
-<!--                </div>-->
             </form>
         </div>
     </div>

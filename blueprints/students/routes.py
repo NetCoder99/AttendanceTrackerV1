@@ -348,7 +348,7 @@ def get_attendance_dialog():
         raise Exception ("Badge number is required!")
 
     modal_rank = render_template(
-        "partials/new_attendance_record.html", badge_number=badge_number
+        "partials/new_attendance_form.html", badge_number=badge_number
     )
     response = make_response(modal_rank)
     response.headers['HX-Retarget'] = '#new-attendance-record'
@@ -393,14 +393,20 @@ def get_attendance_class():
         message      = "Class search completed"
         class_data   = validation_results[1]
         class_details = render_template(
-            "partials/class_details.html",
+            "partials/new_attendance_class.html",
             classDayName = "Monday",
-            className = class_data.classDisplayTitle
+            className = class_data.classDisplayTitle,
+            classStartTime=class_data.classStartTime,
+            classFinisTime=class_data.classFinisTime,
         )
-        message_snippet = f'<h5 id="rank_update_message" class="{alert_class} fw-bold text-center mb-3">{message}</h5>'
+        # message_snippet = f'<h5 id="rank_update_message" class="{alert_class} fw-bold text-center mb-3">{message}</h5>'
+        attendance_message = render_template(
+            "partials/new_attendance_message.html",
+            attendance_message = message
+        )
         #response = make_response(message_snippet, class_details)
         #response.headers['HX-Trigger'] = f'ranks_response_{status}'  # CSS Selector
-        return f"{class_details}{message_snippet}"   #response
+        return f"{class_details}{attendance_message}"   #response
 
 def validate_class_search(form_args: dict) -> (bool, Classes):
     if len(form_args) == 0:
