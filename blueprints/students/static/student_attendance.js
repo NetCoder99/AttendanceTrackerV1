@@ -9,6 +9,7 @@ async function InitializeStudentAttendanceScreen() {
 }
 
 function getAttendanceData() {
+    console.log(`getAttendanceData`);
     const badgeNumber = $('#hdnBadgeNumber').val();
     const dataToSend  = {'badgeNumber' : badgeNumber};
     $.ajax({
@@ -31,6 +32,12 @@ function processAttendanceResponse(response) {
     responseJson = JSON.parse(response);
     const studentData    = responseJson.studentData;
     const attendanceData = responseJson.attendanceData;
+
+    document.getElementById('lbl_attendance_total_count').innerHTML = responseJson.attendance_total_count
+    document.getElementById('lbl_last_promotion_date').innerHTML = responseJson.last_promotion_date
+
+
+
     const headerMessage  = `Review student attendance for : ${studentData.firstName} ${studentData.lastName}`;
     $('#studentAttendancePageTitle').html(headerMessage);
     processStudentAttendanceRecords(attendanceData);
@@ -39,14 +46,6 @@ function processAttendanceResponse(response) {
 function processStudentAttendanceRecords(attendanceData) {
     console.log(`processAttendanceResponse: ${attendanceData}`);
     const tbodyStudentAttendance = $('#tbodyStudentAttendance');
-
-//                        <th>Id</th>
-//                        <th>Week Day</th>
-//                        <th>Checkin Date</th>
-//                        <th>Checkin Time</th>
-//                        <th>Class Name</th>
-//                        <th>Edit</th>
-
     for (let i = 0; i < attendanceData.length; i++) {
         console.log(attendanceData[i]);
         const dataRow = getStudentAttendanceRow(attendanceData[i]);

@@ -4,19 +4,23 @@ from datetime import date, datetime
 
 from flask import Blueprint, render_template, request, jsonify
 from flask_htmx import make_response
+from sqlalchemy import select, func
 
 import constants
 from blueprints.belts.sqlite_belts import GetBeltsRecords, GetStripeRecords, GetRanksRecords, GetStripesForRankStmt
-from blueprints.students.student_attendance import UpdPromotionDateStmt
+from blueprints.students.student_attendance import UpdPromotionDateStmt, InsertAttendanceRecord, GetAttendanceRecord
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
-from models import Classes
+from models import Classes, Students, Attendance, Promotions
 from services.barcodeGenerator import createBarcodeFile
 from services.battoDoGenerator import createBattoDoBadgePdf
 from services.checkin_procs import GetCurrentClass
 from services.list_procs import FormListToDict
 from blueprints.students.sqlite_students import *
 from services.pdfGenerator import createBadgePdf
+from sqlite.sqlite_alchemy import getDbSession
 from sqlite.sqlite_procs import GetDataWithArgs, UpdDataWithArgs, GetDataNoArgs
+
+db_session = getDbSession()
 
 # Defining a blueprint
 students_bp = Blueprint(
@@ -146,9 +150,21 @@ def student_attendance_api():
         sqlQueryAttendance = GetStudentAttendanceRecords()
         attendanceData     = GetDataWithArgs(sqlQueryAttendance, {'badgeNumber' : badgeNumber})
 
+        attendance_total_count = (db_session
+                                      .scalar(select(func.count(Attendance.badgeNumber))
+                                      .where(Attendance.badgeNumber == badgeNumber))
+                                      )
+        last_promotion_date = (db_session
+                                      .scalar(select(func.max(Promotions.promotionDate))
+                                      .where(Promotions.badgeNumber == badgeNumber))
+                                      )
+        last_promotion_date_str = parse(last_promotion_date, fuzzy=False).strftime(constants.fmtDate)
+
         rtnData = {
             'studentData'    : studentData[0],
-            'attendanceData' : attendanceData
+            'attendanceData' : attendanceData,
+            'attendance_total_count' : attendance_total_count,
+            'last_promotion_date' : last_promotion_date_str,
         }
         return rtnData
     except Exception as ex:
@@ -360,8 +376,27 @@ def get_attendance_dialog():
 @students_bp.route('/update_attendance_record', methods=['POST'])
 def update_attendance_record():
     try:
-        badge_number = request.form['badge_number']
-        return getAttendanceUpdateMessage('completed', 'Student rank was updated!')
+        badge_number    = request.form['badge_number']
+
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        student_record = db_session.query(Students).filter_by(badgeNumber=badge_number).first()
+        if not student_record:
+            raise Exception("Student record not found!")
+
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        checkin_datetime = parse(request.form['frm_checkinDateTime'])
+        selected_class   = GetCurrentClass(checkin_datetime)
+        if not selected_class:
+            raise Exception('No class found.')
+
+        day_of_week = checkin_datetime.weekday() + 1
+        duplicate_record = GetAttendanceRecord(int(badge_number), checkin_datetime)
+        if len(duplicate_record) > 0:
+            raise Exception('Duplicate attendance record not inserted!')
+
+        InsertAttendanceRecord(student_record, selected_class, checkin_datetime)
+
+        return getAttendanceUpdateMessage('completed', 'New attendance record was added.')
         #return update_required_rank_func()
     except Exception as ex:
         print(str(ex))
@@ -399,13 +434,11 @@ def get_attendance_class():
             classStartTime=class_data.classStartTime,
             classFinisTime=class_data.classFinisTime,
         )
-        # message_snippet = f'<h5 id="rank_update_message" class="{alert_class} fw-bold text-center mb-3">{message}</h5>'
-        attendance_message = render_template(
-            "partials/new_attendance_message.html",
-            attendance_message = message
-        )
-        #response = make_response(message_snippet, class_details)
-        #response.headers['HX-Trigger'] = f'ranks_response_{status}'  # CSS Selector
+        attendance_message = f"""
+                <div id="div_attendance_messages" name="div_attendance_messages" class="mb-3 d-inline-block" hx-oob-swap="true">
+                    <h5 id="attendance_update_message" class="text-success fw-bold text-center mb-3">{message}</h5>
+                </div>
+        """
         return f"{class_details}{attendance_message}"   #response
 
 def validate_class_search(form_args: dict) -> (bool, Classes):

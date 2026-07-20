@@ -10,6 +10,7 @@
                   hx-swap="innerHTML"
                   class="mb-4 p-4">
                 <input type="hidden" name="badge_number" value="{{ badge_number }}"/>
+
                 <div class="mb-3">
                     <label for="frm_checkinDateTime" class="form-label">Checkin Date</label>
                     <input
@@ -27,12 +28,19 @@
                         hx-trigger="click"
                         hx-include="#frm_checkinDateTime"
                         hx-target="#div_class_details"
-                        hx-on:htmx:after-request="alert('Request finished!')"
+                        hx-swap="innerHTML"
                         height={24}
                     />
                 </div>
 
-                <div id="div_class_details" name="div_class_details" class="mb-3 d-inline-block">
+                <div id="div_student_details" class="mb-3 d-inline-block">
+                    <p class="fw-bold">Student details:</p>
+                    <label class="d-inline-block">Student Name</label>
+                    <label class="d-inline-block">Daffy Duck</label>
+                </div>
+
+                <p class="fw-bold">Selected class details:</p>
+                <div id="div_class_details" name="div_class_details" class="mb-3 d-inline-block w-100">
                     <table id="classTable" class="table table-bordered table-striped" >
                       <thead>
                         <tr>
@@ -53,8 +61,25 @@
                     </table>
                 </div>
 
-                <div id="div_attendance_messages" name="div_attendance_messages" class="mb-3 d-inline-block" hx-oob-swap="true">
-                    <h5 id="attendance_update_message" class="text-success fw-bold text-center mb-3">Awaiting input ...</h5>
+                <div id="div_attendance_messages" name="div_attendance_messages" class="mb-3 d-inline-block">
+                    <h5 id="attendance_update_message" class="text-success fw-bold text-center mb-3"></h5>
+                </div>
+
+                <div id="div_new_attendance_buttons" name="div_new_attendance_buttons" class="ms-auto">
+                    <button id="btn_rank_modal_save"
+                            name="btn_rank_modal_save"
+                            type="submit"
+                            class="btn btn-success me-3"
+                    >Save
+                    </button>
+                    <button id="btn_rank_modal_close"
+                            name="btn_rank_modal_close"
+                            type="reset"
+                            class="btn btn-danger me-3"
+                            onclick="clearAllRankRequiredInputs(); "
+                            data-bs-dismiss="modal"
+                    >Cancel
+                    </button>
                 </div>
 
             </form>
@@ -62,3 +87,13 @@
     </div>
 </div>
 
+<script>
+    document.body.addEventListener('htmx:afterSettle', function(evt) {
+        console.log("The DOM has settled!");
+        const attendance_update_message = document.getElementById("attendance_update_message");
+        console.log("attendance_update_message innerHTML:", attendance_update_message.innerHTML);
+        setTimeout(() => {
+            attendance_update_message.innerHTML = "&nbsp";
+        }, 3000);
+    });
+</script>
