@@ -9,6 +9,7 @@ from sqlalchemy import select, func
 import constants
 from blueprints.belts.sqlite_belts import GetBeltsRecords, GetStripeRecords, GetRanksRecords, GetStripesForRankStmt
 from blueprints.students.student_attendance import UpdPromotionDateStmt, InsertAttendanceRecord, GetAttendanceRecord
+from blueprints.students.student_promotions import GetNextPromotion
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
 from models import Classes, Students, Attendance, Promotions
 from services.barcodeGenerator import createBarcodeFile
@@ -159,12 +160,15 @@ def student_attendance_api():
                                       .where(Promotions.badgeNumber == badgeNumber))
                                       )
         last_promotion_date_str = parse(last_promotion_date, fuzzy=False).strftime(constants.fmtDate)
+        next_promotion_data     = GetNextPromotion(badgeNumber)
 
         rtnData = {
-            'studentData'    : studentData[0],
-            'attendanceData' : attendanceData,
+            'studentData'            : studentData[0],
+            'attendanceData'         : attendanceData,
             'attendance_total_count' : attendance_total_count,
-            'last_promotion_date' : last_promotion_date_str,
+            'last_promotion_date'    : last_promotion_date_str,
+            'next_belt_name'         : next_promotion_data['beltTitle'],
+            'next_stripe_title'      : next_promotion_data['stripeTitle']
         }
         return rtnData
     except Exception as ex:

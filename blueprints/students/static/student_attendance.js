@@ -34,9 +34,9 @@ function processAttendanceResponse(response) {
     const attendanceData = responseJson.attendanceData;
 
     document.getElementById('lbl_attendance_total_count').innerHTML = responseJson.attendance_total_count
-    document.getElementById('lbl_last_promotion_date').innerHTML = responseJson.last_promotion_date
-
-
+    document.getElementById('lbl_last_promotion_date').innerHTML    = responseJson.last_promotion_date
+    document.getElementById('lbl_next_belt_name').innerHTML         = responseJson.next_belt_name
+    document.getElementById('lbl_next_stripe_title').innerHTML      = responseJson.next_stripe_title
 
     const headerMessage  = `Review student attendance for : ${studentData.firstName} ${studentData.lastName}`;
     $('#studentAttendancePageTitle').html(headerMessage);
