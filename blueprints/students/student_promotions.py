@@ -32,7 +32,17 @@ def GetNextPromotionStmt():
                   and  s1.currentStripeId = r1.stripeId
                 where  s1.badgeNumber = :badgeNumber
             )
-            select *
+            select requirementId,
+                beltId,
+                beltTitle,
+                stripeId,
+                stripeTitle,
+                stripeSeqNum,
+                classesCount,
+                requiredClasses,
+                promotionSeqNum,
+                createDateTime,
+                updateDateTime
             from   requirements r2
             where  r2.promotionSeqNum > (select promotionSeqNum from cte_current_requirement_id)
             order  by r2.promotionSeqNum asc

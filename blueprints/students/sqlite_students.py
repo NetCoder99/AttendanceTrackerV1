@@ -238,6 +238,13 @@ def UpdateStudentRankStmt():
         where  badgeNumber       = :badgeNumber
     '''
 
+
+def DeleteStudentPromotionStmt():
+    return '''
+        delete from promotions 
+        where  promotionId = :promotionId
+    '''
+
 def GetPromotionHistoryStmt():
     return '''
         select p.promotionId,

@@ -462,6 +462,26 @@ def validate_class_search(form_args: dict) -> (bool, Classes):
 
     return True, selected_class
 
+# --------------------------------------------------------------------
+@students_bp.route('/del_attendance_record', methods=['GET', 'POST'])
+def del_attendance_record():
+    try:
+        print(f'request: {request.json['promotionId']}')
+        delQuery          = DeleteStudentPromotionStmt()
+        delete_counts     = UpdDataWithArgs(delQuery, {'promotionId': request.json['promotionId']})
+
+        sqlQuery          = GetPromotionHistoryStmt()
+        promotionHistory  = GetDataWithArgs(sqlQuery, {'badgeNumber' : request.json['badgeNumber']})
+        return {
+            'status': 'ok',
+            'message' : 'Promotion record was removed',
+            'promotionHistory' : promotionHistory
+        }
+    except Exception as ex:
+        print(f'{str(ex)}')
+        return {'status': 'error', 'message' : str(ex) }
+
+
 # @students_bp.route('/get_student_details', methods=['GET', 'POST'])
 # def get_student_details():
 #     print(f'Current route: get_student_details')

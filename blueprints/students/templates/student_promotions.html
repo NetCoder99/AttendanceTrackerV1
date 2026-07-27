@@ -8,14 +8,14 @@
                 <hr>
             </div>
             <div class="row">
-                <div class="col-sm-10 pt-3">
+                <div class="col-sm-12 pt-3">
                     <form id="frmStudentPromotions">
 <!--                        <h6 id="hdrStudentRank" class="fw-bold">-->
 <!--                            <p id="prgStudentRank">Please set the current student rank:</p>-->
 <!--                        </h6>-->
                         <div class="row">
-                            <div class="d-inline-block text-start" style="width: 10rem;" >
-                                <label class="form-label ms-1 mb-0 fw-bold">Rank Name:</label>
+                            <div class="d-inline-block text-start" style="width: 9rem;" >
+                                <label class="form-label ms-1 mb-0 fw-bold">Next Rank Name:</label>
                                 <select name="studentBeltNames"
                                         id="studentBeltNames"
                                         class="form-select"
@@ -33,8 +33,8 @@
                                     <option value="8">Black Belt</option>
                                 </select>
                             </div>
-                            <div class="d-inline-block text-start ms-1" style="width: 14rem;">
-                                <label class="form-label ms-1 mb-0 fw-bold">Stripe Name:</label>
+                            <div class="d-inline-block text-start ms-1" style="width: 13rem;">
+                                <label class="form-label ms-1 mb-0 fw-bold">Next Stripe Name:</label>
                                 <select name="studentBeltStripes" id="studentBeltStripes" class="form-select">
                                     <option value=58>1st Orange Stripe</option>
                                     <option value=131>2nd Orange Stripe</option>
@@ -45,17 +45,44 @@
                                 </select>
                             </div>
 
-                            <div class="d-inline-block text-start ms-1" style="width: 14rem;" >
-                                <label class="form-label ms-1 mb-0 fw-bold">Promotion Date:</label>
+                            <div class="d-inline-block text-start ms-1" style="width: 13rem;" >
+                                <label class="form-label ms-1 mb-0 fw-bold">Next Promotion Date:</label>
                                 <input id="studentPromotionDate" name="studentPromotionDate" type="date" class="form-control">
                             </div>
 
-                            <div class="d-inline-block text-start ms-1" style="width: 5rem;" >
+                            <div class="d-inline-block text-start ms-1" style="width: 8rem;" >
+                                <label class="form-label ms-1 mb-0 fw-bold">Required:</label>
+                                <input
+                                        id="classesRequired"
+                                        name="classesRequired"
+                                        type="number"
+                                        class="form-control"
+                                        style="width: 7rem;"
+                                        value="1129"
+                                        disabled
+
+                                >
+                            </div>
+
+                            <div class="d-inline-block text-start ms-1" style="width: 8rem;" >
+                                <label class="form-label ms-1 mb-0 fw-bold">Attended:</label>
+                                <input
+                                        id="classesAttended"
+                                        name="classesRequired"
+                                        type="number"
+                                        class="form-control"
+                                        style="width: 7rem;"
+                                        value="21"
+                                        disabled
+
+                                >
+                            </div>
+                            <div class="d-inline-block text-start ms-1" style="width: 6rem;" >
                                 <label class="form-label ms-1 mb-0 fw-bold">&nbsp;</label>
                                 <button id="btnPromotionSave"
                                         name="btnPromotionSave"
                                         type="button"
-                                        class="d-inline-block btn btn-sm btn-primary"
+                                        class="d-inline-block btn btn-sm btn-primary mt-4"
                                         onclick="fncPromotionSave()"
                                         style="height: 2rem;">Save</button>
                             </div>

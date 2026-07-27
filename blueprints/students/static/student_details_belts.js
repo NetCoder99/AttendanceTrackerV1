@@ -154,7 +154,7 @@ function processGetPromotionsResponse(response) {
                             <button type  = "button"
                                     id    = "del-${buttonId}"
                                     class = "btn btn-sm btn-success"
-                                    onclick = "delPromotionDate(${promotionHistory[i].promotionId})">
+                                    onclick = "delPromotionRecord(${promotionHistory[i].promotionId})">
                                 Del
                             </button>
                           </td>
