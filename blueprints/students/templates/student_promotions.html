@@ -14,7 +14,7 @@
 <!--                            <p id="prgStudentRank">Please set the current student rank:</p>-->
 <!--                        </h6>-->
                         <div class="row">
-                            <div class="d-inline-block text-start" style="width: 9rem;" >
+                            <div class="d-inline-block text-start" style="width: 11rem;" >
                                 <label class="form-label ms-1 mb-0 fw-bold">Next Rank Name:</label>
                                 <select name="studentBeltNames"
                                         id="studentBeltNames"
@@ -35,7 +35,13 @@
                             </div>
                             <div class="d-inline-block text-start ms-1" style="width: 13rem;">
                                 <label class="form-label ms-1 mb-0 fw-bold">Next Stripe Name:</label>
-                                <select name="studentBeltStripes" id="studentBeltStripes" class="form-select">
+                                <select name="studentBeltStripes"
+                                        id="studentBeltStripes"
+                                        class="form-select"
+                                        hx-get="/upd_requirements_htmx"
+                                        hx-trigger="change"
+                                        hx-target="#div_requirements_counts"
+                                        >
                                     <option value=58>1st Orange Stripe</option>
                                     <option value=131>2nd Orange Stripe</option>
                                     <option value=132>3rd Orange Stripe</option>
@@ -50,33 +56,36 @@
                                 <input id="studentPromotionDate" name="studentPromotionDate" type="date" class="form-control">
                             </div>
 
-                            <div class="d-inline-block text-start ms-1" style="width: 8rem;" >
-                                <label class="form-label ms-1 mb-0 fw-bold">Required:</label>
-                                <input
-                                        id="classesRequired"
-                                        name="classesRequired"
-                                        type="number"
-                                        class="form-control"
-                                        style="width: 7rem;"
-                                        value="1129"
-                                        disabled
+                             {% include 'partials/requirements_counts.html' %}
 
-                                >
-                            </div>
+<!--                            <div class="d-inline-block text-start ms-1" style="width: 8rem;" >-->
+<!--                                <label class="form-label ms-1 mb-0 fw-bold">Required:</label>-->
+<!--                                <input-->
+<!--                                        id="classesRequired"-->
+<!--                                        name="classesRequired"-->
+<!--                                        type="number"-->
+<!--                                        class="form-control"-->
+<!--                                        style="width: 7rem;"-->
+<!--                                        value="1129"-->
+<!--                                        disabled-->
 
-                            <div class="d-inline-block text-start ms-1" style="width: 8rem;" >
-                                <label class="form-label ms-1 mb-0 fw-bold">Attended:</label>
-                                <input
-                                        id="classesAttended"
-                                        name="classesRequired"
-                                        type="number"
-                                        class="form-control"
-                                        style="width: 7rem;"
-                                        value="21"
-                                        disabled
+<!--                                >-->
+<!--                            </div>-->
 
-                                >
-                            </div>
+<!--                            <div class="d-inline-block text-start ms-1" style="width: 8rem;" >-->
+<!--                                <label class="form-label ms-1 mb-0 fw-bold">Attended:</label>-->
+<!--                                <input-->
+<!--                                        id="classesAttended"-->
+<!--                                        name="classesRequired"-->
+<!--                                        type="number"-->
+<!--                                        class="form-control"-->
+<!--                                        style="width: 7rem;"-->
+<!--                                        value="21"-->
+<!--                                        disabled-->
+
+<!--                                >-->
+<!--                            </div>-->
+
                             <div class="d-inline-block text-start ms-1" style="width: 6rem;" >
                                 <label class="form-label ms-1 mb-0 fw-bold">&nbsp;</label>
                                 <button id="btnPromotionSave"

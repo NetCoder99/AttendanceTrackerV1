@@ -78,7 +78,7 @@ function delPromotionRecord(promotionId){
     console.log(`delPromotionRecord was invoked: ${promotionId}`);
     const badgeNumber        = $('#hdnBadgeNumber').val();
     $.ajax({
-      url: '/del_attendance_record',
+      url: '/del_promotion_record',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify({'promotionId' : promotionId, 'badgeNumber': badgeNumber}),

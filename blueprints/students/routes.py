@@ -463,8 +463,8 @@ def validate_class_search(form_args: dict) -> (bool, Classes):
     return True, selected_class
 
 # --------------------------------------------------------------------
-@students_bp.route('/del_attendance_record', methods=['GET', 'POST'])
-def del_attendance_record():
+@students_bp.route('/del_promotion_record', methods=['GET', 'POST'])
+def del_promotion_record():
     try:
         print(f'request: {request.json['promotionId']}')
         delQuery          = DeleteStudentPromotionStmt()
@@ -480,6 +480,19 @@ def del_attendance_record():
     except Exception as ex:
         print(f'{str(ex)}')
         return {'status': 'error', 'message' : str(ex) }
+
+
+# --------------------------------------------------------------------
+@students_bp.route('/upd_requirements_htmx', methods=['GET', 'POST'])
+def upd_requirements_htmx():
+    print(f'Current route: upd_requirements_htmx')
+    requirements_counts = render_template(
+        "partials/requirements_counts.html",
+        actual_attendance_count=45,
+        required_attendance_count=150
+    )
+    #response = make_response(requirements_counts)
+    return requirements_counts
 
 
 # @students_bp.route('/get_student_details', methods=['GET', 'POST'])
