@@ -132,6 +132,8 @@ class Attendance(Base):
     checkinDateTime:  Mapped[Optional[str]] = mapped_column(Text)
     checkinDate:      Mapped[Optional[str]] = mapped_column(Text)
     checkinTime:      Mapped[Optional[str]] = mapped_column(Text)
+    checkinDayOfWeek: Mapped[Optional[int]] = mapped_column(Text)
+    checkinDayName:   Mapped[Optional[str]] = mapped_column(Text)
     studentFirstName: Mapped[Optional[str]] = mapped_column(Text)
     studentLastName:  Mapped[Optional[str]] = mapped_column(Text)
     studentStatus:    Mapped[Optional[str]] = mapped_column(Text)

@@ -1,3 +1,4 @@
+from dateutil.parser import parse
 from sqlalchemy import select
 
 import constants
@@ -48,9 +49,12 @@ def InsertAttendanceRecord(student_record: Students, class_record: Classes, chec
         checkinDateStr     = checkin_datetime.strftime(constants.fmtDate)
         checkinTimeStr     = checkin_datetime.strftime(constants.fmtTime)
 
+        #day_name = parse(checkinDateTimeStr, fuzzy=True).strftime('%A')
+
         attendance_record = Attendance()
         attendance_record.badgeNumber       = student_record.badgeNumber
         attendance_record.checkinDayOfWeek  = day_of_week
+        attendance_record.checkinDayName    = parse(checkinDateTimeStr, fuzzy=True).strftime('%A')
         attendance_record.checkinDateTime   = checkinDateTimeStr
         attendance_record.checkinDate       = checkinDateStr
         attendance_record.checkinTime       = checkinTimeStr

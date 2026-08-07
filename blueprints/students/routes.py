@@ -431,9 +431,11 @@ def get_attendance_class():
         alert_class  = "text-danger" if status == 'error' else "text-success"
         message      = "Class search completed"
         class_data   = validation_results[1]
+        checkin_date_time     = parse(request.args['frm_checkinDateTime'], fuzzy=True)
+
         class_details = render_template(
             "partials/new_attendance_class.html",
-            classDayName = "Monday",
+            classDayName = checkin_date_time.strftime('%A'),
             className = class_data.classDisplayTitle,
             classStartTime=class_data.classStartTime,
             classFinisTime=class_data.classFinisTime,
