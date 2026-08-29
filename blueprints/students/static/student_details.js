@@ -99,6 +99,13 @@ $('#btnSaveStudentUpdate').off().on('click', function() {
     const formObject = $('#frmStudentDetails');
     let   formData   = $('#frmStudentDetails').serializeArray();
     formData.push({'name': 'badgeNumber', 'value' : badgeNumber});
+
+    const imageObject = $('#studentImageTmp')
+    formData.push({'name': 'imageSrc', 'value': imageObject[0].src});
+
+    const imageName   = $('#studentImageName')
+    formData.push({'name': 'imageName', 'value': imageName[0].innerHTML});
+
     const studentJsonData = JSON.stringify(formData);
 
     fetch('save_student_details_api', {

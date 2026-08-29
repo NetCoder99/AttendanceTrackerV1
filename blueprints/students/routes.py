@@ -99,6 +99,10 @@ def save_student_picture():
         data_json   = json.loads(data_string)
         pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
         matches = pattern.search(data_json['fileBase64'])
+
+        if 'badgeNumber' not in data_json:
+            data_json['badgeNumber'] = -1
+
         updateDict  = {
             'badgeNumber' : data_json['badgeNumber'],
             'studentImageName' : data_json['file_name'],
@@ -106,7 +110,7 @@ def save_student_picture():
             'studentImageBase64' : matches.group(5),
             'fileBase64' :  data_json['fileBase64']
         }
-        UpdStudentPicture(data_json, updateDict)
+        # UpdStudentPicture(data_json, updateDict)
         return json.dumps(updateDict)
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
@@ -180,16 +184,40 @@ def save_student_details_api():
     print(f'Current route: save_student_details_api')
     form_dict  = FormListToDict(request.json)
     validation_results = validateStudentFieldsUpdate(form_dict)
+
+    pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
+    matches = pattern.search(form_dict['imageSrc'])
+    form_dict['studentImageName']   = form_dict['imageName']
+    form_dict['studentImageType']   = matches.group(3)
+    form_dict['studentImageBase64'] = matches.group(5)
+    #form_dict['fileBase64']         = data_json['fileBase64']
+
+    form_dict['currentRankNum']       = 1
+    form_dict['currentRankName']      = 'White Belt'
+    form_dict['currentStripeId']      = 181
+    form_dict['currentStripeName']    = 'No stripe earned'
+    form_dict['studentPromotionDate'] = datetime.now().strftime(constants.fmtDateTime)
+
     if validation_results['validationResults']['status'] == 'ok':
         badgeNumber     = form_dict['badgeNumber']
         sqlQueryStudent = GetStudentRecordsStmtByBadge()
         studentData     = GetDataWithArgs(sqlQueryStudent, {'badgeNumber' : badgeNumber})
         if len(studentData) == 0:
             InsStudentRecord(form_dict)
-            SetInitialRank(badgeNumber)
+            # SetInitialRank(badgeNumber)
         else:
             UpdStudentRecord(form_dict)
     return validation_results
+
+def GetImageDict(data_json: dict):
+    pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
+    matches = pattern.search(data_json['fileBase64'])
+    return {
+            'studentImageName' : data_json['file_name'],
+            'studentImageType' : matches.group(3),
+            'studentImageBase64' : matches.group(5),
+            'fileBase64' :  data_json['fileBase64']
+        }
 
 def SetInitialRank(badgeNumber):
     beltData          = GetRanksRecords()

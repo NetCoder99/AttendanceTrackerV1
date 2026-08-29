@@ -153,7 +153,15 @@ def InsStudentRecordStmt():
           zip,
           birthDate,
           phoneHome,
-          email
+          email,
+          currentRankNum,
+          currentRankName,
+          currentStripeId,
+          currentStripeName,
+          studentPromotionDate,          
+          studentImageName,
+          studentImageType,
+          studentImageBase64          
         )
         values (
           :badgeNumber,
@@ -166,7 +174,15 @@ def InsStudentRecordStmt():
           :frmZip,
           :frmBirthDate,
           :frmPhoneHome,
-          :frmEmail
+          :frmEmail,
+          :currentRankNum,
+          :currentRankName,
+          :currentStripeId,
+          :currentStripeName,
+          :studentPromotionDate,          
+          :studentImageName,
+          :studentImageType,
+          :studentImageBase64          
         )  
     '''
 
