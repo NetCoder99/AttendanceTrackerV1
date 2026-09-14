@@ -332,7 +332,7 @@ def GetDefaultStudentDataStmt():
     '''
 
 # ------------------------------------------------------------------
-def UpdStudentPicture(pictureDetails, updateDict):
+def UpdStudentPicture(updateDict):
     db_path = getDbPath()
     dbObj = sqlite3.connect(db_path)
     dbObj.row_factory = DictFactory

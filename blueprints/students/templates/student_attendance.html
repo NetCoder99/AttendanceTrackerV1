@@ -14,21 +14,17 @@
                             hx-get="/get_attendance_dialog"
                             hx-target="#new-attendance-record"
                             hx-include="#hdnBadgeNumber"
-
                     >New</button>
+                    <button type="button"
+                            id="btn_attendance_refresh"
+                            name="btn_attendance_refresh"
+                            class="btn btn-sm btn-info d-inline-block float-end me-3" style="width: 5rem;"
+                            onclick="getAttendanceData()"
+                    >Refresh</button>
                 </h5>
                 <hr>
             </div>
-
-            <div class="row w-100 d-flex justify-content-center text-center">
-                <p class="col fw-bold text-success fs-6">Total classes attended: <label id="lbl_attendance_total_count"></label></p>
-                <p class="col fw-bold text-success fs-6">Last promotion date:  <label id="lbl_last_promotion_date"></label></p>
-            </div>
-            <div class="row w-100 d-flex justify-content-center text-center">
-                <p class="col fw-bold text-success fs-6">Next belt:   <label id="lbl_next_belt_name"></label></p>
-                <p class="col fw-bold text-success fs-6">Next stripe: <label id="lbl_next_stripe_title"></label></p>
-            </div>
-
+            {% include 'partials/attendance_counts.html' %}
             <div>
                 <table id="tblStudentAttendance" class="table table-bordered table-striped ms-3">
                     <thead>

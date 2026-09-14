@@ -63,12 +63,12 @@ if __name__ == '__main__':
     ok_to_start = IsProcessActive(constants.applicationName)
 
     if ok_to_start['status'] == 'ok':
-        ui = FlaskUI(app=app, width=1250, height=900, fullscreen=False, server='flask', port=5001)
-        ui.run()
+        app.run(debug=False, port=5001)
+        #ui = FlaskUI(app=app, width=1250, height=900, fullscreen=False, server='flask', port=5001)
+        #ui.run()
     else:
         root = tk.Tk()
         root.withdraw()
         messagebox.showinfo("AttendanceCheckin - Error", ok_to_start['message'])
         print(ok_to_start['message'])
 
-    #app.run(debug=False, port=5001)

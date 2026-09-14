@@ -1,7 +1,7 @@
 import json
-from datetime import datetime, time, date
+from datetime import datetime, date
 
-from models import Classes
+from models.data_models import Classes
 from sqlite.sqlite_alchemy import db_session, getDbSession
 from sqlite.sqlite_attendance import insAttendanceRecordStmt
 from sqlite.sqlite_procs import UpdDataWithArgs

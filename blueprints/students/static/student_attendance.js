@@ -44,10 +44,10 @@ function processAttendanceResponse(response) {
 }
 
 function processStudentAttendanceRecords(attendanceData) {
-    console.log(`processAttendanceResponse: ${attendanceData}`);
+    //console.log(`processAttendanceResponse: ${attendanceData}`);
     const tbodyStudentAttendance = $('#tbodyStudentAttendance');
     for (let i = 0; i < attendanceData.length; i++) {
-        console.log(attendanceData[i]);
+        //console.log(attendanceData[i]);
         const dataRow = getStudentAttendanceRow(attendanceData[i]);
         tbodyStudentAttendance.append(dataRow);
     }
@@ -80,28 +80,42 @@ function getStudentAttendanceRow(attendanceData) {
     td6.textContent = attendanceData.appliesPromotion;
     dataRow.appendChild(td6);
 
-    const newAnchor = getFunctionHrefElement(attendanceData.attendance_id);
     const tdLast    = document.createElement("td");
-    tdLast.append(newAnchor);
+    const editAnchor = getEditFunctionHrefElement(attendanceData.attendance_id);
+    const delAnchor  = getDelFunctionHrefElement(attendanceData.attendance_id);
+    tdLast.append(editAnchor);
+    tdLast.append(delAnchor);
+
+//    const tdLast    = document.createElement("td");
+//    tdLast.append(editAnchor);
+
     dataRow.append(tdLast);
 
     return dataRow;
 }
 
-function getFunctionHrefElement(attendance_id) {
+function getEditFunctionHrefElement(attendance_id) {
     const newAnchor = document.createElement('a');
     newAnchor.href       = '#';
     newAnchor.target     = '_blank'; // Opens in a new tab
     newAnchor.title      = 'Edit';
     newAnchor.innerHTML  = 'Edit';
-
+    newAnchor.classList.add("me-3")
     newAnchor.onclick = function(event) {
       event.preventDefault();
       console.log(`Edit clicked for attendance_id: ${attendance_id}`);
-
-//      $('#exampleModal').find('#divClassNum').html('');
-//      $('#exampleModal').find('#divClassDayOfWeek').html(classDayOfWeek);
-//      $('#exampleModal').modal('show');
     };
     return newAnchor;
- }
+}
+function getDelFunctionHrefElement(attendance_id) {
+    const newAnchor = document.createElement('a');
+    newAnchor.href       = '#';
+    newAnchor.target     = '_blank'; // Opens in a new tab
+    newAnchor.title      = 'Del';
+    newAnchor.innerHTML  = 'Del';
+    newAnchor.onclick = function(event) {
+      event.preventDefault();
+      console.log(`Del clicked for attendance_id: ${attendance_id}`);
+    };
+    return newAnchor;
+}

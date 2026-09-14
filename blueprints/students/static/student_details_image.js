@@ -7,13 +7,15 @@ $("#selectStudentPicture").change(function(event) {
     console.log("selectStudentPicture was invoked:") ;
     const file = event.target.files[0]; // Get the first selected file
     console.log(file.name);
+
     if (file) {
+        $("#studentImageName").text(file.name);
         const reader = new FileReader();
         reader.onload = (function(theFile) {
           return function(e) {
             // The base64 string is in e.target.result or reader.result
             const base64String = e.target.result;
-            postImageToServer(file.name, base64String);
+            postImageToServer(file.name, file.type, base64String);
           };
     })(file);
         reader.readAsDataURL(file);
@@ -21,13 +23,14 @@ $("#selectStudentPicture").change(function(event) {
 });
 
 // -------------------------------------------------------------------------------
-function postImageToServer(fileName, base64String) {
+function postImageToServer(fileName, fileType, base64String) {
     console.log("postImageToServer:" + base64String) ;
     const badgeNumber = $('#hdnBadgeNumber').val();
 
     const dataToSend = {
         'badgeNumber' : badgeNumber,
         'file_name' : fileName,
+        'file_type' : fileType,
         'fileBase64': base64String
     };
 

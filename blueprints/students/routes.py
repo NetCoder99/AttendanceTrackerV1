@@ -1,17 +1,20 @@
 import json
-from dateutil.parser import parse, ParserError
-from datetime import date, datetime
+import traceback
 
-from flask import Blueprint, render_template, request, jsonify
+from dateutil.parser import parse
+from datetime import datetime
+
+from flask import Blueprint, render_template, request
 from flask_htmx import make_response
 from sqlalchemy import select, func
 
 import constants
-from blueprints.belts.sqlite_belts import GetBeltsRecords, GetStripeRecords, GetRanksRecords, GetStripesForRankStmt
+from blueprints.belts.sqlite_belts import GetRanksRecords, GetStripesForRankStmt
 from blueprints.students.student_attendance import UpdPromotionDateStmt, InsertAttendanceRecord, GetAttendanceRecord
 from blueprints.students.student_promotions import GetNextPromotion
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
-from models import Classes, Students, Attendance, Promotions
+from models.data_models import Classes, Students, Attendance, Promotions
+from models.input_models import NewPromotionRecord
 from services.barcodeGenerator import createBarcodeFile
 from services.battoDoGenerator import createBattoDoBadgePdf
 from services.checkin_procs import GetCurrentClass
@@ -163,8 +166,15 @@ def student_attendance_api():
                                       .scalar(select(func.max(Promotions.promotionDate))
                                       .where(Promotions.badgeNumber == badgeNumber))
                                       )
-        last_promotion_date_str = parse(last_promotion_date, fuzzy=False).strftime(constants.fmtDate)
-        next_promotion_data     = GetNextPromotion(badgeNumber)
+        if last_promotion_date:
+            last_promotion_date_str = parse(last_promotion_date, fuzzy=False).strftime(constants.fmtDate)
+            next_promotion_data = GetNextPromotion(badgeNumber)
+        elif studentData[0]['studentPromotionDate']:
+            last_promotion_date_str = parse(studentData[0]['studentPromotionDate'], fuzzy=False).strftime(constants.fmtDate)
+            next_promotion_data     = GetNextPromotion(badgeNumber)
+        else:
+            last_promotion_date_str = parse(studentData[0]['memberSinceDate'], fuzzy=False).strftime(constants.fmtDate)
+            next_promotion_data     = GetNextPromotion(badgeNumber)
 
         rtnData = {
             'studentData'            : studentData[0],
@@ -181,33 +191,137 @@ def student_attendance_api():
 
 @students_bp.route('/save_student_details_api', methods=['GET', 'POST'])
 def save_student_details_api():
-    print(f'Current route: save_student_details_api')
-    form_dict  = FormListToDict(request.json)
-    validation_results = validateStudentFieldsUpdate(form_dict)
+    try:
+        print(f'Current route: save_student_details_api')
+        form_dict  = FormListToDict(request.json)
+        validation_results = validateStudentFieldsUpdate(form_dict)
 
-    pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
-    matches = pattern.search(form_dict['imageSrc'])
-    form_dict['studentImageName']   = form_dict['imageName']
-    form_dict['studentImageType']   = matches.group(3)
-    form_dict['studentImageBase64'] = matches.group(5)
-    #form_dict['fileBase64']         = data_json['fileBase64']
+        if validation_results['validationResults']['status'] != 'ok':
+            return validation_results
 
-    form_dict['currentRankNum']       = 1
-    form_dict['currentRankName']      = 'White Belt'
-    form_dict['currentStripeId']      = 181
-    form_dict['currentStripeName']    = 'No stripe earned'
-    form_dict['studentPromotionDate'] = datetime.now().strftime(constants.fmtDateTime)
-
-    if validation_results['validationResults']['status'] == 'ok':
-        badgeNumber     = form_dict['badgeNumber']
-        sqlQueryStudent = GetStudentRecordsStmtByBadge()
-        studentData     = GetDataWithArgs(sqlQueryStudent, {'badgeNumber' : badgeNumber})
-        if len(studentData) == 0:
-            InsStudentRecord(form_dict)
-            # SetInitialRank(badgeNumber)
+        student_record = db_session.query(Students).filter_by(badgeNumber=form_dict['badgeNumber']).first()
+        if not student_record:
+            CreateNewStudentRecord(form_dict)
         else:
-            UpdStudentRecord(form_dict)
-    return validation_results
+            UpdateStudentRecord(student_record, form_dict)
+
+        return validation_results
+
+    except Exception as ex:
+        traceback.print_exc()
+        print(f'Error: {ex.__str__()}')
+
+def CreateNewStudentRecord(form_dict: dict):
+    try:
+        student_record = Students()
+        student_record.badgeNumber = None
+
+        student_record.badgeNumber  = form_dict['badgeNumber']
+        student_record.firstName    = form_dict['frmFirstName']
+        student_record.lastName     = form_dict['frmLastName']
+        #student_record.namePrefix   = form_dict['namePrefix']
+        student_record.email        = form_dict['frmEmail']
+        student_record.address      = form_dict['frmAddress']
+        student_record.address2     = form_dict['frmAddress2']
+        student_record.city         = form_dict['frmCity']
+        student_record.country      = 'USA'
+        student_record.state        = form_dict['frmState']
+        student_record.zip          = form_dict['frmZip']
+        student_record.birthDate    = form_dict['frmBirthDate']
+        student_record.phoneHome    = form_dict['frmPhoneHome']
+        #student_record.phoneMobile  = form_dict['phoneMobile']
+        student_record.status       = 'Active'
+
+        pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
+        matches = pattern.search(form_dict['imageSrc'])
+        student_record.studentImageName   = form_dict['imageName']
+        student_record.studentImageType   = matches.group(3)
+        student_record.studentImageBase64 = matches.group(5)
+
+        student_record.currentRankNum       = 1
+        student_record.currentRankName      = 'White Belt'
+        student_record.currentStripeId      = 181
+        student_record.currentStripeName    = 'No stripe earned'
+        student_record.studentPromotionDate = datetime.now().strftime(constants.fmtDateTime)
+
+        db_session.add(student_record)
+        db_session.commit()
+
+        promotion_params = NewPromotionRecord.construct()
+        promotion_params.badge_number   = student_record.badgeNumber
+        promotion_params.belt_id        = student_record.currentRankNum
+        promotion_params.belt_name      = student_record.currentRankName
+        promotion_params.stripe_id      = student_record.currentStripeId
+        promotion_params.stripe_name    = student_record.currentStripeName
+        promotion_params.promotion_date = student_record.studentPromotionDate
+        promotion_params.comments       = 'New student creation'
+        InsNewPromotionRecord(student_record, promotion_params)
+        return student_record
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
+def UpdateStudentRecord(student_record: Students, form_dict: dict):
+    try:
+        if not student_record.studentImageName or student_record.studentImageName != form_dict['imageName']:
+            pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
+            matches = pattern.search(form_dict['imageSrc'])
+            form_dict['studentImageName'] = form_dict['imageName']
+            form_dict['studentImageType'] = matches.group(3)
+            form_dict['studentImageBase64'] = matches.group(5)
+            UpdStudentPicture(form_dict)
+            # db_session.refresh(student_record)
+
+        if not student_record.currentRankNum:
+            form_dict['currentRankNum']     = 1
+            form_dict['currentRankName']    = 'White Belt'
+            form_dict['currentStripeId']    = 181
+            form_dict['currentStripeName']  = 'No stripe earned'
+            form_dict['studentPromotionDate'] = datetime.now().strftime(constants.fmtDateTime)
+
+        # badgeNumber      = form_dict['badgeNumber']
+        # sqlQueryStudent  = GetStudentRecordsStmtByBadge()
+        UpdStudentRecord(form_dict)
+        db_session.refresh(student_record)
+
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
+def InsNewPromotionRecord(student_record: Students,  promotion_params: NewPromotionRecord) -> Promotions:
+    try:
+        #ValidatePromotionParams(promotion_params)
+        new_promotion_record = Promotions()
+        new_promotion_record.studentName      = f'{student_record.firstName} {student_record.lastName}'
+        new_promotion_record.studentFirstName = student_record.firstName
+        new_promotion_record.studentLastName  = student_record.lastName
+        new_promotion_record.badgeNumber      = student_record.badgeNumber
+        new_promotion_record.beltId      = promotion_params.belt_id
+        new_promotion_record.beltTitle   = promotion_params.belt_name
+        new_promotion_record.stripeId    = promotion_params.stripe_id
+        new_promotion_record.stripeTitle = promotion_params.stripe_name
+        if promotion_params.belt_id != student_record.currentRankNum:
+            new_promotion_record.promotionType = 'Belt'
+        else:
+            new_promotion_record.promotionType = 'Stripe'
+        if promotion_params.comments.strip() == '':
+            new_promotion_record.comments = "Promotion from api"
+        else:
+            new_promotion_record.comments = promotion_params.comments
+
+        if isinstance(promotion_params.promotion_date, str):
+            new_promotion_record.promotionDate = promotion_params.promotion_date
+        elif isinstance(promotion_params.promotion_date, datetime):
+            new_promotion_record.promotionDate  = promotion_params.promotion_date.strftime(constants.fmtDateTime)
+        else:
+            raise Exception("Unknown promotion date type!")
+        new_promotion_record.createDateTime = datetime.now().strftime(constants.fmtDateTime)
+        new_promotion_record.createDateTime = datetime.now().strftime(constants.fmtDateTime)
+        db_session.add(new_promotion_record)
+        db_session.commit()
+        return new_promotion_record
+    except Exception as ex:
+        print(f'Error: {str(ex)}')
+        raise ex
+
 
 def GetImageDict(data_json: dict):
     pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
@@ -523,6 +637,23 @@ def upd_requirements_htmx():
     )
     #response = make_response(requirements_counts)
     return requirements_counts
+
+
+# --------------------------------------------------------------------
+@students_bp.route('/refresh_attendance_dialog', methods=['GET', 'POST'])
+def refresh_attendance_dialog():
+    print(f'Current route: refresh_attendance_dialog')
+    try:
+        badgeNumber = request.args['badgeNumber']
+        student_records = GetSqliteStudents()
+        student_record = [x for x in student_records if
+                          str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
+        student_record['headerMessage'] = 'Reviewing student attendance.'
+        # refresh counts first
+
+        #return render_template('student_attendance.html', studentFields=student_record)
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
 
 
 # @students_bp.route('/get_student_details', methods=['GET', 'POST'])

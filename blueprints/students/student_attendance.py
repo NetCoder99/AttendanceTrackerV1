@@ -3,7 +3,7 @@ from sqlalchemy import select
 
 import constants
 from blueprints.students.sqlite_students import GetStudentRecordsStmtByBadge
-from models import Students, Classes, Attendance
+from models.data_models import Students, Classes, Attendance
 from sqlite.sqlite_alchemy import getDbSession
 from sqlite.sqlite_procs import GetDataWithArgs
 from datetime import datetime
