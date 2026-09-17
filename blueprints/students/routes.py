@@ -11,7 +11,7 @@ from sqlalchemy import select, func
 import constants
 from blueprints.belts.sqlite_belts import GetRanksRecords, GetStripesForRankStmt
 from blueprints.students.student_attendance import UpdPromotionDateStmt, InsertAttendanceRecord, GetAttendanceRecord
-from blueprints.students.student_promotions import GetNextPromotion
+from blueprints.students.student_promotions import GetNextPromotion, GetNextStudentRank
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
 from models.data_models import Classes, Students, Attendance, Promotions
 from models.input_models import NewPromotionRecord
@@ -33,6 +33,16 @@ students_bp = Blueprint(
     static_folder='static',
     static_url_path='/students_bp_static'
 )
+
+
+# -----------------------------------------------------------------------------------
+# commonly used function to get the student record
+# -----------------------------------------------------------------------------------
+def GetStudentRecord(badge_number: int) -> Students:
+    student_list_stmt = select(Students).where(Students.badgeNumber == badge_number)
+    return db_session.scalars(student_list_stmt).first()
+
+
 
 @students_bp.route('/students')   # Focus here
 def students_bp_home():
@@ -148,46 +158,49 @@ def student_attendance():
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
 
-@students_bp.route('/student_attendance_api', methods=['GET', 'POST'])   # Focus here
-def student_attendance_api():
-    try:
-        badgeNumber     = request.json['badgeNumber']
-        sqlQueryStudent = GetStudentRecordsStmtByBadge()
-        studentData     = GetDataWithArgs(sqlQueryStudent, {'badgeNumber' : badgeNumber})
-
-        sqlQueryAttendance = GetStudentAttendanceRecords()
-        attendanceData     = GetDataWithArgs(sqlQueryAttendance, {'badgeNumber' : badgeNumber})
-
-        attendance_total_count = (db_session
-                                      .scalar(select(func.count(Attendance.badgeNumber))
-                                      .where(Attendance.badgeNumber == badgeNumber))
-                                      )
-        last_promotion_date = (db_session
-                                      .scalar(select(func.max(Promotions.promotionDate))
-                                      .where(Promotions.badgeNumber == badgeNumber))
-                                      )
-        if last_promotion_date:
-            last_promotion_date_str = parse(last_promotion_date, fuzzy=False).strftime(constants.fmtDate)
-            next_promotion_data = GetNextPromotion(badgeNumber)
-        elif studentData[0]['studentPromotionDate']:
-            last_promotion_date_str = parse(studentData[0]['studentPromotionDate'], fuzzy=False).strftime(constants.fmtDate)
-            next_promotion_data     = GetNextPromotion(badgeNumber)
-        else:
-            last_promotion_date_str = parse(studentData[0]['memberSinceDate'], fuzzy=False).strftime(constants.fmtDate)
-            next_promotion_data     = GetNextPromotion(badgeNumber)
-
-        rtnData = {
-            'studentData'            : studentData[0],
-            'attendanceData'         : attendanceData,
-            'attendance_total_count' : attendance_total_count,
-            'last_promotion_date'    : last_promotion_date_str,
-            'next_belt_name'         : next_promotion_data['beltTitle'],
-            'next_stripe_title'      : next_promotion_data['stripeTitle']
-        }
-        return rtnData
-    except Exception as ex:
-        print(f'Error: {ex.__str__()}')
-
+# @students_bp.route('/student_attendance_api', methods=['GET', 'POST'])   # Focus here
+# def student_attendance_api():
+#     try:
+#         badgeNumber     = request.json['badgeNumber']
+#         sqlQueryStudent = GetStudentRecordsStmtByBadge()
+#         studentData     = GetDataWithArgs(sqlQueryStudent, {'badgeNumber' : badgeNumber})
+#
+#         sqlQueryAttendance = GetStudentAttendanceRecords()
+#         attendanceData     = GetDataWithArgs(sqlQueryAttendance, {'badgeNumber' : badgeNumber})
+#
+#         attendance_total_count = (db_session
+#                                       .scalar(select(func.count(Attendance.badgeNumber))
+#                                       .where(Attendance.badgeNumber == badgeNumber))
+#                                       )
+#         last_promotion_date = (db_session
+#                                       .scalar(select(func.max(Promotions.promotionDate))
+#                                       .where(Promotions.badgeNumber == badgeNumber))
+#                                       )
+#         student_record = GetStudentRecord(badgeNumber)
+#         next_promotion_temp = GetNextStudentRank(student_record)
+#
+#         if last_promotion_date:
+#             last_promotion_date_str = parse(last_promotion_date, fuzzy=False).strftime(constants.fmtDate)
+#             next_promotion_data = GetNextPromotion(badgeNumber)
+#         elif studentData[0]['studentPromotionDate']:
+#             last_promotion_date_str = parse(studentData[0]['studentPromotionDate'], fuzzy=False).strftime(constants.fmtDate)
+#             next_promotion_data     = GetNextPromotion(badgeNumber)
+#         else:
+#             last_promotion_date_str = parse(studentData[0]['memberSinceDate'], fuzzy=False).strftime(constants.fmtDate)
+#             next_promotion_data     = GetNextPromotion(badgeNumber)
+#
+#         rtnData = {
+#             'studentData'            : studentData[0],
+#             'attendanceData'         : attendanceData,
+#             'attendance_total_count' : attendance_total_count,
+#             'last_promotion_date'    : last_promotion_date_str,
+#             'next_belt_name'         : next_promotion_data['beltTitle'],
+#             'next_stripe_title'      : next_promotion_data['stripeTitle']
+#         }
+#         return rtnData
+#     except Exception as ex:
+#         print(f'Error: {ex.__str__()}')
+#
 
 @students_bp.route('/save_student_details_api', methods=['GET', 'POST'])
 def save_student_details_api():
