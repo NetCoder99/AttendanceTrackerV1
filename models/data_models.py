@@ -2,11 +2,19 @@ from typing import Optional
 import datetime
 
 from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, ForeignKey, Index, Integer, LargeBinary, String, Table, Text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, declarative_base
 from sqlalchemy.sql.sqltypes import NullType
 
-class Base(DeclarativeBase):
-    pass
+import constants
+
+class BaseMixin:
+    def to_dict(self):
+        """Converts SQLAlchemy columns into a standard Python dictionary."""
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+Base = declarative_base(cls=BaseMixin)
+
+# class Base(DeclarativeBase):
+#     pass
 
 class Assets(Base):
     __tablename__ = 'assets'
@@ -208,3 +216,26 @@ class Requirements(Base):
 #     classCount      = Column(Integer)
 #     eligibleCount   = Column(Integer)
 
+class Archive(Base):
+    __tablename__ = 'archive'
+    __table_args__ = (
+        CheckConstraint('archiveDateTime IS datetime(archiveDateTime)', name='chkArchiveDateTime'),
+        CheckConstraint('archiveRecord IS (json_valid(archiveRecord))', name='chkArchiveRecordIsJson')
+    )
+
+    archiveId   : Mapped[int] = mapped_column(Integer, primary_key=True)
+    keyValue    : Mapped[Optional[str]] = mapped_column(Text)
+    badgeNumber : Mapped[Optional[str]] = mapped_column(Text)
+    tableName   : Mapped[Optional[str]] = mapped_column(Text)
+    archiveJson : Mapped[Optional[str]] = mapped_column(Text)
+    archiveDateTime: Mapped[Optional[str]] = mapped_column(Text)
+
+    @classmethod
+    def fromDict(cls, inp_dict):
+        return_rec = Archive()
+        return_rec.keyValue        = inp_dict['keyValue']    if 'keyValue'    in inp_dict else None
+        return_rec.badgeNumber     = inp_dict['badgeNumber'] if 'badgeNumber' in inp_dict else None
+        return_rec.tableName       = inp_dict['tableName']
+        return_rec.archiveJson     = inp_dict['archiveJson']
+        return_rec.archiveDateTime = datetime.datetime.now().strftime(constants.fmtDateTime)
+        return return_rec

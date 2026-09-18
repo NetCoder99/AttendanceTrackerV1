@@ -1,4 +1,5 @@
 applicationName = "AttendanceTrackerV1"
+applicationVersion = "1.0.1"
 #-----------------------------------------------------------
 # Date and Time format strings
 #-----------------------------------------------------------

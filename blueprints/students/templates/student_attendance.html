@@ -24,7 +24,10 @@
                 </h5>
                 <hr>
             </div>
-            {% include 'partials/attendance_counts.html' %}
+            <div class="row w-100 d-flex justify-content-center text-center">
+                <p class="col fw-bold text-success fs-6">Total classes attended: <label id="lbl_attendance_total_count"></label></p>
+                <p class="col fw-bold text-success fs-6">Last promotion date:    <label id="lbl_last_promotion_date"></label></p>
+            </div>
             <div>
                 <table id="tblStudentAttendance" class="table table-bordered table-striped ms-3">
                     <thead>

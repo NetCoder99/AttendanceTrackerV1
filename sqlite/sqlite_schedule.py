@@ -1,9 +1,16 @@
+import json
 import sqlite3
-
-from services.config import getDbPath
-from sqlite.sqlite_procs import DictFactory
+import traceback
 from datetime import datetime
 
+from sqlalchemy import select
+
+from models.data_models import Classes, Archive
+from services.config import getDbPath
+from sqlite.sqlite_procs import DictFactory
+from sqlite.sqlite_alchemy import getDbSession
+
+db_session = getDbSession()
 # ------------------------------------------------------------------
 def GetClassRecordsSorted():
     classRecords = GetClassRecords()
@@ -167,6 +174,7 @@ def UpdateExistingClassStmt():
 # ------------------------------------------------------------------
 def DeleteClass(classDict):
     try:
+        ArchiveClassRecord(classDict)
         db_path = getDbPath()
         dbObj = sqlite3.connect(db_path)
         dbObj.row_factory = DictFactory
@@ -185,3 +193,24 @@ def DeleteClassStmt():
         delete from classes
         where  classNum = :classNum 
     '''
+
+
+def ArchiveClassRecord(classDict):
+    try:
+        current_class_stmt = (select(Classes).where(Classes.classNum == classDict['classNum']))
+        class_record   = db_session.scalars(current_class_stmt).first()
+        archive_json   = class_record.to_dict()
+        archive_record = Archive.fromDict(
+            {
+                'keyValue': class_record.classNum,
+                'tableName': class_record.__tablename__,
+                'archiveJson': json.dumps(archive_json)
+            }
+        )
+        print(f'archive_json: {archive_json}')
+        db_session.add(archive_record)
+        db_session.commit()
+    except Exception as ex:
+        traceback.print_exc()
+        #print(str(ex))
+        raise ex

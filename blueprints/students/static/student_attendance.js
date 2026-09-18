@@ -35,8 +35,8 @@ function processAttendanceResponse(response) {
 
     document.getElementById('lbl_attendance_total_count').innerHTML = responseJson.attendance_total_count
     document.getElementById('lbl_last_promotion_date').innerHTML    = responseJson.last_promotion_date
-    document.getElementById('lbl_next_belt_name').innerHTML         = responseJson.next_belt_name
-    document.getElementById('lbl_next_stripe_title').innerHTML      = responseJson.next_stripe_title
+//    document.getElementById('lbl_next_belt_name').innerHTML         = responseJson.next_belt_name
+//    document.getElementById('lbl_next_stripe_title').innerHTML      = responseJson.next_stripe_title
 
     const headerMessage  = `Review student attendance for : ${studentData.firstName} ${studentData.lastName}`;
     $('#studentAttendancePageTitle').html(headerMessage);
@@ -46,6 +46,8 @@ function processAttendanceResponse(response) {
 function processStudentAttendanceRecords(attendanceData) {
     //console.log(`processAttendanceResponse: ${attendanceData}`);
     const tbodyStudentAttendance = $('#tbodyStudentAttendance');
+    tbodyStudentAttendance.empty();
+    // $("#myTable tbody").empty();
     for (let i = 0; i < attendanceData.length; i++) {
         //console.log(attendanceData[i]);
         const dataRow = getStudentAttendanceRow(attendanceData[i]);
@@ -73,7 +75,8 @@ function getStudentAttendanceRow(attendanceData) {
     dataRow.appendChild(td4);
 
     const td5 = document.createElement("td");
-    td5.textContent = attendanceData.className;
+    console.log("Class Name: " + attendanceData.className)
+    td5.textContent = "Class Name: " + attendanceData.className;
     dataRow.appendChild(td5);
 
     const td6 = document.createElement("td");

@@ -158,49 +158,42 @@ def student_attendance():
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
 
-# @students_bp.route('/student_attendance_api', methods=['GET', 'POST'])   # Focus here
-# def student_attendance_api():
-#     try:
-#         badgeNumber     = request.json['badgeNumber']
-#         sqlQueryStudent = GetStudentRecordsStmtByBadge()
-#         studentData     = GetDataWithArgs(sqlQueryStudent, {'badgeNumber' : badgeNumber})
-#
-#         sqlQueryAttendance = GetStudentAttendanceRecords()
-#         attendanceData     = GetDataWithArgs(sqlQueryAttendance, {'badgeNumber' : badgeNumber})
-#
-#         attendance_total_count = (db_session
-#                                       .scalar(select(func.count(Attendance.badgeNumber))
-#                                       .where(Attendance.badgeNumber == badgeNumber))
-#                                       )
-#         last_promotion_date = (db_session
-#                                       .scalar(select(func.max(Promotions.promotionDate))
-#                                       .where(Promotions.badgeNumber == badgeNumber))
-#                                       )
-#         student_record = GetStudentRecord(badgeNumber)
-#         next_promotion_temp = GetNextStudentRank(student_record)
-#
-#         if last_promotion_date:
-#             last_promotion_date_str = parse(last_promotion_date, fuzzy=False).strftime(constants.fmtDate)
-#             next_promotion_data = GetNextPromotion(badgeNumber)
-#         elif studentData[0]['studentPromotionDate']:
-#             last_promotion_date_str = parse(studentData[0]['studentPromotionDate'], fuzzy=False).strftime(constants.fmtDate)
-#             next_promotion_data     = GetNextPromotion(badgeNumber)
-#         else:
-#             last_promotion_date_str = parse(studentData[0]['memberSinceDate'], fuzzy=False).strftime(constants.fmtDate)
-#             next_promotion_data     = GetNextPromotion(badgeNumber)
-#
-#         rtnData = {
-#             'studentData'            : studentData[0],
-#             'attendanceData'         : attendanceData,
-#             'attendance_total_count' : attendance_total_count,
-#             'last_promotion_date'    : last_promotion_date_str,
-#             'next_belt_name'         : next_promotion_data['beltTitle'],
-#             'next_stripe_title'      : next_promotion_data['stripeTitle']
-#         }
-#         return rtnData
-#     except Exception as ex:
-#         print(f'Error: {ex.__str__()}')
-#
+@students_bp.route('/student_attendance_api', methods=['GET', 'POST'])   # Focus here
+def student_attendance_api():
+    try:
+        badgeNumber        = request.json['badgeNumber']
+        sqlQueryStudent    = GetStudentRecordsStmtByBadge()
+        studentData        = GetDataWithArgs(sqlQueryStudent, {'badgeNumber' : badgeNumber})
+        sqlQueryAttendance = GetStudentAttendanceRecords()
+        attendanceData     = GetDataWithArgs(sqlQueryAttendance, {'badgeNumber' : badgeNumber})
+        attendance_total_count = (db_session
+                                      .scalar(select(func.count(Attendance.badgeNumber))
+                                      .where(Attendance.badgeNumber == badgeNumber))
+                                      )
+        last_promotion_date = (db_session
+                                      .scalar(select(func.max(Promotions.promotionDate))
+                                      .where(Promotions.badgeNumber == badgeNumber))
+                                      )
+        #student_record = GetStudentRecord(badgeNumber)
+
+        if last_promotion_date:
+            last_promotion_date_str = parse(last_promotion_date, fuzzy=False).strftime(constants.fmtDate)
+        elif studentData[0]['studentPromotionDate']:
+            last_promotion_date_str = parse(studentData[0]['studentPromotionDate'], fuzzy=False).strftime(constants.fmtDate)
+        else:
+            last_promotion_date_str = parse(studentData[0]['memberSinceDate'], fuzzy=False).strftime(constants.fmtDate)
+
+        rtnData = {
+            'studentData'            : studentData[0],
+            'attendanceData'         : attendanceData,
+            'attendance_total_count' : attendance_total_count,
+            'last_promotion_date'    : last_promotion_date_str
+        }
+        return rtnData
+    except Exception as ex:
+        traceback.print_exc()
+        raise ex
+
 
 @students_bp.route('/save_student_details_api', methods=['GET', 'POST'])
 def save_student_details_api():
