@@ -73,11 +73,11 @@ def createBadgePdf(badgeNumber, studentData):
         badgeFilePath = os.path.join('static', 'images', 'badges', f'{badgeNumber}.pdf')
         pdf.output(badgeFilePath)
 
-
         abs_file_path = os.path.abspath(badgeFilePath)
         webbrowser.open_new_tab(f'file://{abs_file_path}')
-    except Exception as e:
-        print(f"Error generating badge pdf : {e}")
+    except Exception as ex:
+        print(f"Error generating badge pdf : {ex}")
+        raise ex
 
 
 def correctImageOrientationBase64(inpImageBase64, imageFormat):

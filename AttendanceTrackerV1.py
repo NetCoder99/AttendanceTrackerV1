@@ -12,12 +12,20 @@ from flaskwebgui import FlaskUI
 import tkinter as tk
 from tkinter import messagebox
 
+import logging.config
+import loggingConf
+
 import constants
 from blueprints.belts.routes import belts_bp
 from blueprints.schedule.routes import schedule_bp
 from blueprints.students.routes import students_bp
 from blueprints.requirements.routes import requirements_bp
 from services.processScanner import DisplayActiveProcesses, IsProcessActive
+
+# ----------------------------------------------------------------------------------
+logging_config_dict = loggingConf.LOGGING_CONFIG
+logging.config.dictConfig(logging_config_dict)
+logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------------------------------------
 base_dir = '.'
@@ -63,12 +71,13 @@ if __name__ == '__main__':
     ok_to_start = IsProcessActive(constants.applicationName)
 
     if ok_to_start['status'] == 'ok':
-        #app.run(debug=False, port=5001)
-        ui = FlaskUI(app=app, width=1250, height=900, fullscreen=False, server='flask', port=5001)
-        ui.run()
+        app.run(debug=False, port=5001)
+        # ui = FlaskUI(app=app, width=1250, height=900, fullscreen=False, server='flask', port=5001)
+        # ui.run()
+        logger.info("AttendanceTracker was started")
     else:
         root = tk.Tk()
         root.withdraw()
         messagebox.showinfo("AttendanceCheckin - Error", ok_to_start['message'])
-        print(ok_to_start['message'])
+        logger.info(ok_to_start['message'])
 

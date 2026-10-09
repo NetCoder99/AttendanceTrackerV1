@@ -23,9 +23,23 @@ $('#btnCreateStudentBadge').off().on('click', function() {
     });
 })
 
-function processCreateBadgeResponse() {
+function processCreateBadgeResponse(response) {
     console.log("processCreateBadgeResponse was invoked");
-
+    response_json = JSON.parse(response);
+    divStudentMessages = $('#divStudentMessages')
+    if (response_json.status.toLowerCase() == 'ok'.toLowerCase()) {
+        divStudentMessages.attr('class', 'fw-bold text-success');
+        divStudentMessages.text(response_json.message)
+    }
+    else {
+        divStudentMessages.attr('class', 'fw-bold text-danger');
+        divStudentMessages.text('Error: ' + response_json.message)
+    }
+    setTimeout(() => {
+        $('#divStudentMessages').html("Awaiting input ...");
+        $('#divStudentMessages').removeClass('text-danger');
+        $('#divStudentMessages').addClass('text-success');
+    }, 5000);
 }
 
 // ------------------------------------------------------------------

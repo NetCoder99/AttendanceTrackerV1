@@ -1,7 +1,8 @@
 from typing import Optional
 import datetime
 
-from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, ForeignKey, Index, Integer, LargeBinary, String, Table, Text
+from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, ForeignKey, Index, Integer, LargeBinary, String, \
+    Table, Text, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, declarative_base
 from sqlalchemy.sql.sqltypes import NullType
 
@@ -239,3 +240,24 @@ class Archive(Base):
         return_rec.archiveJson     = inp_dict['archiveJson']
         return_rec.archiveDateTime = datetime.datetime.now().strftime(constants.fmtDateTime)
         return return_rec
+
+class Schools(Base):
+    __tablename__ = 'schools'
+    __table_args__ = (
+        CheckConstraint('createDateTime IS datetime(createDateTime)', name='chkCreateDateTime'),
+        CheckConstraint("schoolPhone GLOB '[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]'", name='chkSchoolPhone'),
+        CheckConstraint("schoolZip GLOB '[0-9][0-9][0-9][0-9][0-9]' OR \n        schoolZip GLOB '[0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]'", name='chkSchoolZip'),
+        CheckConstraint('updateDateTime IS datetime(updateDateTime)', name='chkUpdateDateTime')
+    )
+
+    schoolId: Mapped[Optional[int]] = mapped_column(Integer, primary_key=True)
+    schoolName: Mapped[Optional[str]] = mapped_column(Text)
+    schoolAddr1: Mapped[Optional[str]] = mapped_column(Text)
+    schoolAddr2: Mapped[Optional[str]] = mapped_column(Text)
+    schoolCity: Mapped[Optional[str]] = mapped_column(Text)
+    schoolState: Mapped[Optional[str]] = mapped_column(Text)
+    schoolZip: Mapped[Optional[str]] = mapped_column(Text)
+    schoolPhone: Mapped[Optional[str]] = mapped_column(Text)
+    schoolUrl: Mapped[Optional[str]] = mapped_column(Text)
+    createDateTime: Mapped[Optional[str]] = mapped_column(Text, server_default=text('CURRENT_TIMESTAMP'))
+    updateDateTime: Mapped[Optional[str]] = mapped_column(Text)

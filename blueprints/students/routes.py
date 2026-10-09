@@ -1,9 +1,9 @@
 import json
 import traceback
+import logging.config
 
 from dateutil.parser import parse
 from datetime import datetime
-
 from flask import Blueprint, render_template, request
 from flask_htmx import make_response
 from sqlalchemy import select, func
@@ -20,10 +20,11 @@ from services.battoDoGenerator import createBattoDoBadgePdf
 from services.checkin_procs import GetCurrentClass
 from services.list_procs import FormListToDict
 from blueprints.students.sqlite_students import *
-from services.pdfGenerator import createBadgePdf
+from services.badgeGenerator import createBadgePdf
 from sqlite.sqlite_alchemy import getDbSession
 from sqlite.sqlite_procs import GetDataWithArgs, UpdDataWithArgs, GetDataNoArgs
 
+logger = logging.getLogger(__name__)
 db_session = getDbSession()
 
 # Defining a blueprint
@@ -61,7 +62,8 @@ def get_student_details():
             raise Exception("Invalid student record count.")
         return student_records[0]
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        raise ex
 
 @students_bp.route('/student_create', methods=['GET', 'POST'])
 def student_create():
@@ -71,7 +73,8 @@ def student_create():
         student_record = {'':''}
         return render_template('student_create.html', studentFields=student_record)
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        raise ex
 
 @students_bp.route('/student_list_api', methods=['GET', 'POST'])
 def student_list_api():
@@ -80,7 +83,8 @@ def student_list_api():
         student_records = GetSqliteStudents()
         return json.dumps(student_records)
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        raise ex
 
 @students_bp.route('/student_details_api', methods=['GET', 'POST'])
 def students_details_api():
@@ -92,7 +96,8 @@ def students_details_api():
                           str(x['badgeNumber']).lower() == badgeNumber.lower()][0]
         return json.dumps(student_record)
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        raise ex
 
 @students_bp.route('/student_create_api', methods=['GET', 'POST'])
 def student_create_api():
@@ -101,7 +106,8 @@ def student_create_api():
         student_record  = GetDataNoArgs(GetDefaultStudentDataStmt())[0]
         return json.dumps(student_record)
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        raise ex
 
 @students_bp.route('/save_student_picture', methods=['POST'])
 def save_student_picture():
@@ -126,25 +132,8 @@ def save_student_picture():
         # UpdStudentPicture(data_json, updateDict)
         return json.dumps(updateDict)
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
         return json.dumps({"error" : ex.__str__()})
-
-# @students_bp.route('/student_promotions')   # Focus here
-# def student_promotions():
-#     print(f'Current route: student_promotions')
-#     try:
-#         badgeNumber     = request.args['badgeNumber']
-#         studentData     = GetDataWithArgs(GetStudentRecordsStmtByBadge(), {'badgeNumber': request.args['badgeNumber']})
-#         belt_records    = GetBeltsRecords()
-#
-#         stripe_records  = GetStripeRecords({'rankNum': '1'})
-#         #student_record['headerMessage'] = 'Reviewing student promotions.'
-#
-#         return render_template('student_promotions.html', studentFields=studentData)
-#
-#
-#     except Exception as ex:
-#         print(f'Error: {ex.__str__()}')
 
 @students_bp.route('/student_attendance', methods=['GET', 'POST'])   # Focus here
 def student_attendance():
@@ -156,7 +145,8 @@ def student_attendance():
         student_record['headerMessage'] = 'Reviewing student attendance.'
         return render_template('student_attendance.html', studentFields=student_record)
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        raise ex
 
 @students_bp.route('/student_attendance_api', methods=['GET', 'POST'])   # Focus here
 def student_attendance_api():
@@ -191,9 +181,8 @@ def student_attendance_api():
         }
         return rtnData
     except Exception as ex:
-        traceback.print_exc()
+        logger.error(ex)
         raise ex
-
 
 @students_bp.route('/save_student_details_api', methods=['GET', 'POST'])
 def save_student_details_api():
@@ -214,8 +203,8 @@ def save_student_details_api():
         return validation_results
 
     except Exception as ex:
-        traceback.print_exc()
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        raise ex
 
 def CreateNewStudentRecord(form_dict: dict):
     try:
@@ -264,7 +253,8 @@ def CreateNewStudentRecord(form_dict: dict):
         InsNewPromotionRecord(student_record, promotion_params)
         return student_record
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        raise ex
 
 def UpdateStudentRecord(student_record: Students, form_dict: dict):
     try:
@@ -290,7 +280,8 @@ def UpdateStudentRecord(student_record: Students, form_dict: dict):
         db_session.refresh(student_record)
 
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        raise ex
 
 def InsNewPromotionRecord(student_record: Students,  promotion_params: NewPromotionRecord) -> Promotions:
     try:
@@ -325,7 +316,7 @@ def InsNewPromotionRecord(student_record: Students,  promotion_params: NewPromot
         db_session.commit()
         return new_promotion_record
     except Exception as ex:
-        print(f'Error: {str(ex)}')
+        logger.error(ex)
         raise ex
 
 
@@ -372,29 +363,30 @@ def SetInitialRank(badgeNumber):
 @students_bp.route('/create_badge_api', methods=['GET', 'POST'])
 def create_badge_api():
     try:
-        print(f'Current route: create_badge_api')
+        logger.info(f'Current route: create_badge_api')
         badgeNumber   = request.json['badgeNumber']
         sqlQuery      = GetStudentRecordsStmtByBadge()
         studentData   = GetDataWithArgs(sqlQuery, {'badgeNumber' : badgeNumber})
         createBarcodeFile(badgeNumber)
         createBadgePdf(badgeNumber, studentData[0])
-        return {"status" : 'ok'}
+        return {"status" : 'ok', 'message' : 'Shorin Ryu badge was created.'}
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        return {"status" : 'error', 'message' : str(ex)}
 
 @students_bp.route('/create_batto_do_badge_api', methods=['GET', 'POST'])
 def create_batto_do_badge_api():
     try:
-        print(f'Current route: create_batto_do_badge_api')
+        logger.info(f'Current route: create_batto_do_badge_api')
         badgeNumber   = request.json['badgeNumber']
         sqlQuery      = GetStudentRecordsStmtByBadge()
         studentData   = GetDataWithArgs(sqlQuery, {'badgeNumber' : badgeNumber})
         createBarcodeFile(badgeNumber)
         createBattoDoBadgePdf(badgeNumber, studentData[0])
-        #createBadgePdf(badgeNumber, studentData[0])
-        return {"status" : 'ok'}
+        return {"status" : 'ok', 'message' : 'Batta Do badge was created.'}
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
+        logger.error(ex)
+        return {"status" : 'error', 'message' : str(ex)}
 
 @students_bp.route('/get_stripe_names', methods=['GET', 'POST'])
 def get_stripe_names():
@@ -551,7 +543,7 @@ def update_attendance_record():
         return getAttendanceUpdateMessage('completed', 'New attendance record was added.')
         #return update_required_rank_func()
     except Exception as ex:
-        print(str(ex))
+        logger.error(ex)
         return getAttendanceUpdateMessage('error', str(ex))
 
 # -------------------------------------------------------

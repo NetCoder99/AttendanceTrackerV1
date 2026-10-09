@@ -30,6 +30,7 @@ $(document).ready(function() {
                 }
             },
             { "data": "currentRankName" },
+            { "data": "currentStripeName" },
             { "data": "memberSinceDate",
                 className: 'dt-left',
                 render: function (data, type, row) {
