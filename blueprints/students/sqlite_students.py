@@ -165,13 +165,13 @@ def InsStudentRecordStmt():
         )
         values (
           :badgeNumber,
-          :frmFirstName,
-          :frmLastName,
-          :frmAddress,
-          :frmAddress2,
-          :frmCity,
-          :frmState,
-          :frmZip,
+          :frmField1,
+          :frmField3,
+          :frmField4,
+          :frmField42,
+          :frmField9,
+          :frmField10,
+          :frmField11,
           :frmBirthDate,
           :frmPhoneHome,
           :frmEmail,
@@ -204,13 +204,13 @@ def UpdStudentRecord(studentRecord):
 def UpdStudentRecordStmt():
     return '''
         UPDATE students
-        SET    firstName   = :frmFirstName,
-               lastName    = :frmLastName,
-               address     = :frmAddress,
-               address2    = :frmAddress2,
-               city        = :frmCity,
-               state       = :frmState,
-               zip         = :frmZip,
+        SET    firstName   = :frmField1,
+               lastName    = :frmField3,
+               address     = :frmField4,
+               address2    = :frmField42,
+               city        = :frmField9,
+               state       = :frmField10,
+               zip         = :frmField11,
                birthDate   = :frmBirthDate,
                phoneHome   = :frmPhoneHome,
                email       = :frmEmail

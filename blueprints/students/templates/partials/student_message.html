@@ -1,0 +1,5 @@
+   <div id="divStudentMessages"
+         class="fw-bold text-success"
+         hx-swap-oob="innerHTML">
+         {{ studentMessage | default('Awaiting input ...')|safe}}
+    </div>

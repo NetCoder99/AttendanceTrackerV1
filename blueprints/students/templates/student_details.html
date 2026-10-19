@@ -48,60 +48,79 @@
                 </div>
                 <div class="col-sm-8 pt-3">
                     <form id="frmStudentDetails">
+<!--                       &lt;!&ndash; Trick elements to absorb the browser's automated prompts &ndash;&gt;-->
+<!--                        <input type="text" name="fakeCreate" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakePictureSelect" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeStudentDetails" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeFirstName" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeMiddleName" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeLastName" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeAdr1" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeAdr12" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeCity" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeState" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeZip" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeBirthDate" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakePhoneHome" style="display:none;" aria-hidden="true">-->
+<!--                        <input type="text" name="fakeEmail" style="display:none;" aria-hidden="true">-->
+
+
                         <div class="row">
                             <div class="d-inline-block text-start" style="width: 11rem">
                                 <label class="form-label ms-1 mb-0">First Name</label>
-                                <input id="frmFirstName"
-                                       name="frmFirstName"
+                                <input id="frmField1"
+                                       name="frmField1"
                                        placeholder="First Name"
                                        class="d-inline-block float-left form-control"
                                        style="width: 11rem"
-                                       onBlur=handleFieldBlur("frmFirstName")
+                                       onBlur=handleFieldBlur("frmField1")
+                                       autocomplete="off"
                                 />
                             </div>
                             <div class="d-inline-block text-start ms-3" style="width: 11rem">
                                 <label class="form-label ms-1 mb-0">Middle Name</label>
-                                <input id="frmMiddleName"
-                                       name="frmMiddleName"
+                                <input id="frmField2"
+                                       name="frmField2"
                                        placeholder="Middle Name"
                                        class="d-inline-block float-left form-control"
                                        style="width: 11rem"
-                                       onBlur=handleFieldBlur("frmMiddleName")
-                                       disabled
+                                       onBlur=handleFieldBlur("frmField2")
+                                       autocomplete="off"
                                 />
                             </div>
                             <div class="d-inline-block text-start ms-3" style="width: 11rem">
                                 <label class="form-label ms-1 mb-0">Last Name</label>
-                                <input id="frmLastName"
-                                       name="frmLastName"
+                                <input id="frmField3"
+                                       name="frmField3"
                                        placeholder="Last Name"
                                        class="d-inline-block float-left form-control"
                                        style="width: 11rem"
-                                       onBlur=handleFieldBlur("frmLastName")
+                                       onBlur=handleFieldBlur("frmField3")
+                                       autocomplete="off"
                                 />
                             </div>
                         </div>
                         <div class="row">
                             <div class="d-inline-block text-start mt-2" style="width: 35rem">
                                 <label class="form-label ms-1 mb-0">Address Line 1(Optional)</label>
-                                <input id="frmAddress"
-                                       name="frmAddress"
-                                       placeholder="Address Line 1"
+                                <input id="frmField4"
+                                       name="frmField4"
                                        class="d-inline-block float-left form-control"
                                        style="width: 35rem"
-                                       onBlur=handleFieldBlur("frmAddress")
+                                       onBlur=handleFieldBlur("frmField4")
+                                       autocomplete="off"
                                 />
                             </div>
                         </div>
                         <div class="row">
                             <div class="d-inline-block text-start mt-2" style="width: 35rem">
                                 <label class="form-label ms-1 mb-0">Address Line 2 (Optional)</label>
-                                <input id="frmAddress2"
-                                       name="frmAddress2"
-                                       placeholder="Address Line 1"
+                                <input id="frmField42"
+                                       name="frmField42"
                                        class="d-inline-block float-left form-control"
                                        style="width: 35rem"
-                                       onBlur=handleFieldBlur("frmAddress2")
+                                       onBlur=handleFieldBlur("frmField42")
+                                       autocomplete="off"
                                 />
                             </div>
                         </div>
@@ -109,12 +128,12 @@
                         <div class="row">
                             <div class="d-inline-block text-start mt-2" style="width: 35rem">
                                 <label class="form-label ms-1 mb-0">City (Optional)</label>
-                                <input id="frmCity"
-                                       name="frmCity"
-                                       placeholder="City"
+                                <input id="frmField9"
+                                       name="frmField9"
                                        class="d-inline-block float-left form-control"
                                        style="width: 35rem"
-                                       onBlur=handleFieldBlur("frmCity")
+                                       onBlur=handleFieldBlur("frmField9")
+                                       autocomplete="off"
                                 />
                             </div>
                         </div>
@@ -122,25 +141,26 @@
                         <div class="row mt-2">
                             <div class="d-inline-block text-start" style="width: 12rem">
                                 <label class="form-label ms-1 mb-0">State</label>
-                                <input id="frmState"
-                                       name="frmState"
-                                       placeholder="State"
+                                <input id="frmField10"
+                                       name="frmField10"
                                        class="d-inline-block float-left form-control"
                                        style="width: 11rem"
-                                       onBlur=handleFieldBlur("frmState")
+                                       onBlur=handleFieldBlur("frmField10")
                                        maxlength="2"
+                                       autocomplete="off"
                                 />
                             </div>
                             <div class="d-inline-block text-start ms-3" style="width: 12rem">
                                 <label class="form-label ms-1 mb-0">Zip Code</label>
-                                <input id="frmZip"
+                                <input id="frmField11"
                                        pattern="^\d{5}(?:[-\s]\d{4})?$"
-                                       name="frmZip"
+                                       name="frmField11"
                                        placeholder="Zip Code"
                                        class="d-inline-block float-left form-control"
                                        style="width: 11rem"
-                                       onBlur=handleFieldBlur("frmZip")
+                                       onBlur=handleFieldBlur("frmField11")
                                        maxlength="5"
+                                       autocomplete="off"
                                 />
                             </div>
                             <div class="d-inline-block text-start ms-3" style="width: 12rem">
@@ -151,6 +171,7 @@
                                        class="d-inline-block float-left form-control"
                                        style="width: 11rem"
                                        onBlur=handleFieldBlur("frmBirthDate")
+                                       autocomplete="off"
                                 />
                             </div>
                         </div>
@@ -179,29 +200,10 @@
                                 />
                             </div>
                         </div>
-
-                        <div class="row mt-2">
-                            <div class="d-inline-block text-start" style="width: 12rem">
-                                <button id="btnSaveStudentUpdate" type="button" class="btn btn-success btn-sm ">Save
-                                    Updates
-                                </button>
-                            </div>
-                            <div class="d-inline-block text-start" style="width: 12rem">
-                                <button id="btnCreateStudentBadge" type="button" class="btn btn-success btn-sm ">Create
-                                    Badge
-                                </button>
-                            </div>
-                            <div class="d-inline-block text-start" style="width: 12rem">
-                                <button id="btnCreateStudentBadgeBattoDo" type="button" class="btn btn-success btn-sm ">Create
-                                    Batto-Do Badge
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="row mt-2">
-                            <div id="divStudentMessages" class="fw-bold text-success">Awaiting input ...</div>
-                        </div>
-
+                        {% include 'partials/student_confirmation.html' %}
+<!--                        <div class="row mt-2">-->
+<!--                            {% include 'partials/student_message.html' %}-->
+<!--                        </div>-->
                     </form>
                 </div>
             </div>

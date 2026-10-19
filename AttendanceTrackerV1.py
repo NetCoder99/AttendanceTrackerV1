@@ -39,6 +39,12 @@ app.register_blueprint(schedule_bp)
 app.register_blueprint(belts_bp)
 app.register_blueprint(requirements_bp)
 
+# browser_prefs = {
+#     "autofill.profile_enabled": False,       # Disables "Save address?" prompts
+#     "credentials_enable_service": False,    # Disables "Save password?" prompts
+#     "profile.password_manager_enabled": False
+# }
+
 htmx = HTMX(app)
 
 # ----------------------------------------------------------------------------------
@@ -69,7 +75,6 @@ def page_not_found(e):
 if __name__ == '__main__':
     DisplayActiveProcesses('attendance')
     ok_to_start = IsProcessActive(constants.applicationName)
-
     if ok_to_start['status'] == 'ok':
         #app.run(debug=False, port=5001)
         ui = FlaskUI(app=app, width=1250, height=900, fullscreen=False, server='flask', port=5001)

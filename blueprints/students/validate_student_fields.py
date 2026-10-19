@@ -1,21 +1,34 @@
 # ---------------------------------------------------------------------------------------------------
 from datetime import datetime
 import re
+from typing import Any
 
 import phonenumbers
 
 from sqlite.sqlite_common import GetStateCodesStmt, GetZipCodesStmt
 from sqlite.sqlite_procs import GetDataNoArgs, GetDataWithArgs
 
+def getFirstValidationError(validationResults: dict) -> dict | None:
+    for validationResult in validationResults:
+        if validationResults[validationResult]['status'] == 'error':
+            return validationResults[validationResult]
+    return None
+
+def getErrorFields(validationResults: dict) -> list:
+    rtn_list = []
+    for validationResult in validationResults:
+        if validationResults[validationResult]['status'] == 'error':
+            rtn_list.append(validationResult)
+    return rtn_list
 
 def validateStudentFieldsUpdate(classData):
     try:
         validationResults = {}
-        validationResults['frmFirstName'] = validateStudentFirstName(classData['frmFirstName'])
-        validationResults['frmLastName'] = validateStudentLastName(classData['frmLastName'])
+        validationResults['frmField1'] = validateStudentFirstName(classData['frmField1'])
+        validationResults['frmField3'] = validateStudentLastName(classData['frmField3'])
         validationResults['frmPhoneHome'] = validatePhoneNumberHome(classData['frmPhoneHome'])
-        validationResults['frmState'] = validateStudentState(classData['frmState'])
-        validationResults['frmZip'] = validateStudentZipCode(classData['frmZip'])
+        validationResults['frmField10'] = validateStudentState(classData['frmField10'])
+        validationResults['frmField11'] = validateStudentZipCode(classData['frmField11'])
         validationResults['frmBirthDate'] = validateStudentBirthDate(classData['frmBirthDate'])
         validationResults['frmEmail'] = validateStudentEmail(classData['frmEmail'])
 
@@ -66,34 +79,34 @@ def validatePhoneNumberHome(frmPhoneHome):
 
 
 # ---------------------------------------------------------------------------------------------------
-def validateStudentState(frmState):
-    if not frmState:
+def validateStudentState(frmField10):
+    if not frmField10:
         return {'status': 'ok', 'message': 'Student state was not entered'}
     pattern = re.compile(r"^[a-zA-Z]{2}$")
-    if not pattern.match(frmState):
+    if not pattern.match(frmField10):
         return {'status': 'error', 'message': 'State code must be 2 characters'}
-    frmState = frmState.upper()
+    frmField10 = frmField10.upper()
     stateCodesStmt = GetStateCodesStmt()
 
     stateCodes = GetDataNoArgs(stateCodesStmt)
     if not stateCodes:
         return {'status': 'error', 'message': 'State code was not found'}
 
-    foundEntry = [z for z in stateCodes if z['physicalState'] == frmState]
+    foundEntry = [z for z in stateCodes if z['physicalState'] == frmField10]
     if len(foundEntry) == 0:
         return {'status': 'error', 'message': 'State code was not found'}
 
     return {'status': 'ok', 'message': 'Student state code was valid'}
 
 # ---------------------------------------------------------------------------------------------------
-def validateStudentZipCode(frmZip):
-    if not frmZip:
+def validateStudentZipCode(frmField11):
+    if not frmField11:
         return {'status': 'ok', 'message': 'Student zipcode was not entered'}
     pattern = re.compile(r"^[0-9]{5}$")
-    if not pattern.match(frmZip):
+    if not pattern.match(frmField11):
         return {'status': 'error', 'message': 'Student zip code must be 5 digits'}
     stateCodesStmt = GetZipCodesStmt()
-    zipCodes = GetDataWithArgs(stateCodesStmt, {'physicalZip' : frmZip})
+    zipCodes = GetDataWithArgs(stateCodesStmt, {'physicalZip' : frmField11})
 
     if not zipCodes:
         return {'status': 'error', 'message': 'State code was not found'}

@@ -12,7 +12,8 @@ import constants
 from blueprints.belts.sqlite_belts import GetRanksRecords, GetStripesForRankStmt
 from blueprints.students.student_attendance import UpdPromotionDateStmt, InsertAttendanceRecord, GetAttendanceRecord
 from blueprints.students.student_promotions import GetNextPromotion, GetNextStudentRank
-from blueprints.students.validate_student_fields import validateStudentFieldsUpdate
+from blueprints.students.validate_student_fields import validateStudentFieldsUpdate, getFirstValidationError, \
+    getErrorFields
 from models.data_models import Classes, Students, Attendance, Promotions
 from models.input_models import NewPromotionRecord
 from services.barcodeGenerator import createBarcodeFile
@@ -47,13 +48,13 @@ def GetStudentRecord(badge_number: int) -> Students:
 
 @students_bp.route('/students')   # Focus here
 def students_bp_home():
-    print(f'Current route: students_bp_home')
+    logging.info(f'Current route: students_bp_home')
     student_records = GetSqliteStudents()
     return render_template('students_main.html', student_records=student_records)
 
 @students_bp.route('/get_student_details', methods=['GET', 'POST'])   # Focus here
 def get_student_details():
-    print(f'Current route: get_student_details')
+    logging.info(f'Current route: get_student_details')
     try:
         badgeNumber     = request.json['badgeNumber']
         sqlQueryStudent = GetStudentRecordsStmtByBadge()
@@ -62,12 +63,12 @@ def get_student_details():
             raise Exception("Invalid student record count.")
         return student_records[0]
     except Exception as ex:
-        logger.error(ex)
+        logger.exception(ex)
         raise ex
 
 @students_bp.route('/student_create', methods=['GET', 'POST'])
 def student_create():
-    print(f'Current route: student_create')
+    logging.info(f'Current route: student_create')
     try:
         imageData   = GetDataWithArgs(GetDefaultImageStmt(), {'imageName' : 'RSM_Logo2.webp'})[0]
         student_record = {'':''}
@@ -78,7 +79,7 @@ def student_create():
 
 @students_bp.route('/student_list_api', methods=['GET', 'POST'])
 def student_list_api():
-    print(f'Current route: student_list_api')
+    logging.info(f'Current route: student_list_api')
     try:
         student_records = GetSqliteStudents()
         return json.dumps(student_records)
@@ -88,7 +89,7 @@ def student_list_api():
 
 @students_bp.route('/student_details_api', methods=['GET', 'POST'])
 def students_details_api():
-    print(f'Current route: students_details_api')
+    logging.info(f'Current route: students_details_api')
     try:
         badgeNumber     = request.json['badgeNumber']
         student_records = GetSqliteStudents()
@@ -101,7 +102,7 @@ def students_details_api():
 
 @students_bp.route('/student_create_api', methods=['GET', 'POST'])
 def student_create_api():
-    print(f'Current route: student_create_api')
+    logging.info(f'Current route: student_create_api')
     try:
         student_record  = GetDataNoArgs(GetDefaultStudentDataStmt())[0]
         return json.dumps(student_record)
@@ -112,7 +113,7 @@ def student_create_api():
 @students_bp.route('/save_student_picture', methods=['POST'])
 def save_student_picture():
     try:
-        print(f'Current route: save_student_picture')
+        logging.info(f'Current route: save_student_picture')
         data_bytes  = request.data
         data_string = data_bytes.decode('utf-8')
         data_json   = json.loads(data_string)
@@ -184,10 +185,58 @@ def student_attendance_api():
         logger.error(ex)
         raise ex
 
+
+# --------------------------------------------------------------------
+@students_bp.route('/save_student_details_htmx', methods=['GET', 'POST'])
+def save_student_details_htmx():
+    logging.info(f'Current route: save_student_details_htmx')
+    try:
+        # form_data = request.args['frmField1']
+        validation_results = validateStudentFieldsUpdate(request.args)
+        if validation_results['validationResults']['status'] != 'ok':
+            student_confirmation_panel = render_template(
+                "partials/student_confirmation.html",
+                studentMessage = getFirstValidationError(validation_results)['message'],
+                messageClass   = "text-danger"
+            )
+            response         = make_response(student_confirmation_panel)
+            error_fields     = getErrorFields(validation_results)
+            response_payload = json.dumps({"highLightErrorFields": error_fields })
+            response.headers['HX-Trigger-After-Settle'] = response_payload
+            return response
+
+# '''
+# 'frmField1' = {str} 'Jennifer'
+# 'frmField3' = {str} 'Hesterman'
+# 'frmField4' = {str} '14213 N. BRUNSWICK DR'
+# 'frmField42' = {str} 'APT A'
+# 'frmField9' = {str} 'Fountain Hills'
+# 'frmField10' = {str} 'AZ'
+# 'frmField11' = {str} '85268'
+# 'frmBirthDate' = {str} '03/31/1987'
+# 'frmPhoneHome' = {str} '480-304-0327'
+# 'frmEmail' = {str} ''
+# 'studentBeltNames' = {str} '1'
+# 'studentBeltStripes' = {str} '58'
+# 'studentPromotionDate' = {str} ''
+# 'classesRequired' = {str} ''
+# '''
+
+
+        return render_template(
+            "partials/student_confirmation.html",
+            studentMessage = "Student details have been updated.",
+            messageClass = "text-success"
+        )
+    except Exception as ex:
+        logging.exception(ex)
+
+
+
 @students_bp.route('/save_student_details_api', methods=['GET', 'POST'])
 def save_student_details_api():
     try:
-        print(f'Current route: save_student_details_api')
+        logging.info(f'Current route: save_student_details_api')
         form_dict  = FormListToDict(request.json)
         validation_results = validateStudentFieldsUpdate(form_dict)
 
@@ -212,16 +261,16 @@ def CreateNewStudentRecord(form_dict: dict):
         student_record.badgeNumber = None
 
         student_record.badgeNumber  = form_dict['badgeNumber']
-        student_record.firstName    = form_dict['frmFirstName']
-        student_record.lastName     = form_dict['frmLastName']
+        student_record.firstName    = form_dict['frmField1']
+        student_record.lastName     = form_dict['frmField3']
         #student_record.namePrefix   = form_dict['namePrefix']
         student_record.email        = form_dict['frmEmail']
-        student_record.address      = form_dict['frmAddress']
-        student_record.address2     = form_dict['frmAddress2']
-        student_record.city         = form_dict['frmCity']
+        student_record.address      = form_dict['frmField4']
+        student_record.address2     = form_dict['frmField42']
+        student_record.city         = form_dict['frmField9']
         student_record.country      = 'USA'
-        student_record.state        = form_dict['frmState']
-        student_record.zip          = form_dict['frmZip']
+        student_record.state        = form_dict['frmField10']
+        student_record.zip          = form_dict['frmField11']
         student_record.birthDate    = form_dict['frmBirthDate']
         student_record.phoneHome    = form_dict['frmPhoneHome']
         #student_record.phoneMobile  = form_dict['phoneMobile']
@@ -390,14 +439,14 @@ def create_batto_do_badge_api():
 
 @students_bp.route('/get_stripe_names', methods=['GET', 'POST'])
 def get_stripe_names():
-    print(f'Current route: get_stripe_names')
+    logging.info(f'Current route: get_stripe_names')
     sqlQuery      = GetStripeNamesByRank()
     stripeRecords = GetDataWithArgs(sqlQuery, request.json)
     return stripeRecords
 
 @students_bp.route('/upd_student_rank', methods=['GET', 'POST'])
 def upd_student_rank():
-    print(f'Current route: upd_student_rank')
+    logging.info(f'Current route: upd_student_rank')
     studentData       = GetDataWithArgs(GetStudentRecordsStmtByBadge(), {'badgeNumber': request.json['badgeNumber']})
     promotionHistory  = GetDataWithArgs(GetPromotionHistoryStmt(), request.json)
 
@@ -485,7 +534,7 @@ def get_promotion_history():
 
 @students_bp.route('/save_promotion_date', methods=['GET', 'POST'])
 def save_promotion_date():
-    print(f'Current route: save_promotion_date')
+    logging.info(f'Current route: save_promotion_date')
     promotionId   = request.form['promotionId']
     promotionDate = parse(request.form['promotionDate'], fuzzy=False).strftime(constants.fmtDateTime)
     updateDate    = datetime.now().strftime(constants.fmtDateTime)
@@ -499,7 +548,7 @@ def save_promotion_date():
 
 @students_bp.route('/get_attendance_dialog', methods=['GET', 'POST'])
 def get_attendance_dialog():
-    print(f'Current route: get_attendance_dialog')
+    logging.info(f'Current route: get_attendance_dialog')
     if 'hdnBadgeNumber' in request.args:
         badge_number = request.args['hdnBadgeNumber']
     elif  'hdnBadgeNumber' in request.form:
@@ -608,7 +657,7 @@ def validate_class_search(form_args: dict) -> (bool, Classes):
 @students_bp.route('/del_promotion_record', methods=['GET', 'POST'])
 def del_promotion_record():
     try:
-        print(f'request: {request.json['promotionId']}')
+        logging.info(f'request: {request.json['promotionId']}')
         delQuery          = DeleteStudentPromotionStmt()
         delete_counts     = UpdDataWithArgs(delQuery, {'promotionId': request.json['promotionId']})
 
@@ -627,7 +676,7 @@ def del_promotion_record():
 # --------------------------------------------------------------------
 @students_bp.route('/upd_requirements_htmx', methods=['GET', 'POST'])
 def upd_requirements_htmx():
-    print(f'Current route: upd_requirements_htmx')
+    logging.info(f'Current route: upd_requirements_htmx')
     requirements_counts = render_template(
         "partials/requirements_counts.html",
         actual_attendance_count=45,
@@ -640,7 +689,7 @@ def upd_requirements_htmx():
 # --------------------------------------------------------------------
 @students_bp.route('/refresh_attendance_dialog', methods=['GET', 'POST'])
 def refresh_attendance_dialog():
-    print(f'Current route: refresh_attendance_dialog')
+    logging.info(f'Current route: refresh_attendance_dialog')
     try:
         badgeNumber = request.args['badgeNumber']
         student_records = GetSqliteStudents()
@@ -650,6 +699,20 @@ def refresh_attendance_dialog():
         # refresh counts first
 
         #return render_template('student_attendance.html', studentFields=student_record)
+    except Exception as ex:
+        print(f'Error: {ex.__str__()}')
+
+
+# --------------------------------------------------------------------
+@students_bp.route('/student_delete_confirmation', methods=['GET', 'POST'])
+def student_delete_confirmation():
+    logging.info(f'Current route: student_delete_confirmation')
+    try:
+        badgeNumber = request.args['hdnBadgeNumber']
+        return render_template(
+            "partials/student_confirmation.html",
+            studentMessage="Student record was deleted."
+        )
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
 
