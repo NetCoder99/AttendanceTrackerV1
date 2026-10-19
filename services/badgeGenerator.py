@@ -1,24 +1,25 @@
 import base64
+import logging
 import os
 import webbrowser
 from io import BytesIO
 
 import img2pdf
 from PIL import Image
+from flask import current_app
 from fpdf import FPDF, Align
 
+logger = logging.getLogger(__name__)
 
 def createBadgePdf(badgeNumber, studentData):
     try:
         imageName     = str(studentData['studentImageName'])
         if imageName is not None:
-            oldImagePath = os.path.join('static', 'images', 'students', imageName)
             data_uri = f"data:image/{studentData['studentImageType']};base64,{studentData['studentImageBase64']}"
         else:
-            oldImagePath = os.path.join('static', 'images', 'misc_images', 'RISING_SUN_FOOTER.webp')
-            data_uri = os.path.join('static', 'images', 'misc_images', 'RISING_SUN_FOOTER.webp')
+            data_uri = os.path.join(str(current_app.root_path), 'static', 'images', 'misc_images', 'RISING_SUN_FOOTER.webp')
 
-        rsmImagePath  = os.path.join('static', 'images', 'misc_images', 'RSM_Logo2.jpg')
+        rsmImagePath  = os.path.join(str(current_app.root_path), 'static', 'images', 'misc_images', 'RSM_Logo2.jpg')
 
         pdf = FPDF(unit="in", format=(2, 3.5))
         pdf.add_page()
@@ -43,7 +44,6 @@ def createBadgePdf(badgeNumber, studentData):
 
         newImageBase64 = correctImageOrientationBase64(data_uri, studentData['studentImageType'])
         newDataUri     = f"data:image/{studentData['studentImageType']};base64,{newImageBase64}"
-        # newImagePath = os.path.join('static', 'images', 'students', 'studentImage.jpg')
         # showImageProperties(oldImagePath)
         pdf.image(newDataUri, x=.4, y=.75, h=1.5)
 
@@ -63,20 +63,21 @@ def createBadgePdf(badgeNumber, studentData):
         pdf.set_line_width(.009)
         pdf.line(.1, line_x, 1.9, line_x)
 
-        barcodeFilePath = os.path.join('static', 'images', 'badges', f'{badgeNumber}_barcode.png')
+        barcodeFilePath = os.path.join(str(current_app.root_path), 'static', 'images', 'badges', f'{badgeNumber}_barcode.png')
+        logger.info(f'absolute barcode path: {os.path.abspath(barcodeFilePath)}')
         pdf.image(barcodeFilePath, x=.3, y=2.86, h=.5,  w=1.5)
 
         line_x = 3.4
         pdf.set_line_width(.009)
         pdf.line(.1, line_x, 1.9, line_x)
 
-        badgeFilePath = os.path.join('static', 'images', 'badges', f'{badgeNumber}.pdf')
+        badgeFilePath = os.path.join(str(current_app.root_path), 'static', 'images', 'badges', f'{badgeNumber}.pdf')
         pdf.output(badgeFilePath)
 
         abs_file_path = os.path.abspath(badgeFilePath)
         webbrowser.open_new_tab(f'file://{abs_file_path}')
     except Exception as ex:
-        print(f"Error generating badge pdf : {ex}")
+        logger.exception(ex)
         raise ex
 
 
@@ -87,8 +88,6 @@ def correctImageOrientationBase64(inpImageBase64, imageFormat):
         tmpImageBase64 = inpImageBase64
     tmpImageBytes = BytesIO(base64.b64decode(tmpImageBase64))
 
-    # oldFilePath = os.path.split(imagePath)[0]
-    # newFilePath = os.path.join(oldFilePath, "studentImage.jpg")
     try:
         with Image.open(tmpImageBytes) as img:
             exif = img.getexif()
@@ -113,7 +112,7 @@ def correctImageOrientationBase64(inpImageBase64, imageFormat):
             newImageDecode = base64.b64encode(buffered.getvalue()).decode('utf-8')
             return newImageDecode
     except Exception as e:
-        print(f"Error processing image : {e}")
+        logger.exception(e)
 
 def correctImageOrientation(imagePath):
     oldFilePath = os.path.split(imagePath)[0]
@@ -133,17 +132,8 @@ def correctImageOrientation(imagePath):
             img.thumbnail(max_size, Image.Resampling.LANCZOS)
             img.close()
     except Exception as e:
-        print(f"Error processing image {imagePath}: {e}")
+        logger.exception(e)
     return newFilePath
-
-# def saveImageAsPdf(imagePath):
-#     # pdfPath = os.path.split(imagePath)
-#     pdfFileName   = os.path.split(imagePath)[1].replace('JPG', 'PDF')
-#     pdfImagePath  = os.path.join('static', 'images', 'pdfTemp', pdfFileName)
-#     with open(pdfImagePath, "wb") as f:
-#         f.write(img2pdf.convert(imagePath, rotation=img2pdf.Rotation.ifvalid))
-#     return pdfImagePath
-#
 
 def showImageProperties(imagePath):
     img = Image.open(imagePath)
