@@ -1,6 +1,6 @@
 $(document).ready(function() {
     console.log("Student Details Document ready");
-    if (window.location.pathname == '/student_create') {
+    if (window.location.pathname == '/display_student_create') {
         console.log(`pathname: ${window.location.pathname}`);
         InitializeStudentDetailsFormEmpty();
     }
@@ -151,6 +151,10 @@ function ProcessSaveStudentResponse(studentSaveResponse) {
 
     let errorMessage = "";
 
+    if (validationStudentResults.message.includes('created')) {
+        window.location.replace("/students?search_term=test");
+    }
+
     for (const [key, value] of Object.entries(studentSaveResponse)) {
       console.log(`${key} is ${value.status} : ${value.message}`);
       const frmField = $(`#${key}`);
@@ -163,7 +167,7 @@ function ProcessSaveStudentResponse(studentSaveResponse) {
         }
       }
       else {
-          console.log(`Check for reformatted value: ${value}`);
+          // console.log(`Check for reformatted value: ${value}`);
           const rtnFieldName = key.replace(/^frm/, "rtn");
           if (rtnFieldName in value) {
               console.log(`Display formatted value: ${value[rtnFieldName]}`);

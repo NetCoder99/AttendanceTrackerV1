@@ -76,7 +76,7 @@ if __name__ == '__main__':
     DisplayActiveProcesses('attendance')
     ok_to_start = IsProcessActive(constants.applicationName)
     if ok_to_start['status'] == 'ok':
-        #app.run(debug=False, port=5001)
+        # app.run(debug=False, port=5001)
         ui = FlaskUI(app=app, width=1250, height=900, fullscreen=False, server='flask', port=5001)
         ui.run()
         logger.info("AttendanceTracker was started")

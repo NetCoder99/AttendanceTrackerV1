@@ -6,7 +6,7 @@ $(document).ready(function() {
         initComplete: function () {
             $('div.toolbar').html('<button id="btnNewStudent" class="btn btn-success btn-new-student">New Student</button>');
             $('#btnNewStudent').on('click', function() {
-                window.location.replace("/student_create");
+                window.location.replace("/display_student_create");
             });
         },
         "ajax": {
@@ -56,7 +56,32 @@ $(document).ready(function() {
         $("#hdnBadgeNumber").val(rowData['badgeNumber']);
         processStudentEditClick(rowData['badgeNumber']);
     });
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    studentListTable.ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('search_term')) {
+            const search_term = urlParams.get('search_term');
+            console.log(`  search_term: ${search_term}`);
+            const search_box = $('#dt-search-0') ;
+            if (search_box) {
+                search_box.val(search_term);
+                console.log(`  search_box_val: ${search_box.val()}`);
+            }
+            search_box.focus();
+
+            const e = $.Event('keydown');
+            e.which = 13;
+            e.keyCode = 13;
+            search_box.trigger(e);
+
+        }
+    });
 })
+
+//window.onload = function() {
+//    console.log("Student List Document Loaded");
+//};
 
 // -------------------------------------------------------------------------------
 function processStudentEditClick(badgeNumber) {

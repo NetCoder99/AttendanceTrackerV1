@@ -1,12 +1,16 @@
 # ---------------------------------------------------------------------------------------------------
-from datetime import datetime
 import re
-from typing import Any
+import logging.config
+from sqlalchemy import select, func
+from datetime import datetime
 
-import phonenumbers
-
+from models.data_models import Students
+from sqlite.sqlite_alchemy import getDbSession
 from sqlite.sqlite_common import GetStateCodesStmt, GetZipCodesStmt
 from sqlite.sqlite_procs import GetDataNoArgs, GetDataWithArgs
+
+logger = logging.getLogger(__name__)
+db_session = getDbSession()
 
 def getFirstValidationError(validationResults: dict) -> dict | None:
     for validationResult in validationResults:
@@ -136,3 +140,17 @@ def validateStudentEmail(frmEmail):
         return {'status': 'ok', 'message': 'Student email was valid'}
     else:
         return {'status': 'error', 'message': 'Student email was not valid'}
+
+def isDuplicateStudentByName(first_name, last_name) -> bool:
+    duplicate_student_stmt = (select(func.count())
+        .select_from(Students)
+        .where(
+            func.lower(Students.firstName) == first_name.lower(),
+            func.lower(Students.lastName) == last_name.lower(),
+        )
+    )
+    duplicate_student_count = db_session.scalar(duplicate_student_stmt)
+    if duplicate_student_count > 0:
+        return True
+    else:
+        return False

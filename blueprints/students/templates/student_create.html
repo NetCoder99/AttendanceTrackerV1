@@ -14,9 +14,11 @@ Student related functions
 {% endblock %}
 
 {% block content %}
-      {% include 'student_details.html' %}
-<script type="application/javascript" src="{{ url_for('students_bp.static',filename='students_main.js') }}"></script>
-<script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details.js') }}"></script>
-<script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details_image.js') }}"></script>
-<script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details_badge.js') }}"></script>
+    <h2>Student Functions</h2>
+    <input type="hidden" id="hdnBadgeNumber" name="hdnBadgeNumber" value="{{ badgeNumber | safe}}">
+    {% include 'student_details.html' %}
+    <script type="application/javascript" src="{{ url_for('students_bp.static',filename='students_main.js') }}"></script>
+    <script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details.js') }}"></script>
+    <script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details_image.js') }}"></script>
+    <script type="application/javascript" src="{{ url_for('students_bp.static',filename='student_details_badge.js') }}"></script>
 {% endblock %}

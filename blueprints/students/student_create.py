@@ -3,6 +3,8 @@ import logging.config
 
 import constants
 from datetime import datetime
+
+from blueprints.students.sqlite_students import UpdStudentPicture, UpdStudentRecord
 from models.data_models import Students, Promotions
 from models.input_models import NewPromotionRecord
 from sqlite.sqlite_alchemy import getDbSession
@@ -94,4 +96,32 @@ def InsNewPromotionRecord(student_record: Students,  promotion_params: NewPromot
         return new_promotion_record
     except Exception as ex:
         logger.error(ex)
+        raise ex
+
+
+def UpdateStudentRecord(student_record: Students, form_dict: dict):
+    try:
+        if not student_record.studentImageName or student_record.studentImageName != form_dict['imageName']:
+            pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
+            matches = pattern.search(form_dict['imageSrc'])
+            form_dict['studentImageName'] = form_dict['imageName']
+            form_dict['studentImageType'] = matches.group(3)
+            form_dict['studentImageBase64'] = matches.group(5)
+            UpdStudentPicture(form_dict)
+            # db_session.refresh(student_record)
+
+        if not student_record.currentRankNum:
+            form_dict['currentRankNum']     = 1
+            form_dict['currentRankName']    = 'White Belt'
+            form_dict['currentStripeId']    = 181
+            form_dict['currentStripeName']  = 'No stripe earned'
+            form_dict['studentPromotionDate'] = datetime.now().strftime(constants.fmtDateTime)
+
+        # badgeNumber      = form_dict['badgeNumber']
+        # sqlQueryStudent  = GetStudentRecordsStmtByBadge()
+        UpdStudentRecord(form_dict)
+        db_session.refresh(student_record)
+
+    except Exception as ex:
+        logger.exception(ex)
         raise ex

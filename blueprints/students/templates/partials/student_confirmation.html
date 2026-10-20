@@ -1,28 +1,46 @@
 <div id="divStudentConfirmation" hx-swap-oob="innerHTML">
     <div id="divStudentUpdateButtons" class="row mt-2">
-        <div class="d-inline-block text-start" style="width: 8rem">
+        <div class="d-inline-block text-start " style="width: 9rem">
             <button id="btnSaveStudentUpdate"
                     type="button"
                     hx-on="SaveStudentDetails()"
                     class="btn btn-success btn-sm ">
-                Save Updates
+                {{save_btn_message | default('Save Updates')}}
             </button>
         </div>
-        <div class="d-inline-block text-start" style="width: 9rem">
+
+        <div class="d-inline-block text-start " style="width: 6rem; padding: 0rem; mx-0;">
+            <button id="btnCancel"
+                    type="button"
+                    onclick="window.location.href='/students';"
+                    class="btn btn-success btn-sm ">
+                Cancel
+            </button>
+        </div>
+
+        <div class="d-inline-block text-start {{is_hidden}}" style="width: 8rem; padding: 0rem; mx-0;">
             <button id="btnDeleteStudent"
                     type="button"
                     onclick="ShowDeleteStudentConfirmation()"
-                    class="btn btn-success btn-sm ">
+                    class="btn btn-success btn-sm "
+                    {{is_create_panel}} >
                 Delete Student
             </button>
         </div>
-        <div class="d-inline-block text-start" style="width: 8rem">
-            <button id="btnCreateStudentBadge" type="button" class="btn btn-success btn-sm ">Create
-                Badge
+
+        <div class="d-inline-block text-start {{is_hidden}}" style="width: 8rem; padding: 0rem; mx-0; ">
+            <button id="btnCreateStudentBadge"
+                    type="button"
+                    class="btn btn-success btn-sm "
+                    {{is_create_panel}}>
+                Create Badge
             </button>
         </div>
-        <div class="d-inline-block text-start" style="width: 12rem">
-            <button id="btnCreateStudentBadgeBattoDo" type="button" class="btn btn-success btn-sm ">Create
+        <div class="d-inline-block text-start {{is_hidden}}" style="width: 12rem; padding: 0rem; mx-0;">
+            <button id="btnCreateStudentBadgeBattoDo"
+                    type="button"
+                    class="btn btn-success btn-sm "
+                    {{is_create_panel}}>
                 Batto-Do Badge
             </button>
         </div>
@@ -31,7 +49,7 @@
 
 
     <div id="divStudentMessages"
-         class="fw-bold {{ messageClass }}"
+         class="fw-bold {{ messageClass }} fs-5"
          hx-swap-oob="innerHTML">
          {{ studentMessage | default('Awaiting input ...')|safe}}
     </div>

@@ -3,17 +3,17 @@ import logging.config
 
 from dateutil.parser import parse
 from datetime import datetime
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for
 from flask_htmx import make_response
 from sqlalchemy import select, func
 
 import constants
 from blueprints.belts.sqlite_belts import GetRanksRecords, GetStripesForRankStmt
 from blueprints.students.student_attendance import UpdPromotionDateStmt, InsertAttendanceRecord, GetAttendanceRecord
-from blueprints.students.student_create import CreateNewStudentRecord
+from blueprints.students.student_create import CreateNewStudentRecord, UpdateStudentRecord
 from blueprints.students.student_delete import DelStudentRecord
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate, getFirstValidationError, \
-    getErrorFields
+    getErrorFields, isDuplicateStudentByName
 from models.data_models import Classes, Students, Attendance, Promotions
 from models.input_models import NewPromotionRecord
 from services.barcodeGenerator import createBarcodeFile
@@ -66,13 +66,18 @@ def get_student_details():
         logger.exception(ex)
         raise ex
 
-@students_bp.route('/student_create', methods=['GET', 'POST'])
-def student_create():
-    logging.info(f'Current route: student_create')
+@students_bp.route('/display_student_create', methods=['GET', 'POST'])
+def display_student_create():
+    logging.info(f'Current route: display_student_create')
     try:
-        imageData   = GetDataWithArgs(GetDefaultImageStmt(), {'imageName' : 'RSM_Logo2.webp'})[0]
-        student_record = {'':''}
-        return render_template('student_create.html', studentFields=student_record)
+        student_record = GetDataNoArgs(GetDefaultStudentDataStmt())[0]
+        return render_template(
+            'student_create.html',
+            studentFields=student_record,
+            is_create_panel='disabled',
+            is_hidden='d-none',
+            save_btn_message='Create Student',
+        )
     except Exception as ex:
         logger.error(ex)
         raise ex
@@ -186,39 +191,39 @@ def student_attendance_api():
         raise ex
 
 
-# --------------------------------------------------------------------
-@students_bp.route('/save_student_details_htmx', methods=['GET', 'POST'])
-def save_student_details_htmx():
-    logging.info(f'Current route: save_student_details_htmx')
-    try:
-        # form_data = request.args['frmField1']
-        validation_results = validateStudentFieldsUpdate(request.args)
-        if validation_results['validationResults']['status'] != 'ok':
-            student_confirmation_panel = render_template(
-                "partials/student_confirmation.html",
-                studentMessage = getFirstValidationError(validation_results)['message'],
-                messageClass   = "text-danger"
-            )
-            response         = make_response(student_confirmation_panel)
-            error_fields     = getErrorFields(validation_results)
-            response_payload = json.dumps({"highLightErrorFields": error_fields })
-            response.headers['HX-Trigger-After-Settle'] = response_payload
-            return response
-
-        student_record = db_session.query(Students).filter_by(badgeNumber=request.args['hdnBadgeNumber']).first()
-        if not student_record:
-            CreateNewStudentRecord(request.args)
-        else:
-            UpdateStudentRecord(student_record, request.args)
-
-
-        return render_template(
-            "partials/student_confirmation.html",
-            studentMessage = "Student details have been updated.",
-            messageClass = "text-success"
-        )
-    except Exception as ex:
-        logging.exception(ex)
+# # --------------------------------------------------------------------
+# @students_bp.route('/save_student_details_htmx', methods=['GET', 'POST'])
+# def save_student_details_htmx():
+#     logging.info(f'Current route: save_student_details_htmx')
+#     try:
+#         # form_data = request.args['frmField1']
+#         validation_results = validateStudentFieldsUpdate(request.args)
+#         if validation_results['validationResults']['status'] != 'ok':
+#             student_confirmation_panel = render_template(
+#                 "partials/student_confirmation.html",
+#                 studentMessage = getFirstValidationError(validation_results)['message'],
+#                 messageClass   = "text-danger"
+#             )
+#             response         = make_response(student_confirmation_panel)
+#             error_fields     = getErrorFields(validation_results)
+#             response_payload = json.dumps({"highLightErrorFields": error_fields })
+#             response.headers['HX-Trigger-After-Settle'] = response_payload
+#             return response
+#
+#         student_record = db_session.query(Students).filter_by(badgeNumber=request.args['hdnBadgeNumber']).first()
+#         if not student_record:
+#             CreateNewStudentRecord(request.args)
+#         else:
+#             UpdateStudentRecord(student_record, request.args)
+#
+#
+#         return render_template(
+#             "partials/student_confirmation.html",
+#             studentMessage = "Student details have been updated.",
+#             messageClass = "text-success"
+#         )
+#     except Exception as ex:
+#         logging.exception(ex)
 
 
 
@@ -233,45 +238,27 @@ def save_student_details_api():
             return validation_results
 
         student_record = db_session.query(Students).filter_by(badgeNumber=form_dict['badgeNumber']).first()
+
         if not student_record:
-            CreateNewStudentRecord(form_dict)
+            if isDuplicateStudentByName(form_dict['frmField1'], form_dict['frmField3']):
+                validation_results['validationResults']['status']  = 'error'
+                validation_results['validationResults']['message'] = 'Duplicate student name'
+                return validation_results
+            else:
+                CreateNewStudentRecord(form_dict)
+                validation_results['validationResults']['status']  = 'ok'
+                validation_results['validationResults']['message'] = 'Student record was created'
+                return validation_results
         else:
             UpdateStudentRecord(student_record, form_dict)
 
+        validation_results['validationResults']['status'] = 'ok'
+        validation_results['validationResults']['message'] = 'Student record was updated'
         return validation_results
 
     except Exception as ex:
         logger.error(ex)
         raise ex
-
-
-def UpdateStudentRecord(student_record: Students, form_dict: dict):
-    try:
-        if not student_record.studentImageName or student_record.studentImageName != form_dict['imageName']:
-            pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
-            matches = pattern.search(form_dict['imageSrc'])
-            form_dict['studentImageName'] = form_dict['imageName']
-            form_dict['studentImageType'] = matches.group(3)
-            form_dict['studentImageBase64'] = matches.group(5)
-            UpdStudentPicture(form_dict)
-            # db_session.refresh(student_record)
-
-        if not student_record.currentRankNum:
-            form_dict['currentRankNum']     = 1
-            form_dict['currentRankName']    = 'White Belt'
-            form_dict['currentStripeId']    = 181
-            form_dict['currentStripeName']  = 'No stripe earned'
-            form_dict['studentPromotionDate'] = datetime.now().strftime(constants.fmtDateTime)
-
-        # badgeNumber      = form_dict['badgeNumber']
-        # sqlQueryStudent  = GetStudentRecordsStmtByBadge()
-        UpdStudentRecord(form_dict)
-        db_session.refresh(student_record)
-
-    except Exception as ex:
-        logger.exception(ex)
-        raise ex
-
 
 
 def GetImageDict(data_json: dict):
