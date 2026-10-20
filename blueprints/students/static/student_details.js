@@ -105,81 +105,87 @@ function DisplayStudentData(studentData) {
     $('#frmEmail').val(studentData.email);
 }
 
-//$('#btnSaveStudentUpdate').off().on('click', function() {
-//
-//    const badgeNumber = $('#hdnBadgeNumber').val();
-//
-//    console.log("btnSaveStudentUpdate: Clicked");
-//    event.preventDefault();
-//    const formObject = $('#frmStudentDetails');
-//    let   formData   = $('#frmStudentDetails').serializeArray();
-//    formData.push({'name': 'badgeNumber', 'value' : badgeNumber});
-//
-//    const imageObject = $('#studentImageTmp')
-//    formData.push({'name': 'imageSrc', 'value': imageObject[0].src});
-//
-//    const imageName   = $('#studentImageName')
-//    formData.push({'name': 'imageName', 'value': imageName[0].innerHTML});
-//
-//    const studentJsonData = JSON.stringify(formData);
-//
-//    fetch('save_student_details_api', {
-//      method: 'POST',
-//      headers: {
-//        'Content-Type': 'application/json'
-//      },
-//      body: JSON.stringify(formData)
-//    })
-//    .then(response    => response.json())
-//    .then(studentSaveResponse => ProcessSaveStudentResponse(studentSaveResponse))
-//    .catch(error      => console.error('Error:', ProcessSaveStudentError(error)));
-//});
-//
-//function ProcessSaveStudentError(studentSaveResponse) {
-//    console.log(`ProcessSaveStudentError: ${JSON.stringify(studentSaveResponse)}`);
-//};
-//
-//function ProcessSaveStudentResponse(studentSaveResponse) {
-//    console.log(`ProcessSaveStudentResponse: ${JSON.stringify(studentSaveResponse.validationResults)}`);
-//    const validationStudentResults = studentSaveResponse.validationResults;
-//
-//    let errorMessage = "";
-//
-//    for (const [key, value] of Object.entries(studentSaveResponse)) {
-//      console.log(`${key} is ${value.status} : ${value.message}`);
-//      const frmField = $(`#${key}`);
-//      frmField.removeClass("invalid");
-//      if (value.status == "error") {
-//        frmField.addClass("invalid");
-//        if (errorMessage == "") {
-//            errorMessage = value.message
-//            frmField.focus();
-//        }
-//      }
-//      else {
-//          console.log(`Check for reformatted value: ${value}`);
-//          const rtnFieldName = key.replace(/^frm/, "rtn");
-//          if (rtnFieldName in value) {
-//              console.log(`Display formatted value: ${value[rtnFieldName]}`);
-//              $(`#${key}`).val(value[rtnFieldName]);
-//          }
-//      }
-//    }
-//    $('#divStudentMessages').removeClass('text-danger');
-//    $('#divStudentMessages').removeClass('text-success');
-//    if (errorMessage == "") {
-//        $('#divStudentMessages').addClass('text-success');
-//        $('#divStudentMessages').html("Student updates saved");
-//    }
-//    else {
-//        $('#divStudentMessages').addClass('text-danger');
-//        $('#divStudentMessages').html(errorMessage);
-//    }
-//    setTimeout(() => {
-//        $('#divStudentMessages').html("Awaiting input ...");
-//        $('#divStudentMessages').removeClass('text-danger');
-//        $('#divStudentMessages').addClass('text-success');
-//    }, 5000);
-//}
-//
+function SaveStudentDetails() {
+    const badgeNumber = $('#hdnBadgeNumber').val();
+    console.log("*** SaveStudentDetails: Clicked ***");
+}
+
+
+$('#btnSaveStudentUpdate').off().on('click', function() {
+
+    const badgeNumber = $('#hdnBadgeNumber').val();
+
+    console.log("btnSaveStudentUpdate: Clicked");
+    event.preventDefault();
+    const formObject = $('#frmStudentDetails');
+    let   formData   = $('#frmStudentDetails').serializeArray();
+    formData.push({'name': 'badgeNumber', 'value' : badgeNumber});
+
+    const imageObject = $('#studentImageTmp')
+    formData.push({'name': 'imageSrc', 'value': imageObject[0].src});
+
+    const imageName   = $('#studentImageName')
+    formData.push({'name': 'imageName', 'value': imageName[0].innerHTML});
+
+    const studentJsonData = JSON.stringify(formData);
+
+    fetch('save_student_details_api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(response    => response.json())
+    .then(studentSaveResponse => ProcessSaveStudentResponse(studentSaveResponse))
+    .catch(error      => console.error('Error:', ProcessSaveStudentError(error)));
+});
+
+function ProcessSaveStudentError(studentSaveResponse) {
+    console.log(`ProcessSaveStudentError: ${JSON.stringify(studentSaveResponse)}`);
+};
+
+function ProcessSaveStudentResponse(studentSaveResponse) {
+    console.log(`ProcessSaveStudentResponse: ${JSON.stringify(studentSaveResponse.validationResults)}`);
+    const validationStudentResults = studentSaveResponse.validationResults;
+
+    let errorMessage = "";
+
+    for (const [key, value] of Object.entries(studentSaveResponse)) {
+      console.log(`${key} is ${value.status} : ${value.message}`);
+      const frmField = $(`#${key}`);
+      frmField.removeClass("invalid");
+      if (value.status == "error") {
+        frmField.addClass("invalid");
+        if (errorMessage == "") {
+            errorMessage = value.message
+            frmField.focus();
+        }
+      }
+      else {
+          console.log(`Check for reformatted value: ${value}`);
+          const rtnFieldName = key.replace(/^frm/, "rtn");
+          if (rtnFieldName in value) {
+              console.log(`Display formatted value: ${value[rtnFieldName]}`);
+              $(`#${key}`).val(value[rtnFieldName]);
+          }
+      }
+    }
+    $('#divStudentMessages').removeClass('text-danger');
+    $('#divStudentMessages').removeClass('text-success');
+    if (errorMessage == "") {
+        $('#divStudentMessages').addClass('text-success');
+        $('#divStudentMessages').html("Student updates saved");
+    }
+    else {
+        $('#divStudentMessages').addClass('text-danger');
+        $('#divStudentMessages').html(errorMessage);
+    }
+    setTimeout(() => {
+        $('#divStudentMessages').html("Awaiting input ...");
+        $('#divStudentMessages').removeClass('text-danger');
+        $('#divStudentMessages').addClass('text-success');
+    }, 5000);
+}
+
 

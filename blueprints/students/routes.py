@@ -1,17 +1,17 @@
 import json
-import traceback
 import logging.config
 
 from dateutil.parser import parse
 from datetime import datetime
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 from flask_htmx import make_response
 from sqlalchemy import select, func
 
 import constants
 from blueprints.belts.sqlite_belts import GetRanksRecords, GetStripesForRankStmt
 from blueprints.students.student_attendance import UpdPromotionDateStmt, InsertAttendanceRecord, GetAttendanceRecord
-from blueprints.students.student_promotions import GetNextPromotion, GetNextStudentRank
+from blueprints.students.student_create import CreateNewStudentRecord
+from blueprints.students.student_delete import DelStudentRecord
 from blueprints.students.validate_student_fields import validateStudentFieldsUpdate, getFirstValidationError, \
     getErrorFields
 from models.data_models import Classes, Students, Attendance, Promotions
@@ -205,22 +205,11 @@ def save_student_details_htmx():
             response.headers['HX-Trigger-After-Settle'] = response_payload
             return response
 
-# '''
-# 'frmField1' = {str} 'Jennifer'
-# 'frmField3' = {str} 'Hesterman'
-# 'frmField4' = {str} '14213 N. BRUNSWICK DR'
-# 'frmField42' = {str} 'APT A'
-# 'frmField9' = {str} 'Fountain Hills'
-# 'frmField10' = {str} 'AZ'
-# 'frmField11' = {str} '85268'
-# 'frmBirthDate' = {str} '03/31/1987'
-# 'frmPhoneHome' = {str} '480-304-0327'
-# 'frmEmail' = {str} ''
-# 'studentBeltNames' = {str} '1'
-# 'studentBeltStripes' = {str} '58'
-# 'studentPromotionDate' = {str} ''
-# 'classesRequired' = {str} ''
-# '''
+        student_record = db_session.query(Students).filter_by(badgeNumber=request.args['hdnBadgeNumber']).first()
+        if not student_record:
+            CreateNewStudentRecord(request.args)
+        else:
+            UpdateStudentRecord(student_record, request.args)
 
 
         return render_template(
@@ -255,55 +244,6 @@ def save_student_details_api():
         logger.error(ex)
         raise ex
 
-def CreateNewStudentRecord(form_dict: dict):
-    try:
-        student_record = Students()
-        student_record.badgeNumber = None
-
-        student_record.badgeNumber  = form_dict['badgeNumber']
-        student_record.firstName    = form_dict['frmField1']
-        student_record.lastName     = form_dict['frmField3']
-        #student_record.namePrefix   = form_dict['namePrefix']
-        student_record.email        = form_dict['frmEmail']
-        student_record.address      = form_dict['frmField4']
-        student_record.address2     = form_dict['frmField42']
-        student_record.city         = form_dict['frmField9']
-        student_record.country      = 'USA'
-        student_record.state        = form_dict['frmField10']
-        student_record.zip          = form_dict['frmField11']
-        student_record.birthDate    = form_dict['frmBirthDate']
-        student_record.phoneHome    = form_dict['frmPhoneHome']
-        #student_record.phoneMobile  = form_dict['phoneMobile']
-        student_record.status       = 'Active'
-
-        pattern = re.compile(r"^(data):(image)/(.*);(base64),(.+)")
-        matches = pattern.search(form_dict['imageSrc'])
-        student_record.studentImageName   = form_dict['imageName']
-        student_record.studentImageType   = matches.group(3)
-        student_record.studentImageBase64 = matches.group(5)
-
-        student_record.currentRankNum       = 1
-        student_record.currentRankName      = 'White Belt'
-        student_record.currentStripeId      = 181
-        student_record.currentStripeName    = 'No stripe earned'
-        student_record.studentPromotionDate = datetime.now().strftime(constants.fmtDateTime)
-
-        db_session.add(student_record)
-        db_session.commit()
-
-        promotion_params = NewPromotionRecord.construct()
-        promotion_params.badge_number   = student_record.badgeNumber
-        promotion_params.belt_id        = student_record.currentRankNum
-        promotion_params.belt_name      = student_record.currentRankName
-        promotion_params.stripe_id      = student_record.currentStripeId
-        promotion_params.stripe_name    = student_record.currentStripeName
-        promotion_params.promotion_date = student_record.studentPromotionDate
-        promotion_params.comments       = 'New student creation'
-        InsNewPromotionRecord(student_record, promotion_params)
-        return student_record
-    except Exception as ex:
-        logger.error(ex)
-        raise ex
 
 def UpdateStudentRecord(student_record: Students, form_dict: dict):
     try:
@@ -329,44 +269,9 @@ def UpdateStudentRecord(student_record: Students, form_dict: dict):
         db_session.refresh(student_record)
 
     except Exception as ex:
-        logger.error(ex)
+        logger.exception(ex)
         raise ex
 
-def InsNewPromotionRecord(student_record: Students,  promotion_params: NewPromotionRecord) -> Promotions:
-    try:
-        #ValidatePromotionParams(promotion_params)
-        new_promotion_record = Promotions()
-        new_promotion_record.studentName      = f'{student_record.firstName} {student_record.lastName}'
-        new_promotion_record.studentFirstName = student_record.firstName
-        new_promotion_record.studentLastName  = student_record.lastName
-        new_promotion_record.badgeNumber      = student_record.badgeNumber
-        new_promotion_record.beltId      = promotion_params.belt_id
-        new_promotion_record.beltTitle   = promotion_params.belt_name
-        new_promotion_record.stripeId    = promotion_params.stripe_id
-        new_promotion_record.stripeTitle = promotion_params.stripe_name
-        if promotion_params.belt_id != student_record.currentRankNum:
-            new_promotion_record.promotionType = 'Belt'
-        else:
-            new_promotion_record.promotionType = 'Stripe'
-        if promotion_params.comments.strip() == '':
-            new_promotion_record.comments = "Promotion from api"
-        else:
-            new_promotion_record.comments = promotion_params.comments
-
-        if isinstance(promotion_params.promotion_date, str):
-            new_promotion_record.promotionDate = promotion_params.promotion_date
-        elif isinstance(promotion_params.promotion_date, datetime):
-            new_promotion_record.promotionDate  = promotion_params.promotion_date.strftime(constants.fmtDateTime)
-        else:
-            raise Exception("Unknown promotion date type!")
-        new_promotion_record.createDateTime = datetime.now().strftime(constants.fmtDateTime)
-        new_promotion_record.createDateTime = datetime.now().strftime(constants.fmtDateTime)
-        db_session.add(new_promotion_record)
-        db_session.commit()
-        return new_promotion_record
-    except Exception as ex:
-        logger.error(ex)
-        raise ex
 
 
 def GetImageDict(data_json: dict):
@@ -702,24 +607,18 @@ def refresh_attendance_dialog():
     except Exception as ex:
         print(f'Error: {ex.__str__()}')
 
-
 # --------------------------------------------------------------------
-@students_bp.route('/student_delete_confirmation', methods=['GET', 'POST'])
-def student_delete_confirmation():
-    logging.info(f'Current route: student_delete_confirmation')
+@students_bp.route('/student_delete_confirmation_api', methods=['GET', 'POST'])
+def student_delete_confirmation_api():
+    logging.info(f'Current route: student_delete_confirmation_api')
     try:
         badgeNumber = request.args['hdnBadgeNumber']
-        return render_template(
-            "partials/student_confirmation.html",
-            studentMessage="Student record was deleted."
-        )
+        student_record = db_session.query(Students).filter_by(badgeNumber=request.args['hdnBadgeNumber']).first()
+        if not student_record:
+            return jsonify({'status': 'error', 'message': f'Student record {badgeNumber} was not found'})
+        else:
+            DelStudentRecord(student_record)
+            return jsonify({'status' : 'ok', 'message' : f'Student record {badgeNumber} was deleted'})
     except Exception as ex:
-        print(f'Error: {ex.__str__()}')
-
-
-# @students_bp.route('/get_student_details', methods=['GET', 'POST'])
-# def get_student_details():
-#     print(f'Current route: get_student_details')
-#     sqlQuery          = GetPromotionHistoryStmt()
-#     promotionHistory  = GetDataWithArgs(sqlQuery, request.json)
-#     return promotionHistory
+        logger.exception(ex)
+        return jsonify({'status' : 'error', 'message' : str(ex)})

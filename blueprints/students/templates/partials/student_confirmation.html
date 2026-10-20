@@ -3,9 +3,7 @@
         <div class="d-inline-block text-start" style="width: 8rem">
             <button id="btnSaveStudentUpdate"
                     type="button"
-                    hx-get="/save_student_details_htmx"
-                    hx-include="#frmCreate"
-                    hx-target=""
+                    hx-on="SaveStudentDetails()"
                     class="btn btn-success btn-sm ">
                 Save Updates
             </button>
@@ -13,8 +11,7 @@
         <div class="d-inline-block text-start" style="width: 9rem">
             <button id="btnDeleteStudent"
                     type="button"
-                    hx-get="/student_delete_confirmation"
-                    hx-include="#hdnBadgeNumber"
+                    onclick="ShowDeleteStudentConfirmation()"
                     class="btn btn-success btn-sm ">
                 Delete Student
             </button>
@@ -31,11 +28,8 @@
         </div>
     </div>
 
-    <div id="divClassConfirmations" class="row removed modal-footer">
-        <label id="lblConfirmClassDelete" class="fw-bold col-5">Are you sure?</label>
-        <button id="btnClassConfirmDeleteYes"  type="button" class="btn btn-danger col-3">Yes</button>
-        <button id="btnClassConfirmDeleteNo"   type="button" class="btn btn-primary col-3">No</button>
-    </div>
+
+
     <div id="divStudentMessages"
          class="fw-bold {{ messageClass }}"
          hx-swap-oob="innerHTML">
