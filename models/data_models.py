@@ -1,10 +1,11 @@
+import enum
 from typing import Optional
 import datetime
 
 from sqlalchemy import Boolean, CheckConstraint, Column, DateTime, ForeignKey, Index, Integer, LargeBinary, String, \
     Table, Text, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, declarative_base
-from sqlalchemy.sql.sqltypes import NullType
+from sqlalchemy.sql.sqltypes import NullType, Enum
 
 import constants
 
@@ -207,28 +208,26 @@ class Requirements(Base):
 
     #belts: Mapped[Optional['Belts']] = relationship('Belts', back_populates='requirements')
 
-# class VwEligibilityCounts(Base):
-#     __tablename__ = 'vw_elgibility_counts'      # Name of the view in SQLite
-#     rowNum = Column(Integer, primary_key=True)  # Map an existing unique column
-#     beltId = Column(Integer)
-#     stripePrefixSeq = Column(Integer)
-#     beltTitle       = Column(Text)
-#     stripeTitle     = Column(Text)
-#     classCount      = Column(Integer)
-#     eligibleCount   = Column(Integer)
+class ArchiveActiontype(str, enum.Enum):
+    UPDATE = 'Update'
+    DELETE = 'Delete'
+
 
 class Archive(Base):
     __tablename__ = 'archive'
     __table_args__ = (
+        CheckConstraint("actionType IN ('Update', 'Delete')", name='chkActionType'),
         CheckConstraint('archiveDateTime IS datetime(archiveDateTime)', name='chkArchiveDateTime'),
-        CheckConstraint('archiveRecord IS (json_valid(archiveRecord))', name='chkArchiveRecordIsJson')
+        CheckConstraint('json_valid(archiveJson)', name='chkArchiveRecordIsJson')
     )
 
-    archiveId   : Mapped[int] = mapped_column(Integer, primary_key=True)
-    keyValue    : Mapped[Optional[str]] = mapped_column(Text)
-    badgeNumber : Mapped[Optional[str]] = mapped_column(Text)
-    tableName   : Mapped[Optional[str]] = mapped_column(Text)
-    archiveJson : Mapped[Optional[str]] = mapped_column(Text)
+    archiveId: Mapped[int] = mapped_column(Integer, primary_key=True)
+    keyType: Mapped[Optional[str]] = mapped_column(Text)
+    keyValue: Mapped[Optional[str]] = mapped_column(Text)
+    actionType: Mapped[Optional[ArchiveActiontype]] = mapped_column(Enum(ArchiveActiontype, values_callable=lambda cls: [member.value for member in cls]))
+    badgeNumber: Mapped[Optional[int]] = mapped_column(Integer)
+    tableName: Mapped[Optional[str]] = mapped_column(Text)
+    archiveJson: Mapped[Optional[str]] = mapped_column(Text)
     archiveDateTime: Mapped[Optional[str]] = mapped_column(Text)
 
     @classmethod

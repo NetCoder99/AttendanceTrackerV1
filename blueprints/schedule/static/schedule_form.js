@@ -2,6 +2,12 @@
 $(document).ready(function() {
     console.log("Schedule form document ready");
 
+    if (cookieExists('status')) {
+        getCookieModern('message').then(value => ProcessCookieMessage(value));
+    } else {
+      console.log('status cookie does not exist.');
+    }
+
     $('#exampleModal').on('show.bs.modal', function (event) {
         const classModal     = $('#exampleModal');
         const classDayOfWeek = $('#exampleModal').find('#divClassDayOfWeek').html();
@@ -15,6 +21,38 @@ $(document).ready(function() {
         }
     });
 })
+
+// ------------------------------------------------------------------------
+function cookieExists(name) {
+  return document.cookie.split('; ').some(row => row.startsWith(name + '='));
+}
+async function getCookieModern(name) {
+  const cookie = await cookieStore.get(name);
+  return cookie ? cookie.value : null;
+}
+
+// ------------------------------------------------------------------------
+function ProcessCookieMessage(message) {
+    console.log(`Message: ${message}`);
+    $("#divScheduleMessage").removeClass()
+    $("#divScheduleMessage").addClass('fw-bold');
+    $("#divScheduleMessage").addClass('text-success');
+    $("#divScheduleMessage").html('Class was deleted.');
+
+//    if (response_json.status == 'error') {
+//        $("#divScheduleMessage").html('Class was not deleted!');
+//        $("#divScheduleMessage").addClass('text-danger');
+//    } else {
+//        $("#divScheduleMessage").html('Class was deleted.');
+//        $("#divScheduleMessage").addClass('text-success');
+//    }
+
+    setTimeout(() => {
+        $("#divScheduleMessage").html("&nbsp");
+        $('#divStudentMessages').removeClass();
+    }, 4000);
+
+}
 
 // ------------------------------------------------------------------------
 $("#btnSave").click(function() {
@@ -88,8 +126,11 @@ $('#chkAll').on('change', function() {
 // ------------------------------------------------------------------------
 function processDeleteResponse(result) {
     console.log(`processDeleteResponse: ${JSON.stringify(result)}`);
+    result_json = JSON.stringify(result);
     if (result.status === 'ok') {
         $('#exampleModal').modal('hide');
+        document.cookie = "status=ok; max-age=30;"
+        document.cookie = "message=Class was deleted; max-age=30;"
         location.reload();
     }
     else {
@@ -164,6 +205,25 @@ function processSaveResponse(result, classNum) {
         }
     }
 
+}
+
+
+function processUpdateScheduleResponse(response) {
+    console.log("processUpdateScheduleResponse was called");
+//    response_json = JSON.parse(response)
+//    $("#divScheduleMessage").removeClass()
+//    $("#divScheduleMessage").addClass('fw-bold');
+//    if (response_json.status == 'error') {
+//        $("#divScheduleMessage").html(`Error: ${response_json.message}`);
+//        $("#divScheduleMessage").addClass('text-danger');
+//    } else {
+//        $("#divScheduleMessage").html(`${response_json.message}`);
+//        $("#divScheduleMessage").addClass('text-success');
+//    }
+//    setTimeout(() => {
+//        $("#divScheduleMessage").html("&nbsp");
+//        $('#divStudentMessages').removeClass();
+//    }, 4000);
 }
 
 
