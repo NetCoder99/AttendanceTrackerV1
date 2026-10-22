@@ -3,6 +3,7 @@ from datetime import datetime, date, time, timedelta
 import json
 from time import strptime, strftime
 
+from models.input_models import ValidationResults, Status
 from sqlite.sqlite_schedule import GetClassRecordsSorted, InsertNewClass
 from sqlite.sqlite_styles import GetStyleRecords
 
@@ -27,18 +28,19 @@ def validateClassFieldsInsert(classData):
     validationResults = {}
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     inpClassName = getFieldValue(classData, 'inpClassName')
-    validationResults['inpClassName'] = validateClassName(inpClassName)
+    validationResults['inpClassName'] = validateClassName(1, inpClassName)
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     inpStartTime = getFieldValue(classData, 'inpStartTime')
-    validationResults['inpStartTime'] = validateClassStartTime(classData, inpStartTime)
+    validationResults['inpStartTime'] = validateClassStartTime(2, classData, inpStartTime)
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     inpClassDuration = getFieldValue(classData, 'inpClassDuration')
-    validationResults['inpClassDuration'] = validateClassDuration(inpClassDuration)
+    validationResults['inpClassDuration'] = validateClassDuration(3, inpClassDuration)
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     chkAmPm = getFieldValue(classData, 'chkAmPm')
-    validationResults['inpFinisTime'] = calculateFinisTime(chkAmPm, validationResults['inpStartTime'], validationResults['inpClassDuration'])
+    validationResults['inpFinisTime'] = calculateFinisTime(4, chkAmPm, validationResults['inpStartTime'], validationResults['inpClassDuration'])
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     validationResults['classOverLap'] = checkForClassOverLap(
+        5,
         classData,
         validationResults['inpStartTime'],
         validationResults['inpClassDuration'],
@@ -62,17 +64,17 @@ def getFieldValue(classData, fieldName):
         return None
 
 # ---------------------------------------------------------------------------------------------------
-def checkForClassOverLap(classData, vldStartTime, vldClassDuration, vldFinisTime):
+def checkForClassOverLap(seq, classData, vldStartTime, vldClassDuration, vldFinisTime):
     if vldStartTime['status'] == 'error' or vldClassDuration['status'] == 'error':
-        return {'status': 'err', 'message': 'Could not check for overlap'}
+        return {'seq': seq, 'status': 'err', 'message': 'Could not check for overlap'}
     slctDayOfWeek = getFieldValue(classData, 'slctDayOfWeek')
     classRecords  = GetClassRecordsSorted()
     classesByDay  = [x for x in classRecords if str(x['classDayOfWeek']) == str(slctDayOfWeek)]
     if len(classesByDay) == 0:
         try:
-            return {'status' : 'ok','message': 'No overlap was found', 'value' : ''}
+            return {'seq': seq, 'status' : 'ok','message': 'No overlap was found', 'value' : ''}
         except Exception as ex:
-            return {'status': 'error', 'message': ex.__str__(), 'value': ''}
+            return {'seq': seq, 'status': 'error', 'message': ex.__str__(), 'value': ''}
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # if start time between any other start / end time then it overlaps
@@ -82,11 +84,11 @@ def checkForClassOverLap(classData, vldStartTime, vldClassDuration, vldFinisTime
         classStartTime = datetime.strptime("01-Jan-1900 " + classEntry['classStartTime'], "%d-%b-%Y %I:%M %p")
         classFinisTime = datetime.strptime("01-Jan-1900 " + classEntry['classFinisTime'], "%d-%b-%Y %I:%M %p")
         if classStartTime <= tempStartTime <= classFinisTime:
-            return {'status': 'error', 'message': 'Class overlaps another class', 'value': classEntry['classNum']}
+            return {'seq': seq, 'status': 'error', 'message': 'Class overlaps another class', 'value': classEntry['classNum']}
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    return {'status' : 'ok','message': 'No overlap was found', 'value' : ''}
+    return {'seq': seq, 'status' : 'ok','message': 'No overlap was found', 'value' : ''}
 
 def getSqlClassInsertDict(classData, vldStartTime, vldClassDuration, vldFinisTime):
     return {
@@ -137,36 +139,37 @@ def getStyleName(styleNum):
 
 
 # ---------------------------------------------------------------------------------------------------
-def validateClassName(inpClassName):
+def validateClassName(seq, inpClassName):
     if inpClassName:
-        return {'status' : 'ok','message': 'inpClassName was valid'}
+        return {'seq': seq, 'status' : 'ok','message': 'inpClassName was valid'}
     else:
-        return {'status' : 'error','message': 'Class name is a required field'}
+        return {'seq': seq, 'status' : 'error','message': 'Class name is a required field'}
 
 # ---------------------------------------------------------------------------------------------------
-def validateClassStartTime(classData, inpStartTime):
+def validateClassStartTime(seq, classData, inpStartTime):
+    rtn_results = ValidationResults(seq=seq)
     if inpStartTime:
         chkAmPm   = getFieldValue(classData, 'chkAmPm')
         startTime = validate_time_format(inpStartTime + ' ' + chkAmPm, "%I:%M %p")  #:(inpStartTime + ' ' + chkAmPm)
         if startTime:
-            return {'status': 'ok', 'message': 'inpStartTime was valid', 'value' : startTime.strftime('%I:%M %p').lstrip('0')}
+            return {'seq': seq, 'status': 'ok', 'message': 'inpStartTime was valid', 'value' : startTime.strftime('%I:%M %p').lstrip('0')}
         else:
-            return {'status': 'error', 'message': 'Start time format was not valid', 'value' : inpStartTime}
+            return {'seq': seq, 'status': 'error', 'message': 'Start time format was not valid', 'value' : inpStartTime}
     else:
-        return {'status': 'error', 'message': 'Start time is a required field', 'value' : inpStartTime}
+        return {'seq': seq, 'status': 'error', 'message': 'Start time is a required field', 'value' : inpStartTime}
 
 # ---------------------------------------------------------------------------------------------------
-def validateClassDuration(inpClassDuration):
+def validateClassDuration(seq, inpClassDuration):
     if not inpClassDuration:
-        return {'status': 'error', 'message': 'Class duration is a required field', 'value' : inpClassDuration}
+        return {'seq': seq, 'status': 'error', 'message': 'Class duration is a required field', 'value' : inpClassDuration}
     if not str(inpClassDuration).isdigit():
-        return {'status': 'error', 'message': 'Class duration must be an integer value between 30 and 120', 'value' : inpClassDuration}
+        return {'seq': seq, 'status': 'error', 'message': 'Class duration must be an integer value between 30 and 120', 'value' : inpClassDuration}
     if int(inpClassDuration) < 30 or int(inpClassDuration) > 120:
-        return {'status': 'error', 'message': 'Class duration must be an integer value between 30 and 120', 'value' : inpClassDuration}
-    return {'status': 'ok', 'message': 'Class duration was valid', 'value' : inpClassDuration}
+        return {'seq': seq, 'status': 'error', 'message': 'Class duration must be an integer value between 30 and 120', 'value' : inpClassDuration}
+    return {'seq': seq, 'status': 'ok', 'message': 'Class duration was valid', 'value' : inpClassDuration}
 
 # ---------------------------------------------------------------------------------------------------
-def calculateFinisTime(chkAmPm, vldStartTime, vldClassDuration):
+def calculateFinisTime(seq, chkAmPm, vldStartTime, vldClassDuration):
     if vldStartTime['status'] == 'error' or vldClassDuration['status'] == 'error':
         return {'status': 'err', 'message': 'Could not calculate class end time'}
     inpStartTime      = vldStartTime['value']
@@ -176,7 +179,7 @@ def calculateFinisTime(chkAmPm, vldStartTime, vldClassDuration):
     tempDateTime    = datetime.strptime(date_string, "%d-%b-%Y %I:%M %p")
     minutesToAdd    = timedelta(minutes=int(inpClassDuration))
     tempNewDateTime = tempDateTime + minutesToAdd
-    return {'status': 'ok', 'message': 'Class duration was valid', 'value' : tempNewDateTime.strftime("%I:%M %p").lstrip('0')}
+    return {'seq': seq, 'status': 'ok', 'message': 'Class duration was valid', 'value' : tempNewDateTime.strftime("%I:%M %p").lstrip('0')}
 
 # ---------------------------------------------------------------------------------------------------
 def calculateCheckinTime(inpClassTime: str, inpMinutesOffset: int):

@@ -1,6 +1,8 @@
 # App specific
 static/images/badges/*
+static/images/output/*
 !static/images/badges/.gitkeep
+!static/images/output/.gitkeep
 
 badgeData/*
 !badgeData/.gitkeep

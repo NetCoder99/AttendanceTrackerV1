@@ -1,0 +1,103 @@
+{
+    "type": "table",
+    "database": null,
+    "name": "schools",
+    "withoutRowId": false,
+    "strict": false,
+    "ddl": "CREATE TABLE schools (\n    schoolId        INTEGER,\n    schoolName      TEXT,\n    schoolAddr1     TEXT,\n    schoolAddr2     TEXT,\n    schoolCity      TEXT,\n    schoolState     TEXT,\n    schoolZip       TEXT CONSTRAINT chkSchoolZip      CHECK (\n        schoolZip GLOB '[0-9][0-9][0-9][0-9][0-9]' OR \n        schoolZip GLOB '[0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]'\n    ),\n    schoolPhone     TEXT CONSTRAINT chkSchoolPhone    CHECK (schoolPhone GLOB '[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]' ),\n    schoolUrl       TEXT,\n    createDateTime  TEXT DEFAULT (CURRENT_TIMESTAMP)  CONSTRAINT chkCreateDateTime CHECK (createDateTime IS datetime(createDateTime) ),\n    updateDateTime  TEXT CONSTRAINT chkUpdateDateTime CHECK (updateDateTime IS datetime(updateDateTime) ),\n    PRIMARY KEY (\n        schoolId\n    )\n);",
+    "columns": [
+        {
+            "name": "schoolId",
+            "type": "INTEGER"
+        },
+        {
+            "name": "schoolName",
+            "type": "TEXT"
+        },
+        {
+            "name": "schoolAddr1",
+            "type": "TEXT"
+        },
+        {
+            "name": "schoolAddr2",
+            "type": "TEXT"
+        },
+        {
+            "name": "schoolCity",
+            "type": "TEXT"
+        },
+        {
+            "name": "schoolState",
+            "type": "TEXT"
+        },
+        {
+            "name": "schoolZip",
+            "type": "TEXT",
+            "constraints": [
+                {
+                    "type": "CHECK",
+                    "definition": "CHECK (\n        schoolZip GLOB '[0-9][0-9][0-9][0-9][0-9]' OR \n        schoolZip GLOB '[0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]'\n    )"
+                }
+            ]
+        },
+        {
+            "name": "schoolPhone",
+            "type": "TEXT",
+            "constraints": [
+                {
+                    "type": "CHECK",
+                    "definition": "CHECK (schoolPhone GLOB '[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]' )"
+                }
+            ]
+        },
+        {
+            "name": "schoolUrl",
+            "type": "TEXT"
+        },
+        {
+            "name": "createDateTime",
+            "type": "TEXT",
+            "constraints": [
+                {
+                    "type": "DEFAULT",
+                    "definition": "DEFAULT (CURRENT_TIMESTAMP)  "
+                },
+                {
+                    "type": "CHECK",
+                    "definition": "CHECK (createDateTime IS datetime(createDateTime) )"
+                }
+            ]
+        },
+        {
+            "name": "updateDateTime",
+            "type": "TEXT",
+            "constraints": [
+                {
+                    "type": "CHECK",
+                    "definition": "CHECK (updateDateTime IS datetime(updateDateTime) )"
+                }
+            ]
+        }
+    ],
+    "constraints": [
+        {
+            "type": "PRIMARY KEY",
+            "definition": "PRIMARY KEY (\n        schoolId\n    )\n"
+        }
+    ],
+    "rows": [
+        [
+            1,
+            "Rising Sun Martial Arts",
+            "10855 N Frank Lloyd Wright Blvd",
+            "#107",
+            "Scottsdale",
+            "AZ",
+            "85259",
+            "480-860-1255",
+            "https:\/\/www.risingsunmartialartsaz.com\/",
+            "2026-10-06 22:49:55",
+            null
+        ]
+    ]
+}

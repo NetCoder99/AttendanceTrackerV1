@@ -1,7 +1,8 @@
 import re
 import sqlite3
 
-from services.config import getDbPath
+from sqlite.sqlite_alchemy import getDbPath
+#from services.config import getDbPath
 from sqlite.sqlite_procs import DictFactory
 
 

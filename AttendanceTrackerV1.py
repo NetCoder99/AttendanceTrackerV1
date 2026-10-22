@@ -21,6 +21,7 @@ from blueprints.schedule.routes import schedule_bp
 from blueprints.students.routes import students_bp
 from blueprints.requirements.routes import requirements_bp
 from services.processScanner import DisplayActiveProcesses, IsProcessActive
+from services.table_updates import CheckForTableUpdates
 
 # ----------------------------------------------------------------------------------
 logging_config_dict = loggingConf.LOGGING_CONFIG
@@ -38,12 +39,6 @@ app.register_blueprint(students_bp)
 app.register_blueprint(schedule_bp)
 app.register_blueprint(belts_bp)
 app.register_blueprint(requirements_bp)
-
-# browser_prefs = {
-#     "autofill.profile_enabled": False,       # Disables "Save address?" prompts
-#     "credentials_enable_service": False,    # Disables "Save password?" prompts
-#     "profile.password_manager_enabled": False
-# }
 
 htmx = HTMX(app)
 
@@ -74,6 +69,7 @@ def page_not_found(e):
 # Run the application
 if __name__ == '__main__':
     DisplayActiveProcesses('attendance')
+    CheckForTableUpdates()
     ok_to_start = IsProcessActive(constants.applicationName)
     if ok_to_start['status'] == 'ok':
         # app.run(debug=False, port=5001)

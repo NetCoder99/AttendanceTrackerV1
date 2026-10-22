@@ -271,20 +271,3 @@ function GetNewStripeCell(rankData) {
     return td3;
 }
 
-// ------------------------------------------------------------------
-$('#btnPrintBeltsPDF').off().on('click', function() {
-    console.log("btnPrintBeltsPDF was invoked");
-    $.ajax({
-      url: '/print_belt_api',
-      type: 'POST',
-      contentType: 'application/json',
-      data: null,
-      dataType: 'text',
-      success: function(response) {
-        processCreateBadgeResponse(response);
-      },
-      error: function(xhr, status, error) {
-        console.error('Error:', error);
-      }
-    });
-})

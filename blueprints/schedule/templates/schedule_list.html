@@ -15,8 +15,8 @@ Class management functions
 {% block content %}
 <h2>
     <span>Classes / Schedule Manager</span>
-    <a  id="btnPrintBeltsPDF"
-        name="btnPrintBeltsPDF"
+    <a  id="btnPrintSchedulePDF"
+        name="btnPrintSchedulePDF"
         class="small float-end align-self-end me-2 mt-3"
         href="#"
         style="font-size: 1.00rem; color: white">
@@ -24,7 +24,9 @@ Class management functions
     </a>
 </h2>
 
-{% include 'schedule_form.html' %}
+    {% include 'schedule_form.html' %}
+
+    <div id="divScheduleMessage" name="divScheduleMessage" class="d-inline-block"></div>
 
     <table id="classTable" class="table table-bordered table-striped">
       <thead>
@@ -116,4 +118,6 @@ Class management functions
 
 <script type="application/javascript" src="{{ url_for('schedule_bp.static',filename='schedule_list.js') }}"> </script>
 <script type="application/javascript" src="{{ url_for('schedule_bp.static',filename='schedule_form.js') }}"> </script>
+<script type="application/javascript" src="{{ url_for('schedule_bp.static',filename='schedule_print.js') }}"> </script>
+
 {% endblock %}

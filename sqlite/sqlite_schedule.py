@@ -6,9 +6,8 @@ from datetime import datetime
 from sqlalchemy import select
 
 from models.data_models import Classes, Archive
-from services.config import getDbPath
 from sqlite.sqlite_procs import DictFactory
-from sqlite.sqlite_alchemy import getDbSession
+from sqlite.sqlite_alchemy import getDbSession, getDbPath
 
 db_session = getDbSession()
 # ------------------------------------------------------------------
