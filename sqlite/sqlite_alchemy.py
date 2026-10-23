@@ -6,11 +6,14 @@ from sqlalchemy.orm import sessionmaker
 
 db_session = None
 
-def getDbPath(db_name: str = 'AttendanceV3.db'):
+def getDbPath(db_name: str = 'AttendanceV3_20261022.db'):
     if platform.system() == 'Windows':
         return os.path.join(os.getenv('APPDATA'), 'Attendance', db_name)
     else:
         return os.path.join('/', 'Attendance', db_name)
+
+def getDbURL():
+    return f'sqlite:///{getDbPath()}'
 
 def getDbSession(db_path: str = getDbPath()):
     global db_session
