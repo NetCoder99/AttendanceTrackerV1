@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 db_session = None
 
-def getDbPath(db_name: str = 'AttendanceV3_temp.db'):
+def getDbPath(db_name: str = 'AttendanceV3.db'):
     if platform.system() == 'Windows':
         return os.path.join(os.getenv('APPDATA'), 'Attendance', db_name)
     else:
