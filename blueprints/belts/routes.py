@@ -49,11 +49,6 @@ def getStripesList_api():
     beltsRecords = GetStripeRecords(searchData)
     return jsonify({"data": beltsRecords})
 
-
-
-
-
-
 @belts_bp.route('/addNextStripe_api', methods=['POST', 'GET'])
 def addNextStripe_api():
     searchData = request.json

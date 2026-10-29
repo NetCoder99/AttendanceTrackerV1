@@ -61,7 +61,10 @@ def GetStripeRecordsStmt(searchData):
     return f'''
         select r.RankNumId,
                r.RankName,
-               trim(replace(replace(r.RankName, substr(r.RankName, 1, instr(r.RankName, ' ') - 1), ''), 'Belt', '')) AS StripeName,
+               case when trim(replace(replace(r.RankName, substr(r.RankName, 1, instr(r.RankName, ' ') - 1), ''), 'Belt', '')) = ''
+                    then 'No Stripe Earned'
+                    else trim(replace(replace(r.RankName, substr(r.RankName, 1, instr(r.RankName, ' ') - 1), ''), 'Belt', ''))
+               end  AS StripeName,
                r.TotalRequiredClasses
         from   ranks  r
         where  r.beltId = cast({searchData['rankNum']} as integer)
