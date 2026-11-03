@@ -1,5 +1,9 @@
+import logging
+
 from models.data_models import Archive
 from sqlite.sqlite_alchemy import getDbSession
+
+logger = logging.getLogger(__name__)
 
 # ------ powershell -------------------------------------------------------------
 # $env:PYTHONPATH="C:\Users\jdugger01\source\Python\AttendanceTrackerV1"
@@ -11,6 +15,6 @@ from sqlite.sqlite_alchemy import getDbSession
 db_session = getDbSession()
 def DeleteArchiveTable():
     engine = db_session.get_bind()
-    print(f'DeleteArchiveTable - started - {str(engine.url)}')
+    logger.info(f'DeleteArchiveTable - started - {str(engine.url)}')
     Archive.__table__.drop(bind=db_session.get_bind(), checkfirst=True)
-    print('DeleteArchiveTable - completed')
+    logger.info('DeleteArchiveTable - completed')
