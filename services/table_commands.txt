@@ -1,0 +1,7 @@
+# ------ powershell -------------------------------------------------------------
+# $env:PYTHONPATH="C:\Users\jdugger01\source\Python\AttendanceTrackerV1"
+# python -c 'from table_delete import DeleteArchiveTable; DeleteArchiveTable()'
+
+# ------ bash  -------------------------------------------------------------
+# PYTHONPATH="/home/johnd/AttendanceTracker/AttendanceTrackerV1" python -c "from table_delete import DeleteArchiveTable; DeleteArchiveTable()"
+
